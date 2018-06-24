@@ -12,6 +12,10 @@ services:
       - secrets.ini
     volumes:
       - ./public:/var/www/html
+  php-app:
+    image: php:7.2.6-fpm-alpine
+    volumes:
+      - ./app:/var/www/html
 
 secrets:
   secrets.ini:
