@@ -1,5 +1,6 @@
 .idea/
 *.iml
+secrets.ini
 
 
 ### https://raw.github.com/github/gitignore/5db84d2431ce5209d252112fdc377c0f17d5078b/Global/Windows.gitignore
@@ -37,7 +38,8 @@ $RECYCLE.BIN/
 .LSOverride
 
 # Icon must end with two \r
-Icon
+Icon
+
 
 # Thumbnails
 ._*
