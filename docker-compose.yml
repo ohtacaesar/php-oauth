@@ -1,0 +1,12 @@
+version: '3'
+services:
+  nginx:
+    build: ./nginx
+    ports:
+      - 8080:80
+    depends_on:
+      - php-oauth
+  php-oauth:
+    build: ./
+
+
