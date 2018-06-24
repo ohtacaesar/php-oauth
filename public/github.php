@@ -1,8 +1,11 @@
 <?php
 
 $ini = parse_ini_file('/var/run/secrets/secrets.ini');
+
 define('CLIENT_ID', $ini['client_id']);
 define('CLIENT_SECRET', $ini['client_secret']);
+
+$cookieDomain = '.localhost.test';
 
 function setUserInfo($accessToken)
 {
@@ -42,10 +45,11 @@ function setAccessToken($code)
 
     $accessToken = $data['access_token'];
     $_SESSION["access_token"] = $accessToken;
-
 }
 
-session_start();
+session_start([
+    'cookie_domain' => $cookieDomain
+]);
 
 if (isset($_SESSION['id'])) {
     var_dump($_SESSION);
