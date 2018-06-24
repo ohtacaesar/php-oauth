@@ -1,4 +1,4 @@
-version: '3'
+version: '3.6'
 services:
   nginx:
     build: ./nginx
@@ -8,5 +8,12 @@ services:
       - php-oauth
   php-oauth:
     build: ./
+    secrets:
+      - secrets.ini
+    volumes:
+      - ./public:/var/www/html
 
+secrets:
+  secrets.ini:
+    file: ./secrets.ini
 
