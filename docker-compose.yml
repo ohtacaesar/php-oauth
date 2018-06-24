@@ -1,21 +1,25 @@
 version: '3.6'
 services:
-  nginx:
-    build: ./nginx
-    ports:
-      - 8080:80
-    depends_on:
-      - php-oauth
   php-oauth:
     build: ./
     secrets:
       - secrets.ini
     volumes:
       - ./public:/var/www/html
+    environment:
+      SESSION_COOKIE_DOMAIN: .localhost.test
+
   php-app:
     image: php:7.2.6-fpm-alpine
     volumes:
       - ./app:/var/www/html
+    environment:
+      SESSION_COOKIE_DOMAIN: .localhost.test
+
+  nginx:
+    build: ./nginx
+    ports:
+      - 8080:80
 
 secrets:
   secrets.ini:

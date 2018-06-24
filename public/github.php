@@ -5,7 +5,15 @@ $ini = parse_ini_file('/var/run/secrets/secrets.ini');
 define('CLIENT_ID', $ini['client_id']);
 define('CLIENT_SECRET', $ini['client_secret']);
 
-$cookieDomain = '.localhost.test';
+$sessionStartOptions = [];
+
+foreach(['cookie_domain', 'cookie_secure'] as $key) {
+    $KEY = 'SESSION_' . strtoupper($key);
+    if (isset($_ENV[$KEY])) {
+        $sessionStartOptions[$key] = $_ENV[$KEY];
+    }
+}
+
 
 function setUserInfo($accessToken)
 {
@@ -47,9 +55,7 @@ function setAccessToken($code)
     $_SESSION["access_token"] = $accessToken;
 }
 
-session_start([
-    'cookie_domain' => $cookieDomain
-]);
+session_start($sessionStartOptions);
 
 if (isset($_SESSION['id'])) {
     var_dump($_SESSION);
