@@ -9,3 +9,7 @@ foreach(['cookie_domain', 'cookie_secure'] as $key) {
     }
 }
 
+$redis = new Redis();
+$redis->connect('redis', 6379);
+var_dump($redis->get('test'));
+$redis->close();
