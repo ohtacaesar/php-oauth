@@ -6,13 +6,17 @@ services:
       - secrets.ini
     volumes:
       - ./public:/var/www/html
+    depends_on:
+      - redis
     environment:
       SESSION_COOKIE_DOMAIN: .localhost.test
 
   php-app:
-    image: php:7.2.6-fpm-alpine
+    build: ./app
     volumes:
-      - ./app:/var/www/html
+      - ./app/public:/var/www/html
+    depends_on:
+      - redis
     environment:
       SESSION_COOKIE_DOMAIN: .localhost.test
 
@@ -20,6 +24,12 @@ services:
     build: ./nginx
     ports:
       - 8080:80
+    depends_on:
+      - php-app
+      - php-oauth
+
+  redis:
+    image: redis:alpine
 
 secrets:
   secrets.ini:
