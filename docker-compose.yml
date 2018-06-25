@@ -10,6 +10,8 @@ services:
       - redis
     environment:
       SESSION_COOKIE_DOMAIN: .localhost.test
+      SESSION_SAVE_HANDLER:  redis
+      SESSION_SAVE_PATH:     redis:6379
 
   php-app:
     build: ./app
@@ -19,6 +21,8 @@ services:
       - redis
     environment:
       SESSION_COOKIE_DOMAIN: .localhost.test
+      SESSION_SAVE_HANDLER:  redis
+      SESSION_SAVE_PATH:     redis:6379
 
   nginx:
     build: ./nginx
@@ -30,6 +34,8 @@ services:
 
   redis:
     image: redis:alpine
+    volumes:
+      - ./tmp/redis:/data
 
 secrets:
   secrets.ini:
