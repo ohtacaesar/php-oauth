@@ -12,6 +12,7 @@ services:
       SESSION_COOKIE_DOMAIN: .localhost.test
       SESSION_SAVE_HANDLER:  redis
       SESSION_SAVE_PATH:     redis:6379
+      SESSION_SERIALIZE_HANDLER: msgpack
 
   php-app:
     build: ./app
@@ -23,6 +24,7 @@ services:
       SESSION_COOKIE_DOMAIN: .localhost.test
       SESSION_SAVE_HANDLER:  redis
       SESSION_SAVE_PATH:     redis:6379
+      SESSION_SERIALIZE_HANDLER: msgpack
 
   nginx:
     build: ./nginx
