@@ -1,4 +1,4 @@
-FROM php:7.2.6-fpm-alpine
+FROM php:7.2.6-fpm-alpine3.7
 
 RUN set -xe \
     && apk add --no-cache --virtual .build-deps $PHPIZE_DEPS \
