@@ -10,7 +10,11 @@ session_start(['read_and_close' => 1]);
 </head>
 
 <body>
+<a href="//auth.localhost.test:8080/github.php?from=http://<?php echo $_SERVER['HTTP_HOST'] . $_SERVER['SCRIPT_NAME'] ?>">ログイン</a> |
+<a href="//auth.localhost.test:8080/logout.php?from=http://<?php echo $_SERVER['HTTP_HOST'] . $_SERVER['SCRIPT_NAME'] ?>">ログアウト</a>
 <pre><?php var_dump($_SESSION) ?></pre>
+<pre><?php var_dump($_SERVER) ?></pre>
+
 </body>
 
 </html>
