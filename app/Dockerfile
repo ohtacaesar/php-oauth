@@ -9,6 +9,10 @@ RUN set -xe \
     && echo extension=redis.so > /usr/local/etc/php/conf.d/redis.ini \
     && echo extension=msgpack.so > /usr/local/etc/php/conf.d/msgpack.ini
 
-ADD public/* /var/www/html/
+COPY public/* /var/www/html/
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 
 VOLUME /var/www/html
+
+ENTRYPOINT ["entrypoint.sh"]
+CMD ["php-fpm"]

@@ -1,15 +1,6 @@
 <?php
 
-$sessionStartOptions = [];
-
-foreach (['cookie_domain', 'cookie_secure', 'save_handler', 'save_path', 'serialize_handler'] as $key) {
-    $KEY = 'SESSION_' . strtoupper($key);
-    if (isset($_ENV[$KEY])) {
-        $sessionStartOptions[$key] = $_ENV[$KEY];
-    }
-}
-
-session_start($sessionStartOptions);
+session_start(['read_and_close' => 1]);
 
 ?><!DOCTYPE html>
 <html>

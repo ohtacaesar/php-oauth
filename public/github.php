@@ -5,15 +5,6 @@ $ini = parse_ini_file('/var/run/secrets/secrets.ini');
 define('CLIENT_ID', $ini['client_id']);
 define('CLIENT_SECRET', $ini['client_secret']);
 
-$sessionStartOptions = [];
-
-foreach (['cookie_domain', 'cookie_secure', 'save_handler', 'save_path', 'serialize_handler'] as $key) {
-    $KEY = 'SESSION_' . strtoupper($key);
-    if (isset($_ENV[$KEY])) {
-        $sessionStartOptions[$key] = $_ENV[$KEY];
-    }
-}
-
 
 function setUserInfo($accessToken)
 {
@@ -55,7 +46,7 @@ function setAccessToken($code)
     $_SESSION["access_token"] = $accessToken;
 }
 
-session_start($sessionStartOptions);
+session_start();
 
 if (isset($_SESSION['id'])) {
     echo 'logged in';
