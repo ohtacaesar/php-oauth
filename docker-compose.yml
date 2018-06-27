@@ -1,11 +1,11 @@
 version: '3.6'
 services:
-  php-oauth:
-    build: ./
+  php-auth:
+    build: ./php-auth
     secrets:
       - secrets.ini
     volumes:
-      - ./public:/var/www/html
+      - ./php-auth/public:/var/www/html
     environment:
       SESSION_COOKIE_DOMAIN: .localhost.test
       SESSION_SAVE_HANDLER:  redis
@@ -13,9 +13,9 @@ services:
       SESSION_SERIALIZE_HANDLER: msgpack
 
   php-app:
-    build: ./app
+    build: ./php-app
     volumes:
-      - ./app/public:/var/www/html
+      - ./php-app/public:/var/www/html
     environment:
       SESSION_COOKIE_DOMAIN: .localhost.test
       SESSION_SAVE_HANDLER:  redis
@@ -28,7 +28,7 @@ services:
       - 8080:80
     depends_on:
       - php-app
-      - php-oauth
+      - php-auth
 
   redis:
     image: redis:alpine
