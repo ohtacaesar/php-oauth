@@ -6,8 +6,6 @@ services:
       - secrets.ini
     volumes:
       - ./public:/var/www/html
-    depends_on:
-      - redis
     environment:
       SESSION_COOKIE_DOMAIN: .localhost.test
       SESSION_SAVE_HANDLER:  redis
@@ -18,8 +16,6 @@ services:
     build: ./app
     volumes:
       - ./app/public:/var/www/html
-    depends_on:
-      - redis
     environment:
       SESSION_COOKIE_DOMAIN: .localhost.test
       SESSION_SAVE_HANDLER:  redis
