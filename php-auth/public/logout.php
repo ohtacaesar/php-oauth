@@ -1,6 +1,5 @@
 <?php
 
-
 $tmp = parse_url($_SERVER['HTTP_HOST']);
 $serverHost = $tmp["host"];
 
@@ -11,21 +10,25 @@ if (isset($tmp["port"])) {
     $defaultUrl .= ':' . $tmp["port"];
 }
 
-if (isset($_GET["from"])) {
-    $redirectUrl = $_GET["from"];
-    $redirectUrl = filter_var($redirectUrl, FILTER_VALIDATE_URL);
-    $redirectHost = parse_url($redirectUrl)['host'];
+$redirectUrl = null;
 
-    $redirectHost = array_reverse(explode(".", $redirectHost));
+if ($redirectUrl === null && isset($_GET["from"])) {
+    $from = $_GET["from"];
+    $from = filter_var($from, FILTER_VALIDATE_URL);
+    $tmp = parse_url($from)['host'];
 
-    if ($redirectHost[0] !== $serverHost[0] || $redirectHost[1] !== $serverHost[1]) {
-        $redirectUrl = $defaultUrl;
+    $tmp = array_reverse(explode(".", $tmp));
+
+    if ($tmp[0] === $serverHost[0] && $tmp[1] === $serverHost[1]) {
+        $redirectUrl = $from;
     }
-} else {
+}
+
+if ($redirectUrl === null) {
     $redirectUrl = $defaultUrl;
 }
 
 session_start();
 session_destroy();
 
-header('Location: '. $redirectUrl);
+header('Location: ' . $redirectUrl);
