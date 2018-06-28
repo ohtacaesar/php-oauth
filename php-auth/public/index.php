@@ -1,1 +1,1 @@
-<pre><?php var_dump(parse_url($_SERVER['HTTP_HOST'])) ?></pre>
+<?php

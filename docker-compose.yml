@@ -30,10 +30,11 @@ services:
       - php-app
       - php-auth
 
+  postgres:
+    image: postgres:10-alpine
+
   redis:
     image: redis:alpine
-    volumes:
-      - ./tmp/redis:/data
 
 secrets:
   secrets.ini:
