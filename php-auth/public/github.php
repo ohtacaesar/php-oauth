@@ -46,15 +46,52 @@ function setAccessToken($code)
     $_SESSION["access_token"] = $accessToken;
 }
 
+
 session_start();
 
+$tmp = parse_url($_SERVER['HTTP_HOST']);
+$serverHost = $tmp["host"];
+
+$serverHost = array_reverse(explode(".", $serverHost));
+
+$defaultUrl = "//${serverHost[1]}.${serverHost[0]}";
+if (isset($tmp["port"])) {
+    $defaultUrl .= ':' . $tmp["port"];
+}
+
+$redirectUrl = null;
+
+if ($redirectUrl === null && isset($_GET["from"])) {
+    $from = $_GET["from"];
+    $from = filter_var($from, FILTER_VALIDATE_URL);
+    $tmp = parse_url($from)['host'];
+
+    $tmp = array_reverse(explode(".", $tmp));
+
+    if ($tmp[0] === $serverHost[0] && $tmp[1] === $serverHost[1]) {
+        $redirectUrl = $from;
+    }
+}
+
+if ($redirectUrl === null and isset($_SESSION["redirectUrl"])) {
+    $redirectUrl = $_SESSION["redirectUrl"];
+}
+
+if ($redirectUrl === null) {
+    $redirectUrl = $defaultUrl;
+}
+
 if (isset($_SESSION['id'])) {
-    echo 'logged in';
+    unset($_SESSION["redirectUrl"]);
+    header("Location: " . $redirectUrl);
     return;
 }
 
 if (isset($_SESSION['access_token'])) {
     setUserInfo($_SESSION['access_token']);
+
+    unset($_SESSION["redirectUrl"]);
+    header("Location: " . $redirectUrl);
     return;
 }
 
@@ -64,8 +101,12 @@ if (isset($_GET['code'])) {
     $accessToken = $_SESSION['access_token'];
     setUserInfo($accessToken);
 
+    unset($_SESSION["redirectUrl"]);
+    header("Location: " . $redirectUrl);
     return;
 }
+
+$_SESSION["redirectUrl"] = $redirectUrl;
 
 $query = http_build_query([
     'client_id' => CLIENT_ID,
