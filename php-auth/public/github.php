@@ -18,11 +18,40 @@ function setUserInfo($accessToken)
     curl_close($ch);
 
     $data = json_decode($str, true);
-    foreach (['login', 'avatar_url', 'id', 'node_id'] as $key) {
+    foreach (['login', 'id', 'name'] as $key) {
         $_SESSION[$key] = $data[$key];
     }
 
-    return 0;
+    $pdo = new \PDO(
+        'pgsql:host=postgres;port=5432;dbname=postgres',
+        'postgres',
+        null,
+        [
+            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
+        ]
+    );
+
+    $sql = file_get_contents('schema.sql');
+    if ($pdo->exec($sql) === false) {
+        return 1;
+    }
+
+    $stmt = $pdo->prepare("select * from users where id = :id");
+    $stmt->bindValue('id', $_SESSION['id']);
+    $stmt->execute();
+    $user = $stmt->fetch();
+    $stmt->closeCursor();
+
+    if ($user) {
+        return 1;
+    }
+
+    $stmt = $pdo->prepare("insert into users(login, id, name) values (:login, :id, :name)");
+    $stmt->bindValue('login', $_SESSION['login']);
+    $stmt->bindValue('id', $_SESSION['id']);
+    $stmt->bindValue('name', $_SESSION['name']);
+    $stmt->execute();
+    $stmt->closeCursor();
 }
 
 function setAccessToken($code)
