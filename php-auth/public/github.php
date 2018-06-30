@@ -22,10 +22,13 @@ function setUserInfo($accessToken)
         $_SESSION[$key] = $data[$key];
     }
 
+
+    $conf = yaml_parse_file("config.yml");
+
     $pdo = new \PDO(
-        'pgsql:host=postgres;port=5432;dbname=postgres',
-        'postgres',
-        null,
+        $conf['pdo']['dns'],
+        $conf['pdo']['username'],
+        $conf['pdo']['passwd'],
         [
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
         ]

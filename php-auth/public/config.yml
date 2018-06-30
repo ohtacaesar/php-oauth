@@ -1,0 +1,6 @@
+---
+
+pdo:
+  dsn:      pgsql:host=postgres;port=5432;dbname=postgres
+  username: postgres
+  passwd:
