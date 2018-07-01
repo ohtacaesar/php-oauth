@@ -14,12 +14,13 @@ RUN set -xe \
     && rm -rf /tmp/pear ~/.pearrc \
     && docker-php-ext-enable redis msgpack yaml pdo_pgsql
 
+WORKDIR /app
+VOLUME  /app
 
 COPY ./ /app
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 
-WORKDIR /app
-VOLUME  /app
+RUN composer.phar install
 
 ENTRYPOINT ["entrypoint.sh"]
 CMD ["php-fpm"]
