@@ -26,7 +26,7 @@ function setUserInfo($accessToken)
     $conf = yaml_parse_file("config.yml");
 
     $pdo = new \PDO(
-        $conf['pdo']['dns'],
+        $conf['pdo']['dsn'],
         $conf['pdo']['username'],
         $conf['pdo']['passwd'],
         [
