@@ -1,0 +1,6 @@
+{
+    "name": "ohtacaesar/php-auth",
+    "require": {
+        "slim/slim": "^3.10"
+    }
+}
