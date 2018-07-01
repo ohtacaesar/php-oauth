@@ -5,7 +5,7 @@ services:
     secrets:
       - secrets.ini
     volumes:
-      - ./php-auth/public:/var/www/html
+      - ./php-auth:/app
     environment:
       SESSION_COOKIE_DOMAIN: .localhost.test
       SESSION_SAVE_HANDLER:  redis

@@ -1,15 +1,17 @@
 <?php
 
+use \Psr\Http\Message\ServerRequestInterface as Request;
+use \Psr\Http\Message\ResponseInterface as Response;
 
-$conf = yaml_parse_file("config.yml");
+require '../vendor/autoload.php';
 
-$pdo = new \PDO(
-    $conf['pdo']['dsn'],
-    $conf['pdo']['username'],
-    $conf['pdo']['passwd'],
-    [
-        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
-    ]
-);
 
-var_dump($pdo->query("select 1 as a")->fetchAll());
+$app = new \Slim\App;
+$app->get('/hello/{name}', function (Request $request, Response $response, array $args) {
+    $name = $args['name'];
+    $response->getBody()->write("Hello, $name");
+
+    return $response;
+});
+
+$app->run();
