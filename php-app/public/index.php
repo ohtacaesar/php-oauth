@@ -1,5 +1,7 @@
 <?php
 
+$config = yaml_parse_file('config.yml');
+
 session_start(['read_and_close' => 1]);
 
 ?><!DOCTYPE html>
@@ -21,9 +23,10 @@ session_start(['read_and_close' => 1]);
 <ul>
     <li><a href="phpinfo.php">phpinfo</a></li>
     <li><a href="postgresql.php">postgresql</a></li>
+    <li><a href="http://auth.localhost.test:8080/users.php">users</a></li>
 </ul>
 
-
+<pre><?php var_dump($config) ?></pre>
 <pre><?php var_dump($_SESSION) ?></pre>
 <pre><?php var_dump($_SERVER) ?></pre>
 
