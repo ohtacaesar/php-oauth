@@ -13,6 +13,7 @@ require_once __DIR__ . '/../src/settings.php';
 
 require_once __DIR__ . '/../src/dependencies.php';
 
+
 $app->get('/', function (Request $request, Response $response) {
     $users = $this->userDao->getAll();
     return $this->view->render($response, 'index.html.twig', [
@@ -20,6 +21,18 @@ $app->get('/', function (Request $request, Response $response) {
         'session' => $_SESSION,
     ]);
 });
+
+$app->get('/auth', function (Request $request, Response $response) {
+    if(isset($_SESSION['user'])) {
+        return $response->withStatus(200);
+    }
+    return $response->withStatus(403);
+});
+
+$app->get('/private', function (Request $request, Response $response) {
+    return $this->view->render($response, 'private.html.twig');
+});
+
 
 $app->get('/phpinfo', function (Request $request, Response $response) {
     ob_start();
