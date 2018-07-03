@@ -18,9 +18,12 @@ WORKDIR /app
 VOLUME  /app
 
 COPY ./ /app
-COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 
 RUN composer.phar install
+
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+COPY www.conf /usr/local/etc/php-fpm.d/www.conf
+
 
 ENTRYPOINT ["entrypoint.sh"]
 CMD ["php-fpm"]

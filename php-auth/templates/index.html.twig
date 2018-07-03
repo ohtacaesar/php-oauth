@@ -6,7 +6,8 @@
 
 <body>
 <h1>test</h1>
-<p>{{ base_url() }}{{ current_path() }}</p>
+<p>{{ base_url() }}</p>
+<p>{{ current_path() }}</p>
 <a href="{{ path_for('login', {}, {rd: base_url() ~ current_path()}) }}">ログイン</a> |
 <a href="{{ path_for('logout', {}, {rd: base_url() ~ current_path()}) }}">ログアウト</a>
 <pre>{{ dump(session) }}</pre>
