@@ -28,21 +28,6 @@ $app->get('/', function (Request $request, Response $response) {
     ]);
 });
 
-$app->get('/a', function (Request $request, Response $response) {
-    $users = $this->userDao->getAll();
-    $env = [];
-    foreach(['SCRIPT_NAME', 'REQUEST_URI', 'QUERY_STRING'] as $key) {
-        $env[$key] = $_SERVER[$key ];
-    }
-
-    return $this->view->render($response, 'index.html.twig', [
-        'users' => $users,
-        'session' => $_SESSION,
-        'uri' => $this->uri,
-        'env' => $env,
-    ]);
-});
-
 $app->get('/auth', function (Request $request, Response $response) {
     if(isset($_SESSION['user'])) {
         return $response->withStatus(200);
@@ -56,25 +41,6 @@ $app->get('/private', function (Request $request, Response $response) {
 
 $app->get('/private/test', function (Request $request, Response $response) {
     return $this->view->render($response, 'private.html.twig');
-});
-
-
-$app->get('/phpinfo', function (Request $request, Response $response) {
-    ob_start();
-    phpinfo();
-    $tmp = ob_get_clean();
-    ob_end_clean();
-
-    $response->getBody()->write($tmp);
-    return $response;
-});
-
-
-$app->get('/dump', function (Request $request, Response $response) {
-    $tmp = var_export($this->uri, true);
-    $response->getBody()->write('<pre>');
-    $response->getBody()->write($tmp);
-    return $response;
 });
 
 
