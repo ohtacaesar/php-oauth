@@ -16,9 +16,30 @@ require_once __DIR__ . '/../src/dependencies.php';
 
 $app->get('/', function (Request $request, Response $response) {
     $users = $this->userDao->getAll();
+    $env = [];
+    foreach(['SCRIPT_NAME', 'REQUEST_URI', 'QUERY_STRING'] as $key) {
+        $env[$key] = $_SERVER[$key ];
+    }
     return $this->view->render($response, 'index.html.twig', [
         'users' => $users,
         'session' => $_SESSION,
+        'uri' => $this->uri,
+        'env' => $env,
+    ]);
+});
+
+$app->get('/a', function (Request $request, Response $response) {
+    $users = $this->userDao->getAll();
+    $env = [];
+    foreach(['SCRIPT_NAME', 'REQUEST_URI', 'QUERY_STRING'] as $key) {
+        $env[$key] = $_SERVER[$key ];
+    }
+
+    return $this->view->render($response, 'index.html.twig', [
+        'users' => $users,
+        'session' => $_SESSION,
+        'uri' => $this->uri,
+        'env' => $env,
     ]);
 });
 
@@ -30,6 +51,10 @@ $app->get('/auth', function (Request $request, Response $response) {
 });
 
 $app->get('/private', function (Request $request, Response $response) {
+    return $this->view->render($response, 'private.html.twig');
+});
+
+$app->get('/private/test', function (Request $request, Response $response) {
     return $this->view->render($response, 'private.html.twig');
 });
 
