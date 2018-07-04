@@ -1,3 +1,4 @@
 FROM nginx:alpine
 
-ADD default.nginx.conf /etc/nginx/conf.d/default.conf
+ADD ./conf.d/ /etc/nginx/conf.d
+ADD ./html  /usr/share/nginx/html
