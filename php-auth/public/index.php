@@ -5,14 +5,26 @@ use Slim\Http\Response;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-session_start();
-
 $app = new \Slim\App;
 
 require_once __DIR__ . '/../src/settings.php';
 
 require_once __DIR__ . '/../src/dependencies.php';
 
+$uri = $app->getContainer()->get('uri');
+$host = $uri->getHost();
+$cookieDomain = explode('.', $host);
+
+if (count($cookieDomain) > 2) {
+    array_shift($cookieDomain);
+    $cookieDomain = "." . join(".", $cookieDomain);
+} else {
+    $cookieDomain = $host;
+}
+
+session_start([
+    'cookie_domain' => $cookieDomain
+]);
 
 $app->get('/', function (Request $request, Response $response) {
     $users = $this->userDao->getAll();
@@ -28,7 +40,7 @@ $app->get('/', function (Request $request, Response $response) {
     ]);
 });
 
-$app->get('/auth[/{role}]', function (Request $request, Response $response, array $args) {
+$app->get('/auth', function (Request $request, Response $response) {
     // 認証
     if (!isset($_SESSION['user'])) {
         return $response->withStatus(401);
