@@ -17,8 +17,8 @@ require_once __DIR__ . '/../src/dependencies.php';
 $app->get('/', function (Request $request, Response $response) {
     $users = $this->userDao->getAll();
     $env = [];
-    foreach(['SCRIPT_NAME', 'REQUEST_URI', 'QUERY_STRING'] as $key) {
-        $env[$key] = $_SERVER[$key ];
+    foreach (['SCRIPT_NAME', 'REQUEST_URI', 'QUERY_STRING'] as $key) {
+        $env[$key] = $_SERVER[$key];
     }
     return $this->view->render($response, 'index.html.twig', [
         'users' => $users,
@@ -28,12 +28,19 @@ $app->get('/', function (Request $request, Response $response) {
     ]);
 });
 
-$app->get('/auth', function (Request $request, Response $response) {
+$app->get('/auth[/{role}]', function (Request $request, Response $response, array $args) {
     // 認証
-    if(!isset($_SESSION['user'])) {
+    if (!isset($_SESSION['user'])) {
         return $response->withStatus(401);
     }
-    // 認可(未実装)
+
+    // 認可
+    if (isset($_SERVER['HTTP_ROLE']) && $role = $_SERVER['HTTP_ROLE']) {
+        if (!isset($_SESSION['user']['role']) && $_SESSION['user']['role'] !== $role) {
+            return $response->withStatus(403);
+        }
+    }
+
     return $response->withStatus(200);
 });
 
@@ -119,6 +126,7 @@ $app->group('/github', function () {
             error_log('ユーザー情報の取得に失敗.');
             return $response->withRedirect($this->uri->getBaseUrl());
         }
+        $user['role'] = 'ADMIN';
         $_SESSION['access_token'] = $accessToken;
         $_SESSION['user'] = $user;
 
