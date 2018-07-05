@@ -29,10 +29,12 @@ $app->get('/', function (Request $request, Response $response) {
 });
 
 $app->get('/auth', function (Request $request, Response $response) {
-    if(isset($_SESSION['user'])) {
-        return $response->withStatus(200);
+    // 認証
+    if(!isset($_SESSION['user'])) {
+        return $response->withStatus(401);
     }
-    return $response->withStatus(403);
+    // 認可(未実装)
+    return $response->withStatus(200);
 });
 
 $app->get('/private', function (Request $request, Response $response) {
