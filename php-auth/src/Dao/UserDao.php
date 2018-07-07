@@ -27,15 +27,15 @@ class UserDao
     public function update(array $user)
     {
         $sql = <<<EOS
-insert into users(login, id, name) values (:login, :id, :name)
+insert into users(login, user_id, name) values (:login, :user_id, :name)
     on conflict
     on constraint users_pkey
-    do update set id = :id, login = :login, name = :name
+    do update set user_id = :user_id, login = :login, name = :name
 EOS;
 
         $stmt = $this->pdo->prepare($sql);
         $stmt->bindValue('login', $user['login']);
-        $stmt->bindValue('id', $user['id']);
+        $stmt->bindValue('user_id', $user['user_id']);
         $stmt->bindValue('name', $user['name']);
         $val = $stmt->execute();
         $stmt->closeCursor();
@@ -44,13 +44,13 @@ EOS;
     }
 
     /**
-     * @param int $id
+     * @param int $userId
      * @return array|false
      */
-    public function getById(int $id)
+    public function getByUserId(int $userId)
     {
-        $stmt = $this->pdo->prepare('select * from users where id = :id');
-        $stmt->bindValue('id', $_SESSION['id']);
+        $stmt = $this->pdo->prepare('select * from users where user_id = :userId');
+        $stmt->bindValue('userId', $userId);
         $stmt->execute();
         $user = $stmt->fetch(\PDO::FETCH_ASSOC);
         $stmt->closeCursor();
@@ -63,7 +63,25 @@ EOS;
      */
     public function getAll()
     {
-        $stmt = $this->pdo->prepare('select * from users');
+        $sql = <<<EOS
+select
+  a.*
+, b.roles
+from users as a
+
+left join (
+  select
+    user_id
+  , array_to_string(array_agg(trim(role)), ',') as roles
+  from users_roles
+  group by user_id
+) as b
+  on b.user_id = a.user_id
+
+order by a.user_id
+EOS;
+
+        $stmt = $this->pdo->prepare($sql);
         $stmt->execute();
         $users = $stmt->fetchAll(\PDO::FETCH_ASSOC);
         $stmt->closeCursor();

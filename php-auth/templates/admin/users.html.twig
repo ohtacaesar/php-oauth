@@ -1,0 +1,32 @@
+{% extends 'base.html.twig' %}
+
+{% block content %}
+    <table border="1">
+        <thead>
+        <tr>
+            <th>user_id</th>
+            <th>login</th>
+            <th>name</th>
+            <th>created_at</th>
+            <th>ROLES</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for u in users %}
+            <tr>
+                <td>{{ u.user_id }}</td>
+                <td>{{ u.login }}</td>
+                <td>{{ u.name }}</td>
+                <td>{{ u.created_at }}</td>
+                <td>{{ u.roles }}</td>
+                <td>
+                    <form action="{{ path_for('user_update', u) }}" method="post">
+                        <button>ADMIN</button>
+                    </form>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

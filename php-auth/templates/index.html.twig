@@ -1,41 +1,15 @@
-<!DOCTYPE html>
-<html>
-<head>
+{% extends 'base.html.twig' %}
 
-</head>
+{% block title %}php-auth{% endblock %}
 
-<body>
-<h1>test</h1>
-<p>{{ base_url() }}</p>
-<p>{{ current_path() }}</p>
-<a href="{{ path_for('login', {}, {rd: base_url()}) }}">ログイン</a> |
-<a href="{{ path_for('logout', {}, {rd: base_url()}) }}">ログアウト</a>
-<pre>{{ dump(session) }}</pre>
-<pre>{{ dump(uri) }}</pre>
-<pre>{{ dump(env) }}</pre>
-
-<table border="1">
-    <thead>
-    <tr>
-        <th>id</th>
-        <th>login</th>
-        <th>name</th>
-        <th>created_at</th>
-    </tr>
-    </thead>
-    <tbody>
-    {% for u in users %}
-        <tr>
-            <td>{{ u.id }}</td>
-            <td>{{ u.login }}</td>
-            <td>{{ u.name }}</td>
-            <td>{{ u.created_at }}</td>
-        </tr>
-    {% endfor %}
-    </tbody>
-
-</table>
-
-</body>
-
-</html>
+{% block content %}
+    <h1>php-auth</h1>
+    <p>{{ base_url() }}</p>
+    <p>{{ current_path() }}</p>
+    <a href="{{ path_for('update', {}, {rd: base_url()}) }}">Update</a> |
+    <a href="{{ path_for('login', {}, {rd: base_url()}) }}">ログイン</a> |
+    <a href="{{ path_for('logout', {}, {rd: base_url()}) }}">ログアウト</a>
+    <pre>{{ dump(session) }}</pre>
+    <pre>{{ dump(uri) }}</pre>
+    <pre>{{ dump(env) }}</pre>
+{% endblock %}
