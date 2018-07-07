@@ -66,6 +66,7 @@ function fetchUserInfo($accessToken)
     foreach (['id', 'login', 'name'] as $key) {
         $user[$key] = $data[$key];
     }
+    $user['user_id'] = $user['id'];
 
     return $user;
 }

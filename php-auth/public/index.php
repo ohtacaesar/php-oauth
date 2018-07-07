@@ -27,34 +27,61 @@ session_start([
 ]);
 
 $app->get('/', function (Request $request, Response $response) {
-    $users = $this->userDao->getAll();
     $env = [];
     foreach (['SCRIPT_NAME', 'REQUEST_URI', 'QUERY_STRING'] as $key) {
         $env[$key] = $_SERVER[$key];
     }
     return $this->view->render($response, 'index.html.twig', [
-        'users' => $users,
         'session' => $_SESSION,
         'uri' => $this->uri,
         'env' => $env,
     ]);
-});
+})->setName('home');
+
+$app->get('/update', function (Request $request, Response $response) {
+    if (isset($_SESSION['user'])) {
+        $this->userDao->update($_SESSION['user']);
+    }
+
+    return $response->withRedirect('/');
+})->setName('update');
 
 $app->get('/auth', function (Request $request, Response $response) {
     // 認証
-    if (!isset($_SESSION['user'])) {
+    if (!isset($_SESSION['roles'])) {
         return $response->withStatus(401);
     }
 
     // 認可
-    if (isset($_SERVER['HTTP_ROLE']) && $role = $_SERVER['HTTP_ROLE']) {
-        if (!isset($_SESSION['user']['role']) && $_SESSION['user']['role'] !== $role) {
-            return $response->withStatus(403);
-        }
+    if (isset($_SERVER['HTTP_ROLE']) && !in_array($_SESSION['HTTP_ROLE'], $_SESSION['roles'], true)) {
+        return $response->withStatus(403);
     }
 
     return $response->withStatus(200);
 });
+
+$app->group('/admin', function () {
+    $this->get('/users', function (Request $request, Response $response) {
+        if (!isset($_SESSION['roles'])) {
+            return $response->withStatus(401);
+        }
+
+        if (!in_array('ADMIN', $_SESSION['roles'], true)) {
+            return $response->withStatus(403);
+        }
+
+        $users = $this->userDao->getAll();
+        return $this->view->render($response, 'admin/users.html.twig', [
+            'users' => $users
+        ]);
+    });
+
+    $this->post('/users/{user_id}', function (Request $request, Response $response, $args) {
+        var_dump($args);
+        exit(0);
+    })->setName('user_update');
+});
+
 
 $app->get('/private', function (Request $request, Response $response) {
     return $this->view->render($response, 'private.html.twig');
@@ -133,14 +160,17 @@ $app->group('/github', function () {
         $accessToken = $data['access_token'];
 
         $user = fetchUserInfo($accessToken);
-
         if (!$user) {
             error_log('ユーザー情報の取得に失敗.');
             return $response->withRedirect($this->uri->getBaseUrl());
         }
-        $user['role'] = 'ADMIN';
+
+        $userRoleDao = new \Dao\UserRoleDao($this->pdo);
+        $roles = $userRoleDao->findByUserId($user['user_id']);
+
         $_SESSION['access_token'] = $accessToken;
         $_SESSION['user'] = $user;
+        $_SESSION['roles'] = $roles;
 
         if (!$this->userDao->update($user)) {
             error_log('ユーザー情報のセーブに失敗.');
