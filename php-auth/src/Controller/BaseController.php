@@ -3,6 +3,7 @@
 namespace Controller;
 
 use Slim\Container;
+use Slim\Router;
 use Slim\Views\Twig;
 
 
@@ -21,6 +22,9 @@ class BaseController
     /** @var Twig */
     protected $view;
 
+    /** @var Router */
+    protected $router;
+
     /**
      * BaseController constructor.
      * @param Container $container
@@ -31,5 +35,6 @@ class BaseController
         $this->container = $container;
         $this->pdo = $container->get('pdo');
         $this->view = $container->get('view');
+        $this->router = $container->get('router');
     }
 }

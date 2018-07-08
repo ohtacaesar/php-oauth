@@ -11,13 +11,18 @@ class UserDao
     /** @var \PDO */
     private $pdo;
 
+    /** @var UserRoleDao */
+    private $userRoleDao;
+
     /**
      * UserDao constructor.
      * @param \PDO $pdo
+     * @param UserRoleDao|null $userRoleDao
      */
-    public function __construct(\PDO $pdo)
+    public function __construct(\PDO $pdo, UserRoleDao $userRoleDao = null)
     {
         $this->pdo = $pdo;
+        $this->userRoleDao = $userRoleDao;
     }
 
     /**
@@ -47,15 +52,29 @@ EOS;
      * @param int $userId
      * @return array|false
      */
-    public function getByUserId(int $userId)
+    public function findByUserId(int $userId)
     {
         $stmt = $this->pdo->prepare('select * from users where user_id = :userId');
         $stmt->bindValue('userId', $userId);
         $stmt->execute();
-        $user = $stmt->fetch(\PDO::FETCH_ASSOC);
+        $user = $stmt->fetch();
         $stmt->closeCursor();
 
+        if ($this->userRoleDao) {
+            $roles = $this->userRoleDao->findByUserId($userId);
+            $user['roles'] = $roles;
+        }
+
         return $user;
+    }
+
+    /**
+     * @param int $userId
+     * @return array|false
+     */
+    public function getByUserId(int $userId)
+    {
+        return $this->findByUserId($userId);
     }
 
     /**
