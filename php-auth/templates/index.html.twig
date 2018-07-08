@@ -6,7 +6,6 @@
     <h1>php-auth</h1>
     <p>{{ base_url() }}</p>
     <p>{{ current_path() }}</p>
-    <a href="{{ path_for('update', {}, {rd: base_url()}) }}">Update</a> |
     <a href="{{ path_for('login', {}, {rd: base_url()}) }}">ログイン</a> |
     <a href="{{ path_for('logout', {}, {rd: base_url()}) }}">ログアウト</a>
     <pre>{{ dump(session) }}</pre>
