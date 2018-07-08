@@ -1,21 +1,15 @@
 <?php
 
-require_once __DIR__ . '/vendor/autoload.php';
-
 sleep(3);
 
-$config = yaml_parse_file(__DIR__ . '/config.yml');
+/** @var \Slim\App $app */
+$app = require_once __DIR__ . '/src/app.php';
 
-$pdo = new PDO(
-    $config['pdo']['dsn'],
-    $config['pdo']['username'],
-    $config['pdo']['passwd']
-);
+$pdo = $app->getContainer()->get('pdo');
 
-$sql = file_get_contents('schema.sql');
+$sql = file_get_contents(__DIR__ . '/schema.sql');
 
 $pdo->exec($sql);
-
 
 $dao = new \Dao\UserRoleDao($pdo);
 
