@@ -2,35 +2,37 @@
 
 namespace Controller\Admin;
 
-use Psr\Container\ContainerInterface;
+use Controller\BaseController;
+use Dao\UserDao;
+use Slim\Container;
 use Slim\Http\Request;
 use Slim\Http\Response;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * Class UserController
  * @package Controller\Admin
  */
-class UserController
+class UserController extends BaseController
 {
-    private $container;
+    /** @var UserDao */
     private $userDao;
-    private $view;
 
     /**
      * UserController constructor.
-     * @param ContainerInterface $container
+     * @param Container $container
+     * @throws \Interop\Container\Exception\ContainerException
      */
-    public function __construct(ContainerInterface $container)
+    public function __construct(Container $container)
     {
-        $this->container = $container;
+        parent::__construct($container);
         $this->userDao = $container->get('userDao');
-        $this->view = $container->get('view');
     }
 
     /**
      * @param Request $request
      * @param Response $response
-     * @return Response
+     * @return ResponseInterface
      */
     public function index(Request $request, Response $response)
     {

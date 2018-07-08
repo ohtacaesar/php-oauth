@@ -1,52 +1,38 @@
 <?php
 
+use Slim\Container;
+
 $container = $app->getContainer();
 
-/**
- * @return PDO
- */
-$container['pdo'] = function () {
-    $config = yaml_parse_file(__DIR__ . '/../config.yml');
-
+$container['pdo'] = function (Container $c) {
+    $settings = $c->get('settings')['pdo'];
     return new \PDO(
-        $config['pdo']['dsn'],
-        $config['pdo']['username'],
-        $config['pdo']['passwd'],
+        $settings['dsn'],
+        $settings['username'],
+        $settings['passwd'],
         [PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC]
     );
 };
 
-/**
- * @param \Slim\Container $c
- * @return \Dao\UserDao
- */
-$container['userDao'] = function ($c) {
+$container['userDao'] = function (Container $c) {
     return new \Dao\UserDao($c->get('pdo'));
 };
 
-/**
- * @return \Slim\Http\Uri
- */
 $container['uri'] = function () {
     return \Slim\Http\Uri::createFromEnvironment(new \Slim\Http\Environment($_SERVER));
 };
 
-/**
- * @param \Slim\Container $c
- * @return \Slim\Views\Twig
- */
-$container['view'] = function ($c) {
-    $view = new \Slim\Views\Twig(__DIR__ . '/../templates', [
-        'debug' => true,
-        # 'cache'
-    ]);
+$container['view'] = function (Container $c) {
+    $settings = $c->get('settings')['view'];
+
+    $view = new \Slim\Views\Twig($settings['template_path'], $settings);
     $view->addExtension(new \Slim\Views\TwigExtension($c->get('router'), $c->get('uri')));
     $view->addExtension(new Twig_Extension_Debug());
 
     return $view;
 };
 
-$container['logger'] = function ($c) {
+$container['logger'] = function (Container $c) {
     $settings = $c->get('settings')['logger'];
     $logger = new Monolog\Logger($settings['name']);
     $logger->pushProcessor(new Monolog\Processor\UidProcessor());
