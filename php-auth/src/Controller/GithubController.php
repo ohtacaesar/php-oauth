@@ -8,30 +8,13 @@ use Psr\Container\ContainerInterface;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use Slim\Http\Uri;
-use Slim\Views\Twig;
 
-class GithubController
+/**
+ * Class GithubController
+ * @package Controller
+ */
+class GithubController extends BaseController
 {
-    /** @var ContainerInterface */
-    private $container;
-
-    /** @var \PDO */
-    private $pdo;
-
-    /** @var Uri */
-    private $uri;
-
-    /**
-     * GithubController constructor.
-     * @param ContainerInterface $container
-     */
-    public function __construct(ContainerInterface $container)
-    {
-        $this->container = $container;
-        $this->pdo = $container->get('pdo');
-        $this->uri = $container->get('uri');
-    }
-
     /**
      * @param Request $request
      * @param Response $response
@@ -89,7 +72,7 @@ class GithubController
 
         if ($httpStatus !== 200) {
             error_log('Failed to fetch access token.');
-            return $response->withRedirect($this->uri->getBaseUrl());
+            return $response->withRedirect('/');
         }
 
         parse_str($str, $data);
@@ -98,7 +81,7 @@ class GithubController
         $user = fetchUserInfo($accessToken);
         if (!$user) {
             error_log('ユーザー情報の取得に失敗.');
-            return $response->withRedirect($this->uri->getBaseUrl());
+            return $response->withRedirect('/');
         }
 
         $userRoleDao = new \Dao\UserRoleDao($this->pdo);
