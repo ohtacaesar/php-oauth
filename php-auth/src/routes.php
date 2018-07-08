@@ -10,8 +10,11 @@ $app->group('/github', function () {
 
 $app->group('/admin', function () {
     $this->group('/users', function () {
-        $this->get('', UserController::class . ':index')->setName('admin_users');
-        $this->post('/{user_id}', UserController::class . ':update')->setName('admin_user_update');
+        $this->get('', UserController::class . ':index')->setName('users');
+        $this->get('/{user_id:[0-9]+}', UserController::class . ':show')->setName('user');
+        $this->post('/{user_id:[0-9]+}', UserController::class . ':update')->setName('user');
+        $this->post('/{user_id:[0-9]+}/roles', UserController::class . ':userAddRole')->setName('user_add_role');
+        $this->post('/{user_id:[0-9]+}/roles/${role}', UserController::class . ':userRemoveRole')->setName('user_remove_role');
     });
 });
 

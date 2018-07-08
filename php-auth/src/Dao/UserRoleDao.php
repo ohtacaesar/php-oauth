@@ -14,7 +14,7 @@ class UserRoleDao
      * UserRoleDao constructor.
      * @param \PDO $pdo
      */
-    public function __construct($pdo)
+    public function __construct(\PDO $pdo)
     {
         $this->pdo = $pdo;
     }
@@ -36,4 +36,18 @@ class UserRoleDao
         return $roles;
     }
 
+    /**
+     * @param int $userId
+     * @param string $role
+     * @return bool
+     */
+    public function add(int $userId, string $role)
+    {
+        $stmt = $this->pdo->prepare('insert into users_roles(user_id, role) values(:userId, :role)');
+        $stmt->bindValue('userId', $userId);
+        $stmt->bindValue('role', $role);
+        $n = $stmt->execute();
+        $stmt->closeCursor();
+        return $n;
+    }
 }
