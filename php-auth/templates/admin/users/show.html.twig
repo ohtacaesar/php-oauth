@@ -1,6 +1,7 @@
 {% extends 'base.html.twig' %}
 
 {% block content %}
+    {% if message %}<p>{{ message }}<p>{% endif %}
     <div>
         <h2>基本情報</h2>
         <table border="1">
