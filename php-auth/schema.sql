@@ -6,7 +6,7 @@ create table if not exists users (
   primary key (user_id)
 );
 
-create table if not exists users_roles (
+create table if not exists user_roles (
   user_id int     not null,
   role    char(8) not null,
   primary key (user_id, role)

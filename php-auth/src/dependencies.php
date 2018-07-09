@@ -15,7 +15,7 @@ $container['pdo'] = function (Container $c) {
 };
 
 $container['userDao'] = function (Container $c) {
-    return new \Dao\UserDao($c->get('pdo'), $c->get('userRoleDao'));
+    return new \Dao\UserDao($c->get('pdo'));
 
 };
 

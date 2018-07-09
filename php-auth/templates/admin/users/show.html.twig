@@ -21,16 +21,20 @@
     <div>
         <h2>ロール一覧</h2>
         <table border="1">
-            {% for role in user.roles %}
+            {% for user_role in user.user_roles %}
                 <tr>
-                    <td>{{ role }}</td>
-                    <td>削除</td>
+                    <td>{{ user_role.role }}</td>
+                    <td>
+                        <form action="{{ path_for('user_remove_role', user_role) }}" method="post">
+                            <button type="submit">削除</button>
+                        </form>
+                    </td>
                 </tr>
             {% endfor %}
         </table>
     </div>
     <div>
-        <h2>フォーム追加</h2>
+        <h2>ロール追加</h2>
         <form action="{{ path_for('user_add_role', user) }}" method="post">
             <input type="text" name="role">
             <button type="submit">追加</button>
