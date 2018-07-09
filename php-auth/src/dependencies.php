@@ -17,6 +17,14 @@ $container['pdo'] = function (Container $c) {
     );
 };
 
+$container['redis'] = function (Container $c) {
+    $redis = new Redis();
+    $redis->connect('redis', 6379);
+
+    return $redis;
+};
+
+
 $container['userDao'] = function (Container $c) {
     return new \Dao\UserDao($c->get('pdo'));
 
@@ -24,6 +32,10 @@ $container['userDao'] = function (Container $c) {
 
 $container['userRoleDao'] = function (Container $c) {
     return new \Dao\UserRoleDao($c->get('pdo'));
+};
+
+$container['userSessionDao'] = function (Container $c) {
+    return new \Dao\UserSessionDao($c->get('pdo'));
 };
 
 $container['uri'] = function () {

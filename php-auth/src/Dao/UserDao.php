@@ -11,13 +11,9 @@ class UserDao
     /** @var \PDO */
     private $pdo;
 
-    /** @var UserRoleDao */
-    private $userRoleDao;
-
     /**
      * UserDao constructor.
      * @param \PDO $pdo
-     * @param UserRoleDao|null $userRoleDao
      */
     public function __construct(\PDO $pdo)
     {
@@ -31,15 +27,15 @@ class UserDao
     public function update(array $user)
     {
         $sql = <<<EOS
-insert into users(login, user_id, name) values (:login, :user_id, :name)
+insert into users(login, user_id, name) values (:login, :userId, :name)
     on conflict
     on constraint users_pkey
-    do update set user_id = :user_id, login = :login, name = :name
+    do update set login = :login, name = :name
 EOS;
 
         $stmt = $this->pdo->prepare($sql);
         $stmt->bindValue('login', $user['login']);
-        $stmt->bindValue('user_id', $user['user_id']);
+        $stmt->bindValue('userId', $user['user_id']);
         $stmt->bindValue('name', $user['name']);
         $val = $stmt->execute();
         $stmt->closeCursor();
@@ -64,7 +60,7 @@ EOS;
 
     /**
      * @param int $userId
-     * @return array|false
+     * @return mixed
      */
     public function getByUserId(int $userId)
     {

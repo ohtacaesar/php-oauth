@@ -3,6 +3,8 @@
 namespace Controller;
 
 use Dao\UserDao;
+use Dao\UserRoleDao;
+use Dao\UserSessionDao;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
@@ -10,7 +12,7 @@ use Slim\Http\Response;
  * Class GithubController
  * @package Controller
  */
-class GithubController extends BaseController
+class GitHubController extends BaseController
 {
     /**
      * @param Request $request
@@ -81,7 +83,7 @@ class GithubController extends BaseController
             return $response->withRedirect('/');
         }
 
-        $userRoleDao = new \Dao\UserRoleDao($this->pdo);
+        $userRoleDao = new UserRoleDao($this->pdo);
         $userRoles = $userRoleDao->findByUserId($user['user_id']);
         $roles = array_map(function ($e) {
             return $e['role'];
@@ -95,6 +97,10 @@ class GithubController extends BaseController
         if (!$userDao->update($user)) {
             error_log('ユーザー情報のセーブに失敗.');
         }
+
+        $userSessionDao = new UserSessionDao($this->pdo);
+        $user['session_id'] = session_id();
+        $userSessionDao->update($user);
 
         return $response->withRedirect($rd);
     }

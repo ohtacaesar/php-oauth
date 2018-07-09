@@ -2,12 +2,13 @@
 
 use Controller\Admin\UserController;
 use Controller\GithubController;
+use Controller\Admin\StorageController;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
 $app->group('/github', function () {
-    $this->get('', GithubController::class . ':start')->setName('login');
-    $this->get('/callback', GithubController::class . ':callback');
+    $this->get('', GitHubController::class . ':start')->setName('login');
+    $this->get('/callback', GitHubController::class . ':callback');
 });
 
 $app->group('/admin', function () {
@@ -16,6 +17,9 @@ $app->group('/admin', function () {
         $this->get('/{user_id:[0-9]+}', UserController::class . ':show')->setName('user');
         $this->post('/{user_id:[0-9]+}/roles', UserController::class . ':userAddRole')->setName('user_add_role');
         $this->post('/{user_id:[0-9]+}/roles/{role}', UserController::class . ':userRemoveRole')->setName('user_remove_role');
+    });
+    $this->group('/storage', function () {
+        $this->get('/redis', StorageController::class . ':redis')->setName('storage_redis');
     });
 })->add(function (Request $request, Response $response, callable $next) {
     if (!isset($_SESSION['roles'])) {

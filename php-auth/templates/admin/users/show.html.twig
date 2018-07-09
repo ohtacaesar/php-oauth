@@ -35,11 +35,14 @@
         </table>
     </div>
     <div>
+        <h2>セッションID</h2>
+        <p>{{ user.user_session.session_id }}</p>
+    </div>
+    <div>
         <h2>ロール追加</h2>
         <form action="{{ path_for('user_add_role', user) }}" method="post">
             <input type="text" name="role">
             <button type="submit">追加</button>
         </form>
-
     </div>
 {% endblock %}

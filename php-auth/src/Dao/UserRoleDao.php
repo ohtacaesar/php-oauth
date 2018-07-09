@@ -33,15 +33,21 @@ class UserRoleDao
     }
 
     /**
-     * @param int $userId
-     * @param string $role
+     * @param array $userRole
      * @return bool
      */
-    public function create(int $userId, string $role)
+    public function update(array $userRole)
     {
-        $stmt = $this->pdo->prepare('insert into user_roles(user_id, role) values(:userId, :role)');
-        $stmt->bindValue('userId', $userId);
-        $stmt->bindValue('role', $role);
+
+        $sql = <<<EOS
+insert into user_roles(user_id, role) values (:userId, :role)
+    on conflict
+    on constraint user_roles_pkey
+    do update set user_id = :userId, role = :role
+EOS;
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindValue('userId', $userRole['user_id']);
+        $stmt->bindValue('role', $userRole['role']);
         $r = $stmt->execute();
         $stmt->closeCursor();
 
