@@ -65,8 +65,16 @@ class UserController extends BaseController
         $userRoles = $this->userRoleDao->findByUserId($user['user_id']);
         $user['user_roles'] = $userRoles;
 
+        if (isset($_SESSION['message'])) {
+            $message = $_SESSION['message'];
+            unset($_SESSION['message']);
+        } else {
+            $message = null;
+        }
+
         return $this->view->render($response, 'admin/users/show.html.twig', [
             'user' => $user,
+            'message' => $message,
         ]);
     }
 
@@ -86,7 +94,12 @@ class UserController extends BaseController
         $role = $request->getParam('role');
         $role = mb_strtoupper($role);
         if (!$role || !preg_match('/^[A-Z]{1,8}$/', $role)) return $response->withStatus(400);
-        $v = $this->userRoleDao->create($user['user_id'], $role);
+
+        try {
+            $this->userRoleDao->create($user['user_id'], $role);
+        } catch (\PDOException $e) {
+            $_SESSION['message'] = $e->getMessage();
+        }
 
         return $response->withRedirect($this->router->pathFor('user', $user));
     }
