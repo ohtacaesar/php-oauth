@@ -5,6 +5,7 @@ namespace Controller\Admin;
 use Controller\BaseController;
 use Dao\UserDao;
 use Dao\UserRoleDao;
+use Dao\UserSessionDao;
 use Slim\Container;
 use Slim\Exception\NotFoundException;
 use Slim\Http\Request;
@@ -23,6 +24,9 @@ class UserController extends BaseController
     /** @var UserRoleDao */
     private $userRoleDao;
 
+    /** @var UserSessionDao */
+    private $userSessionDao;
+
     /**
      * UserController constructor.
      * @param Container $container
@@ -33,6 +37,7 @@ class UserController extends BaseController
         parent::__construct($container);
         $this->userDao = $container->get('userDao');
         $this->userRoleDao = $container->get('userRoleDao');
+        $this->userSessionDao = $container->get('userSessionDao');
     }
 
     /**
@@ -65,6 +70,9 @@ class UserController extends BaseController
         $userRoles = $this->userRoleDao->findByUserId($user['user_id']);
         $user['user_roles'] = $userRoles;
 
+        $userSession = $this->userSessionDao->findOneByUserId($user['user_id']);
+        $user['user_session'] = $userSession;
+
         if (isset($_SESSION['message'])) {
             $message = $_SESSION['message'];
             unset($_SESSION['message']);
@@ -96,7 +104,10 @@ class UserController extends BaseController
         if (!$role || !preg_match('/^[A-Z]{1,8}$/', $role)) return $response->withStatus(400);
 
         try {
-            $this->userRoleDao->create($user['user_id'], $role);
+            $this->userRoleDao->update([
+                'user_id' => $user['user_id'],
+                'role' => $role,
+            ]);
         } catch (\PDOException $e) {
             $_SESSION['message'] = $e->getMessage();
         }

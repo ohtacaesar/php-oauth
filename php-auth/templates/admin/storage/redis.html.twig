@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+
+{% block content %}
+    <table border="1">
+        <thead>
+        <tr>
+            <th>KEY</th>
+            <th>KEY_LENGTH</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for key in keys %}
+            <tr>
+                <td>{{ key }}</td>
+                <td style="text-align: right">{{ key|length }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+
+    </table>
+{% endblock %}
