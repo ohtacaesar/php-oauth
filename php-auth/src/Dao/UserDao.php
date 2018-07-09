@@ -19,10 +19,9 @@ class UserDao
      * @param \PDO $pdo
      * @param UserRoleDao|null $userRoleDao
      */
-    public function __construct(\PDO $pdo, UserRoleDao $userRoleDao = null)
+    public function __construct(\PDO $pdo)
     {
         $this->pdo = $pdo;
-        $this->userRoleDao = $userRoleDao;
     }
 
     /**
@@ -52,18 +51,13 @@ EOS;
      * @param int $userId
      * @return array|false
      */
-    public function findByUserId(int $userId)
+    public function findOneByUserId(int $userId)
     {
         $stmt = $this->pdo->prepare('select * from users where user_id = :userId');
         $stmt->bindValue('userId', $userId);
         $stmt->execute();
         $user = $stmt->fetch();
         $stmt->closeCursor();
-
-        if ($this->userRoleDao) {
-            $roles = $this->userRoleDao->findByUserId($userId);
-            $user['roles'] = $roles;
-        }
 
         return $user;
     }
@@ -92,7 +86,7 @@ left join (
   select
     user_id
   , array_to_string(array_agg(trim(role)), ',') as roles
-  from users_roles
+  from user_roles
   group by user_id
 ) as b
   on b.user_id = a.user_id

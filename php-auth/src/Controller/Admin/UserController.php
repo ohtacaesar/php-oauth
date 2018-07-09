@@ -6,6 +6,7 @@ use Controller\BaseController;
 use Dao\UserDao;
 use Dao\UserRoleDao;
 use Slim\Container;
+use Slim\Exception\NotFoundException;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use Psr\Http\Message\ResponseInterface;
@@ -41,14 +42,6 @@ class UserController extends BaseController
      */
     public function index(Request $request, Response $response)
     {
-        if (!isset($_SESSION['roles'])) {
-            return $response->withStatus(401);
-        }
-
-        if (!in_array('ADMIN', $_SESSION['roles'], true)) {
-            return $response->withStatus(403);
-        }
-
         $users = $this->userDao->getAll();
         return $this->view->render($response, 'admin/users/index.html.twig', [
             'users' => $users
@@ -60,10 +53,17 @@ class UserController extends BaseController
      * @param Response $response
      * @param array $args
      * @return ResponseInterface
+     * @throws NotFoundException
      */
     public function show(Request $request, Response $response, array $args)
     {
-        $user = $this->userDao->findByUserId(intval($args['user_id']));
+        $user = $this->userDao->findOneByUserId(intval($args['user_id']));
+        if (!$user) {
+            throw new NotFoundException($request, $response);
+        }
+
+        $userRoles = $this->userRoleDao->findByUserId($user['user_id']);
+        $user['user_roles'] = $userRoles;
 
         return $this->view->render($response, 'admin/users/show.html.twig', [
             'user' => $user,
@@ -78,7 +78,7 @@ class UserController extends BaseController
      */
     public function userAddRole(Request $request, Response $response, array $args)
     {
-        $user = $this->userDao->findByUserId(intval($args['user_id']));
+        $user = $this->userDao->findOneByUserId(intval($args['user_id']));
         if (!$user) {
             return $response->withRedirect($this->router->pathFor('users'));
         }
@@ -86,8 +86,7 @@ class UserController extends BaseController
         $role = $request->getParam('role');
         $role = mb_strtoupper($role);
         if (!$role || !preg_match('/^[A-Z]{1,8}$/', $role)) return $response->withStatus(400);
-        $v = $this->userRoleDao->add($user['user_id'], $role);
-        var_dump($v);
+        $v = $this->userRoleDao->create($user['user_id'], $role);
 
         return $response->withRedirect($this->router->pathFor('user', $user));
     }
@@ -95,9 +94,19 @@ class UserController extends BaseController
     /**
      * @param Request $request
      * @param Response $response
-     * @param $args
+     * @param array $args
+     * @return Response
      */
     public function userRemoveRole(Request $request, Response $response, array $args)
     {
+        $user = $this->userDao->findOneByUserId($args['user_id']);
+        $this->userRoleDao->delete($args);
+
+        if ($user) {
+            $rd = $this->router->pathFor('user', $user);
+        } else {
+            $rd = $this->router->pathFor('user_index');
+        }
+        return $response->withRedirect($rd);
     }
 }

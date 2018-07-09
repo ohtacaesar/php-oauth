@@ -5,10 +5,8 @@ namespace Dao;
 
 class UserRoleDao
 {
-
     /** @var \PDO */
     private $pdo;
-
 
     /**
      * UserRoleDao constructor.
@@ -25,15 +23,13 @@ class UserRoleDao
      */
     public function findByUserId($userId)
     {
-        $stmt = $this->pdo->prepare('select trim(role) as role from users_roles where user_id = :user_id');
-        $stmt->bindValue(':user_id', $userId);
+        $stmt = $this->pdo->prepare('select user_id, trim(role) as role from user_roles where user_id = :userId');
+        $stmt->bindValue(':userId', $userId);
         $stmt->execute();
-        $roles = array_map(function ($e) {
-            return $e['role'];
-        }, $stmt->fetchAll());
+        $rows = $stmt->fetchAll();
         $stmt->closeCursor();
 
-        return $roles;
+        return $rows;
     }
 
     /**
@@ -41,13 +37,57 @@ class UserRoleDao
      * @param string $role
      * @return bool
      */
-    public function add(int $userId, string $role)
+    public function create(int $userId, string $role)
     {
-        $stmt = $this->pdo->prepare('insert into users_roles(user_id, role) values(:userId, :role)');
+        $stmt = $this->pdo->prepare('insert into user_roles(user_id, role) values(:userId, :role)');
         $stmt->bindValue('userId', $userId);
         $stmt->bindValue('role', $role);
-        $n = $stmt->execute();
+        $r = $stmt->execute();
         $stmt->closeCursor();
-        return $n;
+
+        return $r;
+    }
+
+    /**
+     * @param array $userRole
+     * @return bool
+     */
+    public function delete(array $userRole)
+    {
+        if (isset($userRole['user_id']) && isset($userRole['role'])) {
+            return $this->deleteByUserIdAndRole($userRole['user_id'], $userRole['role']);
+        }
+
+        return false;
+    }
+
+    /**
+     * @param int $userId
+     * @return bool
+     */
+    public function deleteByUserId(int $userId)
+    {
+        $stmt = $this->pdo->prepare('delete from user_roles where user_id = :userId');
+        $stmt->bindValue('userId', $userId);
+        $r = $stmt->execute();
+        $stmt->closeCursor();
+
+        return $r;
+    }
+
+    /**
+     * @param int $userId
+     * @param string $role
+     * @return bool
+     */
+    public function deleteByUserIdAndRole(int $userId, string $role)
+    {
+        $stmt = $this->pdo->prepare('delete from user_roles where user_id = :userId and role = :role');
+        $stmt->bindValue('userId', $userId);
+        $stmt->bindValue('role', $role);
+        $r = $stmt->execute();
+        $stmt->closeCursor();
+
+        return $r;
     }
 }

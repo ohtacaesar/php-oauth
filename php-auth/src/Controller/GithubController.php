@@ -1,13 +1,10 @@
 <?php
 
-
 namespace Controller;
 
 use Dao\UserDao;
-use Psr\Container\ContainerInterface;
 use Slim\Http\Request;
 use Slim\Http\Response;
-use Slim\Http\Uri;
 
 /**
  * Class GithubController
@@ -85,7 +82,10 @@ class GithubController extends BaseController
         }
 
         $userRoleDao = new \Dao\UserRoleDao($this->pdo);
-        $roles = $userRoleDao->findByUserId($user['user_id']);
+        $userRoles = $userRoleDao->findByUserId($user['user_id']);
+        $roles = array_map(function ($e) {
+            return $e['role'];
+        }, $userRoles);
 
         $_SESSION['access_token'] = $accessToken;
         $_SESSION['user'] = $user;
