@@ -1,14 +1,16 @@
-{% extends 'base.html.twig' %}
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>php-auth</title>
+</head>
+<body>
+{% if login is null %}
+    <a href="{{ path_for('login', {}, {rd: base_url()}) }}">ログイン</a>
+{% else %}
+    <a href="{{ path_for('logout', {}, {rd: base_url()}) }}">ログアウト</a> | Hello, {{ login }}
+{% endif %}
+</body>
+</html>
 
-{% block title %}php-auth{% endblock %}
 
-{% block content %}
-    <h1>php-auth</h1>
-    <p>{{ base_url() }}</p>
-    <p>{{ current_path() }}</p>
-    <a href="{{ path_for('login', {}, {rd: base_url()}) }}">ログイン</a> |
-    <a href="{{ path_for('logout', {}, {rd: base_url()}) }}">ログアウト</a>
-    <pre>{{ dump(session) }}</pre>
-    <pre>{{ dump(uri) }}</pre>
-    <pre>{{ dump(env) }}</pre>
-{% endblock %}

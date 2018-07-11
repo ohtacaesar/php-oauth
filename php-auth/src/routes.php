@@ -12,6 +12,13 @@ $app->group('/github', function () {
 });
 
 $app->group('/admin', function () {
+    $this->get('', function (Request $request, Response $response) {
+        return $this->view->render($response, 'admin/index.html.twig', [
+            'session' => $_SESSION,
+            'uri' => $this->uri,
+        ]);
+    });
+
     $this->group('/users', function () {
         $this->get('', UserController::class . ':index')->setName('users');
         $this->get('/{user_id:[0-9]+}', UserController::class . ':show')->setName('user');

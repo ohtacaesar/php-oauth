@@ -27,7 +27,6 @@ $container['redis'] = function (Container $c) {
 
 $container['userDao'] = function (Container $c) {
     return new \Dao\UserDao($c->get('pdo'));
-
 };
 
 $container['userRoleDao'] = function (Container $c) {
@@ -37,6 +36,17 @@ $container['userRoleDao'] = function (Container $c) {
 $container['userSessionDao'] = function (Container $c) {
     return new \Dao\UserSessionDao($c->get('pdo'));
 };
+
+$container['loginService'] = function (Container $c) {
+    return new \Service\LoginService(
+        $c->get('userDao'),
+        $c->get('userRoleDao'),
+        $c->get('userSessionDao'),
+        $c->get('settings')['clientId'],
+        $c->get('settings')['clientSecret']
+    );
+};
+
 
 $container['uri'] = function () {
     return \Slim\Http\Uri::createFromEnvironment(new \Slim\Http\Environment($_SERVER));

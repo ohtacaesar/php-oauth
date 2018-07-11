@@ -5,24 +5,24 @@ use Slim\Http\Response;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
+require_once __DIR__ . '/functions.php';
+
 $app = new \Slim\App(require_once __DIR__ . '/../src/settings.php');
 
-require_once __DIR__ . '/../src/dependencies.php';
+require_once __DIR__ . '/dependencies.php';
 
-require_once __DIR__ . '/../src/routes.php';
+require_once __DIR__ . '/routes.php';
 
 $app->get('/', function (Request $request, Response $response) {
-    $env = [];
-    foreach (['SCRIPT_NAME', 'REQUEST_URI', 'QUERY_STRING'] as $key) {
-        $env[$key] = $_SERVER[$key];
+    $login = null;
+    if (isset($_SESSION['user']) && isset($_SESSION['user']['login'])) {
+        $login = $_SESSION['user']['login'];
     }
-    return $this->view->render($response, 'index.html.twig', [
-        'session' => $_SESSION,
-        'uri' => $this->uri,
-        'env' => $env,
-    ]);
-})->setName('home');
 
+    return $this->view->render($response, 'index.html.twig', [
+        'login' => $login
+    ]);
+});
 
 $app->get('/auth', function (Request $request, Response $response) {
     // 認証

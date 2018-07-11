@@ -59,15 +59,6 @@ EOS;
     }
 
     /**
-     * @param int $userId
-     * @return mixed
-     */
-    public function getByUserId(int $userId)
-    {
-        return $this->findByUserId($userId);
-    }
-
-    /**
      * @return array|false
      */
     public function getAll()
