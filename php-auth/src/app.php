@@ -14,13 +14,13 @@ require_once __DIR__ . '/dependencies.php';
 require_once __DIR__ . '/routes.php';
 
 $app->get('/', function (Request $request, Response $response) {
-    $login = null;
-    if (isset($_SESSION['user']) && isset($_SESSION['user']['login'])) {
-        $login = $_SESSION['user']['login'];
+    $name = null;
+    if (isset($_SESSION['user']) && isset($_SESSION['user']['name'])) {
+        $name = $_SESSION['user']['name'];
     }
 
     return $this->view->render($response, 'index.html.twig', [
-        'login' => $login
+        'name' => $name
     ]);
 });
 

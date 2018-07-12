@@ -25,8 +25,6 @@ class UserSessionDao
         } else {
             return null;
         }
-
-
     }
 
     public function update(array $userSession)
