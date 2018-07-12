@@ -2,7 +2,7 @@
 
 namespace Controller;
 
-use Dao\UserDao;
+use Dao\UserGithubDao;
 use Dao\UserRoleDao;
 use Dao\UserSessionDao;
 use Service\LoginService;
@@ -79,13 +79,13 @@ class GitHubController extends BaseController
         unset($_SESSION['rd']);
 
         $accessToken = $this->loginService->fetchAccessToken($code);
-        $user = $this->loginService->fetchUserInfo($accessToken);
-        if (!$user) {
+        $githubUser = $this->loginService->fetchUserInfo($accessToken);
+        if (!$githubUser) {
             return $response->withRedirect('/');
         }
         $_SESSION['access_token'] = $accessToken;
 
-        if ($this->loginService->loadUser($user)) {
+        if ($this->loginService->loadUser($githubUser)) {
             return $response->withRedirect($rd);
         } else {
             // エラーページに飛ばす, DB等に問題あり

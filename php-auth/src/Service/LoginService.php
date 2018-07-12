@@ -3,8 +3,10 @@
 namespace Service;
 
 use Dao\UserDao;
+use Dao\UserGithubDao;
 use Dao\UserRoleDao;
 use Dao\UserSessionDao;
+use Psr\Log\LoggerInterface;
 
 /**
  * Class LoginService
@@ -15,6 +17,9 @@ class LoginService
 
     /** @var UserDao */
     private $userDao;
+
+    /** @var UserGithubDao */
+    private $userGithubDao;
 
     /** @var UserRoleDao */
     private $userRoleDao;
@@ -28,13 +33,26 @@ class LoginService
     /** @var string */
     private $clientSecret;
 
-    public function __construct(UserDao $userDao, UserRoleDao $userRoleDao, UserSessionDao $userSessionDao, string $clientId, string $clientSecret)
+    /** @var LoggerInterface */
+    private $logger;
+
+    public function __construct(
+        UserDao $userDao,
+        UserRoleDao $userRoleDao,
+        UserSessionDao $userSessionDao,
+        UserGithubDao $userGithubDao,
+        string $clientId,
+        string $clientSecret,
+        LoggerInterface $logger
+    )
     {
         $this->userDao = $userDao;
         $this->userRoleDao = $userRoleDao;
         $this->userSessionDao = $userSessionDao;
+        $this->userGithubDao = $userGithubDao;
         $this->clientId = $clientId;
         $this->clientSecret = $clientSecret;
+        $this->logger = $logger;
     }
 
     public function getAuthUrl()
@@ -54,7 +72,7 @@ class LoginService
         ]);
 
         if ($httpStatus !== 200) {
-            error_log('Failed to fetch access token.');
+            $this->logger->error('Failed to fetch access token.');
             return false;
         }
 
@@ -73,30 +91,46 @@ class LoginService
             return false;
         }
 
-        $user = [];
-        foreach (['id', 'login', 'name'] as $key) {
-            $user[$key] = $data[$key];
-        }
-        $user['user_id'] = $user['id'];
-
-        return $user;
+        return $data;
     }
 
-    public function loadUser($user)
+    public function loadUser($data)
     {
-        if (!$this->userDao->update($user)) {
-            // データベースに格納失敗
-            return false;
+        // TODO: Transaction
+        // ログイン状態の判定
+        if (isset($_SESSION['user_id'])) {
+            $userId = $_SESSION['user_id'];
+            $user = $this->userDao->findOneByUserId($userId);
+            if (!$user) {
+                // セッションに問題あるよ例外
+                session_destroy();
+                return false;
+            }
+        } else {
+            $userId = bin2hex(random_bytes(10));
+            while ($user = $this->userDao->findOneByUserId($userId)) {
+                $userId = bin2hex(random_bytes(10));
+            }
         }
+
+        if (!$user) {
+            $user = [
+                'user_id' => $userId,
+                'name' => $data['login'],
+            ];
+            $this->userDao->update($user);
+        }
+
+        $data['user_id'] = $userId;
+        $this->userGithubDao->update($data);
 
         $user['session_id'] = session_id();
-        if (!$this->userSessionDao->update($user)) {
-            return false;
-        }
+        $this->userSessionDao->update($user);
         unset($user['session_id']);
 
-        $_SESSION['user'] = $user;
         $_SESSION['user_id'] = $user['user_id'];
+        $_SESSION['user'] = $user;
+
         $this->loadRolesByUserId($user['user_id']);
 
         return true;
@@ -104,11 +138,10 @@ class LoginService
 
     public function loadRolesByUserId($userId)
     {
-        $userRoles = $this->userRoleDao->findByUserId(intval($userId));
+        $userRoles = $this->userRoleDao->findByUserId($userId);
         $roles = array_map(function ($e) {
             return $e['role'];
         }, $userRoles);
-
 
         $_SESSION['roles'] = $roles;
 

@@ -3,7 +3,7 @@
 namespace Controller\Admin;
 
 use Controller\BaseController;
-use Dao\UserDao;
+use Dao\UserGithubDao;
 use Dao\UserRoleDao;
 use Dao\UserSessionDao;
 use Slim\Container;
@@ -18,7 +18,7 @@ use Psr\Http\Message\ResponseInterface;
  */
 class UserController extends BaseController
 {
-    /** @var UserDao */
+    /** @var UserGithubDao */
     private $userDao;
 
     /** @var UserRoleDao */

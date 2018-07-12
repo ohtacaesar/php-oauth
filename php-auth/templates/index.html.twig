@@ -5,10 +5,10 @@
     <title>php-auth</title>
 </head>
 <body>
-{% if login is null %}
-    <a href="{{ path_for('login', {}, {rd: base_url()}) }}">ログイン</a>
+{% if name is null %}
+    <a href="{{ path_for('login', {}, {rd: base_url()}) }}">GitHub</a> | Google
 {% else %}
-    <a href="{{ path_for('logout', {}, {rd: base_url()}) }}">ログアウト</a> | Hello, {{ login }}
+    <a href="{{ path_for('logout', {}, {rd: base_url()}) }}">ログアウト</a> | Hello, {{ name }}
 {% endif %}
 </body>
 </html>

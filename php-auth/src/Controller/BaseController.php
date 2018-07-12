@@ -2,6 +2,7 @@
 
 namespace Controller;
 
+use Psr\Log\LoggerInterface;
 use Slim\Container;
 use Slim\Router;
 use Slim\Views\Twig;
@@ -25,6 +26,9 @@ class BaseController
     /** @var Router */
     protected $router;
 
+    /** @var LoggerInterface */
+    protected $logger;
+
     /**
      * BaseController constructor.
      * @param Container $container
@@ -36,5 +40,6 @@ class BaseController
         $this->pdo = $container->get('pdo');
         $this->view = $container->get('view');
         $this->router = $container->get('router');
+        $this->logger = $container->get('logger');
     }
 }

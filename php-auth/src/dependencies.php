@@ -37,13 +37,19 @@ $container['userSessionDao'] = function (Container $c) {
     return new \Dao\UserSessionDao($c->get('pdo'));
 };
 
+$container['userGithubDao'] = function (Container $c) {
+    return new \Dao\UserGithubDao($c->get('pdo'));
+};
+
 $container['loginService'] = function (Container $c) {
     return new \Service\LoginService(
         $c->get('userDao'),
         $c->get('userRoleDao'),
         $c->get('userSessionDao'),
+        $c->get('userGithubDao'),
         $c->get('settings')['clientId'],
-        $c->get('settings')['clientSecret']
+        $c->get('settings')['clientSecret'],
+        $c->get('logger')
     );
 };
 
@@ -67,6 +73,7 @@ $container['logger'] = function (Container $c) {
     $logger = new Monolog\Logger($settings['name']);
     $logger->pushProcessor(new Monolog\Processor\UidProcessor());
     $logger->pushHandler(new Monolog\Handler\StreamHandler($settings['path'], $settings['level']));
+    $logger->pushHandler(new Monolog\Handler\StreamHandler('php://stdout', $settings['level']));
 
     return $logger;
 };
