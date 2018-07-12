@@ -123,9 +123,17 @@ class UserController extends BaseController
      */
     public function userRemoveRole(Request $request, Response $response, array $args)
     {
-        $user = $this->userDao->findOneByUserId($args['user_id']);
-        $this->userRoleDao->delete($args);
+        $currentUserId = $_SESSION['user_id'];
+        $role = $args['role'];
 
+        // 作業者のADMINロールは削除できない
+        if ($currentUserId == $args['user_id'] && $role === 'ADMIN') {
+            $_SESSION['message'] = '自分のADMINロールは削除できません';
+        } else {
+            $this->userRoleDao->delete($args);
+        }
+
+        $user = $this->userDao->findOneByUserId($args['user_id']);
         if ($user) {
             $rd = $this->router->pathFor('user', $user);
         } else {

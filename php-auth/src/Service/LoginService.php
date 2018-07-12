@@ -96,6 +96,7 @@ class LoginService
         unset($user['session_id']);
 
         $_SESSION['user'] = $user;
+        $_SESSION['user_id'] = $user['user_id'];
         $this->loadRolesByUserId($user['user_id']);
 
         return true;
