@@ -3,20 +3,8 @@
 namespace Dao;
 
 
-class UserRoleDao
+class UserRoleDao extends BaseDao
 {
-    /** @var \PDO */
-    private $pdo;
-
-    /**
-     * UserRoleDao constructor.
-     * @param \PDO $pdo
-     */
-    public function __construct(\PDO $pdo)
-    {
-        $this->pdo = $pdo;
-    }
-
     /**
      * @param $userId
      * @return array

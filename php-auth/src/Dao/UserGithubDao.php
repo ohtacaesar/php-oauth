@@ -6,20 +6,8 @@ namespace Dao;
  * Class UserDao
  * @package Dao
  */
-class UserGithubDao
+class UserGithubDao extends BaseDao
 {
-    /** @var \PDO */
-    private $pdo;
-
-    /**
-     * UserDao constructor.
-     * @param \PDO $pdo
-     */
-    public function __construct(\PDO $pdo)
-    {
-        $this->pdo = $pdo;
-    }
-
     public function update(array $userGithub)
     {
         $sql = <<<EOS
