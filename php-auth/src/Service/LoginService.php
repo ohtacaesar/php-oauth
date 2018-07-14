@@ -98,6 +98,7 @@ class LoginService
     {
         // TODO: Transaction
         // ログイン状態の判定
+        $user = null;
         if (isset($_SESSION['user_id'])) {
             $userId = $_SESSION['user_id'];
             $user = $this->userDao->findOneByUserId($userId);
@@ -106,32 +107,44 @@ class LoginService
                 session_destroy();
                 return false;
             }
-        } else {
-            $userId = bin2hex(random_bytes(10));
-            while ($user = $this->userDao->findOneByUserId($userId)) {
-                $userId = bin2hex(random_bytes(10));
+        }
+
+        // GitHubアカウントの確認
+        if (!$user and $ghUser = $this->userGithubDao->findOneById($data['id'])) {
+            $user = $this->userDao->findOneByUserId($ghUser['user_id']);
+            if (!$user) {
+                $this->logger->warning(sprintf('User not found: user_id=%s, github_id=%s', $ghUser['user_id'], $ghUser['id']));
             }
         }
 
-        if (!$user) {
-            $user = [
-                'user_id' => $userId,
-                'name' => $data['login'],
-            ];
-            $this->userDao->update($user);
+        try {
+            $this->userDao->transaction(function () use ($user, $data) {
+                if (!$user) {
+                    $userId = bin2hex(random_bytes(10));
+                    while ($user = $this->userDao->findOneByUserId($userId)) {
+                        $userId = bin2hex(random_bytes(10));
+                    }
+                    $user = ['user_id' => $userId, 'name' => $data['login']];
+                    $this->logger->info('create new user: ' . json_encode($user));
+                    $this->userDao->create($user);
+                }
+
+                $data['user_id'] = $user['user_id'];
+                $this->userGithubDao->update($data);
+
+                $user['session_id'] = session_id();
+                $this->userSessionDao->update($user);
+                unset($user['session_id']);
+
+                $_SESSION['user_id'] = $user['user_id'];
+                $_SESSION['user'] = $user;
+
+                $this->loadRolesByUserId($user['user_id']);
+            });
+        } catch (\Exception $e) {
+            $this->logger->error($e->getMessage());
+            return false;
         }
-
-        $data['user_id'] = $userId;
-        $this->userGithubDao->update($data);
-
-        $user['session_id'] = session_id();
-        $this->userSessionDao->update($user);
-        unset($user['session_id']);
-
-        $_SESSION['user_id'] = $user['user_id'];
-        $_SESSION['user'] = $user;
-
-        $this->loadRolesByUserId($user['user_id']);
 
         return true;
     }

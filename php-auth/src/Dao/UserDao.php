@@ -2,13 +2,11 @@
 
 namespace Dao;
 
-class UserDao
+class UserDao extends BaseDao
 {
-    private $pdo;
-
-    public function __construct(\PDO $pdo)
+    public function count()
     {
-        $this->pdo = $pdo;
+        return $this->pdo->query("select count(1) as n from users")->fetchAll()[0]['n'];
     }
 
     public function findAll()
@@ -18,8 +16,8 @@ class UserDao
 
     public function findOneByUserId(string $userId)
     {
-        $stmt = $this->pdo->prepare("select * from users where user_id = :userId");
-        $stmt->bindValue('userId', $userId);
+        $stmt = $this->pdo->prepare("select * from users where user_id = :user_id");
+        $stmt->bindValue('user_id', $userId);
         $stmt->execute();
         $rows = $stmt->fetchAll();
         if ($rows) {
@@ -29,21 +27,22 @@ class UserDao
         }
     }
 
-    public function update(array $user)
+    public function create(array $user): bool
     {
-        $sql = <<<EOS
-insert into users(user_id, name) values (:userId, :name)
+        $stmt = $this->pdo->prepare("insert into users(user_id, name) values (:user_id, :name)");
+        return $stmt->execute($user);
+    }
+
+    const UPDATE = <<<EOS
+insert into users(user_id, name) values (:user_id, :name)
     on conflict
     on constraint users_pkey
     do update set name = :name
 EOS;
 
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->bindValue('userId', $user['user_id']);
-        $stmt->bindValue('name', $user['name']);
-        $val = $stmt->execute();
-        $stmt->closeCursor();
-
-        return $val;
+    public function update(array $user): bool
+    {
+        $stmt = $this->pdo->prepare(static::UPDATE);
+        return $stmt->execute($user);
     }
 }

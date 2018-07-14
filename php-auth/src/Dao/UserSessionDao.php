@@ -3,16 +3,8 @@
 namespace Dao;
 
 
-class UserSessionDao
+class UserSessionDao extends BaseDao
 {
-    /** @var \PDO */
-    private $pdo;
-
-    public function __construct($pdo)
-    {
-        $this->pdo = $pdo;
-    }
-
     public function findOneByUserId($userId)
     {
         $stmt = $this->pdo->prepare("select * from user_sessions where user_id = :userId");
