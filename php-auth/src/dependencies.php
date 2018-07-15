@@ -41,15 +41,21 @@ $container['userGithubDao'] = function (Container $c) {
     return new \Dao\UserGithubDao($c->get('pdo'));
 };
 
-$container['loginService'] = function (Container $c) {
-    return new \Service\LoginService(
-        $c->get('userDao'),
-        $c->get('userRoleDao'),
-        $c->get('userSessionDao'),
-        $c->get('userGithubDao'),
-        $c->get('settings')['clientId'],
-        $c->get('settings')['clientSecret'],
-        $c->get('logger')
+$container['userManager'] = function (Container $c) {
+    return new \Manager\UserManager(
+        $c['userDao'],
+        $c['userRoleDao'],
+        $c['userGithubDao']
+    );
+};
+
+$container['authService'] = function (Container $c) {
+    return new \Service\AuthService(
+        $c['userManager'],
+        $c['userSessionDao'],
+        $c['settings']['clientId'],
+        $c['settings']['clientSecret'],
+        $c['logger']
     );
 };
 

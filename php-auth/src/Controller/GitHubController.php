@@ -5,6 +5,7 @@ namespace Controller;
 use Dao\UserGithubDao;
 use Dao\UserRoleDao;
 use Dao\UserSessionDao;
+use Service\AuthService;
 use Service\LoginService;
 use Slim\Container;
 use Slim\Http\Request;
@@ -16,13 +17,13 @@ use Slim\Http\Response;
  */
 class GitHubController extends BaseController
 {
-    /** @var LoginService */
-    private $loginService;
+    /** @var AuthService */
+    private $authService;
 
     public function __construct(Container $container)
     {
         parent::__construct($container);
-        $this->loginService = $container->get('loginService');
+        $this->authService = $container->get('authService');
     }
 
     /**
@@ -37,25 +38,21 @@ class GitHubController extends BaseController
         $rd = filter_var($rd, FILTER_SANITIZE_URL);
 
         if (!$rd) {
+            $this->logger->info($rd);
             return $response->withStatus(400);
         }
 
         if (isset($_SESSION['access_token'])) {
-            $user = $this->loginService->fetchUserInfo($_SESSION['access_token']);
-            if (!$user) {
-                unset($_SESSION['access_token']);
+            if ($this->authService->signUpByGithub($_SESSION['access_token'])) {
+                return $response->withRedirect($rd);
             } else {
-                if ($this->loginService->loadUser($user)) {
-                    return $response->withRedirect($rd);
-                } else {
-                    // エラーページに飛ばす, DB等に問題あり
-                    return $response->withRedirect('/');
-                }
+                unset($_SESSION['access_token']);
+                return $response->withRedirect('/');
             }
         }
 
         $_SESSION['rd'] = $rd;
-        $url = $this->loginService->getAuthUrl();
+        $url = $this->authService->getAuthUrl();
         return $response->withRedirect($url);
     }
 
@@ -78,14 +75,9 @@ class GitHubController extends BaseController
         $rd = $_SESSION['rd'];
         unset($_SESSION['rd']);
 
-        $accessToken = $this->loginService->fetchAccessToken($code);
-        $githubUser = $this->loginService->fetchUserInfo($accessToken);
-        if (!$githubUser) {
-            return $response->withRedirect('/');
-        }
-        $_SESSION['access_token'] = $accessToken;
-
-        if ($this->loginService->loadUser($githubUser)) {
+        $accessToken = $this->authService->fetchAccessToken($code);
+        if ($this->authService->signUpByGithub($accessToken)) {
+            $_SESSION['access_token'] = $accessToken;
             return $response->withRedirect($rd);
         } else {
             // エラーページに飛ばす, DB等に問題あり
