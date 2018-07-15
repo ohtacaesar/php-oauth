@@ -1,10 +1,15 @@
 <?php
 
-use Controller\Admin\UserController;
+use Controller\AuthController;
 use Controller\GithubController;
+use Controller\Admin\UserController;
 use Controller\Admin\StorageController;
 use Slim\Http\Request;
 use Slim\Http\Response;
+
+$app->get('/auth', AuthController::class . ':auth')->setName('auth');
+$app->get('/logout', AuthController::class . ':signOut')->setName('logout');
+$app->get('/signout', AuthController::class . ':signOut')->setName('signout');
 
 $app->group('/github', function () {
     $this->get('', GitHubController::class . ':start')->setName('login');

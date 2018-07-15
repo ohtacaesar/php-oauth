@@ -8,6 +8,12 @@ namespace Dao;
  */
 class UserGithubDao extends BaseDao
 {
+    public function create(string $userId, string $id)
+    {
+        $stmt = $this->pdo->prepare("insert into user_github(user_id, id) values(:user_id, :id)");
+        return $stmt->execute(['user_id' => $userId, 'id' => $id]);
+    }
+
     public function update(array $userGithub)
     {
         $sql = <<<EOS
