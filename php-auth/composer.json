@@ -1,18 +1,22 @@
 {
     "name": "ohtacaesar/php-auth",
-    "config": {
-        "platform": {
-            "php": "7.0.0"
-        }
-    },
     "require": {
+        "php": "^7.2.0",
         "slim/slim": "^3.10",
         "slim/twig-view": "^2.4",
         "monolog/monolog": "^1.23"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^7.0"
     },
     "autoload": {
         "psr-4": {
             "": "src/"
         }
+    },
+    "scripts": {
+        "test": [
+            "phpunit"
+        ]
     }
 }
