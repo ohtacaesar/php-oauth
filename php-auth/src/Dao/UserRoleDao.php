@@ -2,7 +2,6 @@
 
 namespace Dao;
 
-
 class UserRoleDao extends BaseDao
 {
     /**
@@ -26,7 +25,6 @@ class UserRoleDao extends BaseDao
      */
     public function update(array $userRole)
     {
-
         $sql = <<<EOS
 insert into user_roles(user_id, role) values (:userId, :role)
     on conflict

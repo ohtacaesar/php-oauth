@@ -113,7 +113,4 @@ class UserManager
             return false;
         }
     }
-
-
 }
-

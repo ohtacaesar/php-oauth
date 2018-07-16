@@ -85,4 +85,3 @@ class GitHubController extends BaseController
         }
     }
 }
-

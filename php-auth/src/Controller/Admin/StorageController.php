@@ -2,7 +2,6 @@
 
 namespace Controller\Admin;
 
-
 use Controller\BaseController;
 use Slim\Http\Request;
 use Slim\Http\Response;

@@ -15,7 +15,9 @@ require_once __DIR__ . '/routes.php';
 
 $app->get('/', function (Request $request, Response $response) {
     $name = null;
-    if (isset($_SESSION['name'])) $name = $_SESSION['name'];
+    if (isset($_SESSION['name'])) {
+        $name = $_SESSION['name'];
+    }
 
     return $this->view->render($response, 'index.html.twig', [
         'name' => $name
