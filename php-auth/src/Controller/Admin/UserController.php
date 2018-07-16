@@ -3,6 +3,7 @@
 namespace Controller\Admin;
 
 use Controller\BaseController;
+use Dao\UserDao;
 use Dao\UserGithubDao;
 use Dao\UserRoleDao;
 use Dao\UserSessionDao;
@@ -18,7 +19,7 @@ use Psr\Http\Message\ResponseInterface;
  */
 class UserController extends BaseController
 {
-    /** @var UserGithubDao */
+    /** @var UserDao */
     private $userDao;
 
     /** @var UserRoleDao */
@@ -47,7 +48,7 @@ class UserController extends BaseController
      */
     public function index(Request $request, Response $response)
     {
-        $users = $this->userDao->getAll();
+        $users = $this->userDao->findAll();
         return $this->view->render($response, 'admin/users/index.html.twig', [
             'users' => $users
         ]);
@@ -62,7 +63,7 @@ class UserController extends BaseController
      */
     public function show(Request $request, Response $response, array $args)
     {
-        $user = $this->userDao->findOneByUserId(intval($args['user_id']));
+        $user = $this->userDao->findOneByUserId($args['user_id']);
         if (!$user) {
             throw new NotFoundException($request, $response);
         }
@@ -73,9 +74,9 @@ class UserController extends BaseController
         $userSession = $this->userSessionDao->findOneByUserId($user['user_id']);
         $user['user_session'] = $userSession;
 
-        if (isset($_SESSION['message'])) {
-            $message = $_SESSION['message'];
-            unset($_SESSION['message']);
+        if (isset($this->session['message'])) {
+            $message = $this->session['message'];
+            unset($this->session['message']);
         } else {
             $message = null;
         }
@@ -111,7 +112,7 @@ class UserController extends BaseController
                 'role' => $role,
             ]);
         } catch (\PDOException $e) {
-            $_SESSION['message'] = $e->getMessage();
+            $this->session['message'] = $e->getMessage();
         }
 
         return $response->withRedirect($this->router->pathFor('user', $user));
@@ -125,12 +126,12 @@ class UserController extends BaseController
      */
     public function userRemoveRole(Request $request, Response $response, array $args)
     {
-        $currentUserId = $_SESSION['user_id'];
+        $currentUserId = $this->session['user_id'];
         $role = $args['role'];
 
         // 作業者のADMINロールは削除できない
         if ($currentUserId == $args['user_id'] && $role === 'ADMIN') {
-            $_SESSION['message'] = '自分のADMINロールは削除できません';
+            $this->session['message'] = '自分のADMINロールは削除できません';
         } else {
             $this->userRoleDao->delete($args);
         }

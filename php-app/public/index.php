@@ -8,7 +8,7 @@ session_start(['read_and_close' => 1]);
 <html>
 <head>
     <meta charset="utf-8">
-    <title>SESSION DUMP</title>
+    <title>test SESSION DUMP</title>
 </head>
 
 <body>

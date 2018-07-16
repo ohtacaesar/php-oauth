@@ -18,6 +18,9 @@ class AuthService
     /** @var UserSessionDao */
     private $userSessionDao;
 
+    /** @var \Session */
+    private $session;
+
     /** @var string */
     private $clientId;
 
@@ -30,12 +33,14 @@ class AuthService
     public function __construct(
         UserManager $userManager,
         UserSessionDao $userSessionDao,
+        \Session $session,
         string $clientId,
         string $clientSecret,
         LoggerInterface $logger
     ) {
         $this->userManager = $userManager;
         $this->userSessionDao = $userSessionDao;
+        $this->session = $session;
         $this->clientId = $clientId;
         $this->clientSecret = $clientSecret;
         $this->logger = $logger;
@@ -88,8 +93,8 @@ class AuthService
 
         // ログイン状態の判定
         $user = null;
-        if (isset($_SESSION['user_id'])) {
-            if (!$user = $this->userManager->getUserByUserId($_SESSION['user_id'])) {
+        if (isset($this->session['user_id'])) {
+            if (!$user = $this->userManager->getUserByUserId($this->session['user_id'])) {
                 $this->signout();
                 return false;
             }
@@ -128,9 +133,9 @@ class AuthService
             return false;
         }
 
-        $_SESSION['user_id'] = $user['user_id'];
-        $_SESSION['name'] = $user['name'];
-        $_SESSION['roles'] = $user['roles'];
+        $this->session['user_id'] = $user['user_id'];
+        $this->session['name'] = $user['name'];
+        $this->session['roles'] = $user['roles'];
         $this->userSessionDao->update([
             'user_id' => $userId,
             'session_id' => session_id(),
@@ -142,9 +147,9 @@ class AuthService
     public function signOut(): bool
     {
         unset(
-            $_SESSION['user_id'],
-            $_SESSION['name'],
-            $_SESSION['roles']
+            $this->session['user_id'],
+            $this->session['name'],
+            $this->session['roles']
         );
 
         return true;
