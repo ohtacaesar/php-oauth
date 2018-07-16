@@ -54,8 +54,8 @@ $container['authService'] = function (Container $c) {
         $c['userManager'],
         $c['userSessionDao'],
         $c['session'],
-        $c['settings']['clientId'],
-        $c['settings']['clientSecret'],
+        $c['settings']['github']['client_id'],
+        $c['settings']['github']['client_secret'],
         $c['logger']
     );
 };

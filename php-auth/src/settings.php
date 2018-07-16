@@ -1,9 +1,9 @@
 <?php
 
-$ini = parse_ini_file('/var/run/secrets/secrets.ini');
+$ini = parse_ini_file('/var/run/secrets/secrets.ini', true);
 
-return [
-    'settings' => [
+$settings = [
+    'settings' => array_merge([
         'displayErrorDetails' => true, // set to false in production
         'addContentLengthHeader' => false, // Allow the web server to send the content-length header
         // Renderer settings
@@ -21,8 +21,7 @@ return [
             'username' => 'postgres',
             'passwd' => '',
         ],
-        'clientId' => $ini['client_id'],
-        'clientSecret' => $ini['client_secret'],
-    ],
-
+    ], $ini)
 ];
+
+return $settings;
