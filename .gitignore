@@ -3,6 +3,8 @@
 secrets.ini
 tmp/
 logs/
+.php_cs
+.php_cs.cache
 
 
 ### https://raw.github.com/github/gitignore/5db84d2431ce5209d252112fdc377c0f17d5078b/Global/Windows.gitignore

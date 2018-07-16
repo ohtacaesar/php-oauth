@@ -44,4 +44,3 @@ $app->group('/admin', function () {
 
     return $next($request, $response);
 });
-

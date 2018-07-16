@@ -7,7 +7,8 @@
         "monolog/monolog": "^1.23"
     },
     "require-dev": {
-        "phpunit/phpunit": "^7.0"
+        "phpunit/phpunit": "^7.0",
+        "friendsofphp/php-cs-fixer": "^2.12"
     },
     "autoload": {
         "psr-4": {
@@ -17,6 +18,9 @@
     "scripts": {
         "test": [
             "phpunit"
+        ],
+        "fixer": [
+            "php-cs-fixer"
         ]
     }
 }

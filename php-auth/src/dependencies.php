@@ -83,4 +83,3 @@ $container['logger'] = function (Container $c) {
 
     return $logger;
 };
-

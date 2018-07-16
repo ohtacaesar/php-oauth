@@ -7,7 +7,6 @@ use Slim\Container;
 use Slim\Router;
 use Slim\Views\Twig;
 
-
 /**
  * Class BaseController
  * @package Controller

@@ -2,7 +2,6 @@
 
 namespace Dao;
 
-
 class UserSessionDao extends BaseDao
 {
     public function findOneByUserId($userId)

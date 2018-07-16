@@ -33,8 +33,7 @@ class AuthService
         string $clientId,
         string $clientSecret,
         LoggerInterface $logger
-    )
-    {
+    ) {
         $this->userManager = $userManager;
         $this->userSessionDao = $userSessionDao;
         $this->clientId = $clientId;
@@ -98,8 +97,12 @@ class AuthService
 
         try {
             $this->userSessionDao->transaction(function () use ($user, $userInfo) {
-                if (!$user) $user = $this->userManager->getUserByGithubId($userInfo['id']);
-                if (!$user) $user = $this->userManager->createUser($userInfo['login']);
+                if (!$user) {
+                    $user = $this->userManager->getUserByGithubId($userInfo['id']);
+                }
+                if (!$user) {
+                    $user = $this->userManager->createUser($userInfo['login']);
+                }
 
                 if ($user['name'] === null) {
                     $user['name'] = $userInfo['login'];
@@ -147,5 +150,3 @@ class AuthService
         return true;
     }
 }
-
-

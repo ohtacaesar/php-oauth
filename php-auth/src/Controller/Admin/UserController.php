@@ -101,7 +101,9 @@ class UserController extends BaseController
 
         $role = $request->getParam('role');
         $role = mb_strtoupper($role);
-        if (!$role || !preg_match('/^[A-Z]{1,8}$/', $role)) return $response->withStatus(400);
+        if (!$role || !preg_match('/^[A-Z]{1,8}$/', $role)) {
+            return $response->withStatus(400);
+        }
 
         try {
             $this->userRoleDao->update([
