@@ -10,6 +10,12 @@
 {% else %}
     <a href="{{ path_for('logout', {}, {rd: base_url()}) }}">ログアウト</a> | Hello, {{ name }}
 {% endif %}
+
+<ul>
+{% for role in roles %}
+    <li>{{ role }}</li>
+{% endfor %}
+</ul>
 </body>
 </html>
 

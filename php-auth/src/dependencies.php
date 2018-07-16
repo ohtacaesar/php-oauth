@@ -53,6 +53,7 @@ $container['authService'] = function (Container $c) {
     return new \Service\AuthService(
         $c['userManager'],
         $c['userSessionDao'],
+        $c['session'],
         $c['settings']['clientId'],
         $c['settings']['clientSecret'],
         $c['logger']
@@ -82,4 +83,23 @@ $container['logger'] = function (Container $c) {
     $logger->pushHandler(new Monolog\Handler\StreamHandler('php://stdout', $settings['level']));
 
     return $logger;
+};
+
+$container['session'] = function (Container $c) {
+    $uri = $c['uri'];
+    $host = $uri->getHost();
+    $cookieDomain = explode('.', $host);
+
+    if (count($cookieDomain) > 2) {
+        array_shift($cookieDomain);
+        $cookieDomain = "." . join(".", $cookieDomain);
+    } else {
+        $cookieDomain = $host;
+    }
+
+    session_start([
+        'cookie_domain' => $cookieDomain
+    ]);
+
+    return new Session($_SESSION);
 };

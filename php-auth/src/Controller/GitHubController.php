@@ -42,16 +42,16 @@ class GitHubController extends BaseController
             return $response->withStatus(400);
         }
 
-        if (isset($_SESSION['access_token'])) {
-            if ($this->authService->signUpByGithub($_SESSION['access_token'])) {
+        if (isset($this->session['access_token'])) {
+            if ($this->authService->signUpByGithub($this->session['access_token'])) {
                 return $response->withRedirect($rd);
             } else {
-                unset($_SESSION['access_token']);
+                unset($this->session['access_token']);
                 return $response->withRedirect('/');
             }
         }
 
-        $_SESSION['rd'] = $rd;
+        $this->session['rd'] = $rd;
         $url = $this->authService->getAuthUrl();
         return $response->withRedirect($url);
     }
@@ -67,17 +67,17 @@ class GitHubController extends BaseController
             return $response->withStatus(400);
         }
 
-        if (!isset($_SESSION['rd'])) {
+        if (!isset($this->session['rd'])) {
             error_log('redirect url is not set.');
             return $response->withStatus(400);
         }
 
-        $rd = $_SESSION['rd'];
-        unset($_SESSION['rd']);
+        $rd = $this->session['rd'];
+        unset($this->session['rd']);
 
         $accessToken = $this->authService->fetchAccessToken($code);
         if ($this->authService->signUpByGithub($accessToken)) {
-            $_SESSION['access_token'] = $accessToken;
+            $this->session['access_token'] = $accessToken;
             return $response->withRedirect($rd);
         } else {
             // エラーページに飛ばす, DB等に問題あり

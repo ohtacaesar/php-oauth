@@ -15,12 +15,17 @@
             "": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
     "scripts": {
         "test": [
             "phpunit"
         ],
-        "fixer": [
-            "php-cs-fixer"
-        ]
+        "fix": "php-cs-fixer fix",
+        "check": "php-cs-fixer fix --dry-run",
+        "diff": "php-cs-fixer fix --diff --dry-run"
     }
 }

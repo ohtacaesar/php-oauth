@@ -21,12 +21,15 @@ class AuthController extends BaseController
     public function auth(Request $request, Response $response)
     {
         // 認証
-        if (!isset($_SESSION['roles'])) {
+        if (!isset($this->session['roles'])) {
             return $response->withStatus(401);
         }
 
+        $request->getServerParam("HTTP_ROLE");
+
         // 認可
-        if (isset($_SERVER['HTTP_ROLE']) && !in_array($_SESSION['HTTP_ROLE'], $_SESSION['roles'], true)) {
+        $role = $request->getServerParam('HTTP_ROLE');
+        if ($role && !in_array($role, $this->session['roles'], true)) {
             return $response->withStatus(403);
         }
 

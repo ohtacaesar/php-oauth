@@ -25,8 +25,12 @@ class BaseController
     /** @var Router */
     protected $router;
 
+    /** @var \Session */
+    protected $session;
+
     /** @var LoggerInterface */
     protected $logger;
+
 
     /**
      * BaseController constructor.
@@ -39,6 +43,7 @@ class BaseController
         $this->pdo = $container->get('pdo');
         $this->view = $container->get('view');
         $this->router = $container->get('router');
+        $this->session = $container->get('session');
         $this->logger = $container->get('logger');
     }
 }
