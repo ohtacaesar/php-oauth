@@ -127,6 +127,10 @@ class AuthService
         }
     }
 
+    public function signupByGoogle() {
+
+    }
+
     public function signIn($userId): bool
     {
         if (!$user = $this->userManager->getUserByUserId($userId)) {
