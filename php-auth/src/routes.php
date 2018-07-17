@@ -2,6 +2,7 @@
 
 use Controller\AuthController;
 use Controller\GithubController;
+use Controller\GoogleController;
 use Controller\Admin\UserController;
 use Controller\Admin\StorageController;
 use Slim\Http\Request;
@@ -14,6 +15,11 @@ $app->get('/signout', AuthController::class . ':signOut')->setName('signout');
 $app->group('/github', function () {
     $this->get('', GitHubController::class . ':start')->setName('login');
     $this->get('/callback', GitHubController::class . ':callback');
+});
+
+$app->group('/google', function () {
+    $this->get('', GoogleController::class . ':start')->setName('oauth_google');
+    $this->get('/callback', GoogleController::class . ':callback')->setName('oauth_google_callback');
 });
 
 $app->group('/admin', function () {

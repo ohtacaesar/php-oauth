@@ -103,3 +103,15 @@ $container['session'] = function (Container $c) {
 
     return new Session($_SESSION);
 };
+
+
+$container['googleProvider'] = function (Container $c) {
+    $conf = $c['settings']['google'];
+
+    return new League\OAuth2\Client\Provider\Google([
+        'clientId' => $conf['client_id'],
+        'clientSecret' => $conf['client_secret'],
+        'redirectUri' => 'http://auth.example.com/google/callback',
+        'useOidcMode' => true,
+    ]);
+};

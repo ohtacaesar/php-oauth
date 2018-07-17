@@ -6,16 +6,26 @@
 </head>
 <body>
 {% if name is null %}
-    <a href="{{ path_for('login', {}, {rd: base_url()}) }}">GitHub</a> | Google
+    <ul>
+        <li>OAuth Providers</li>
+        <li>
+            <ul>
+                <li><a href="{{ path_for('login', {}, {rd: base_url()}) }}">GitHub</a></li>
+                <li><a href="{{ path_for('oauth_google', {}, {rd: base_url()}) }}">Google</a></li>
+            </ul>
+        </li>
+    </ul>
 {% else %}
     <a href="{{ path_for('logout', {}, {rd: base_url()}) }}">ログアウト</a> | Hello, {{ name }}
 {% endif %}
 
 <ul>
-{% for role in roles %}
-    <li>{{ role }}</li>
-{% endfor %}
+    {% for role in roles %}
+        <li>{{ role }}</li>
+    {% endfor %}
 </ul>
+
+<pre>{{ dump(session) }}</pre>
 </body>
 </html>
 
