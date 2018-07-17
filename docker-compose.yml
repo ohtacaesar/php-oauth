@@ -9,7 +9,7 @@ services:
     depends_on:
       - postgres
     environment:
-      SESSION_COOKIE_DOMAIN: .localhost.dev
+      SESSION_COOKIE_DOMAIN: .example.com
       SESSION_SAVE_HANDLER:  redis
       SESSION_SAVE_PATH:     redis:6379
       SESSION_SERIALIZE_HANDLER: msgpack
@@ -19,7 +19,7 @@ services:
     volumes:
       - ./php-app/public:/var/www/html
     environment:
-      SESSION_COOKIE_DOMAIN: .localhost.dev
+      SESSION_COOKIE_DOMAIN: .example.com
       SESSION_SAVE_HANDLER:  redis
       SESSION_SAVE_PATH:     redis:6379
       SESSION_SERIALIZE_HANDLER: msgpack
