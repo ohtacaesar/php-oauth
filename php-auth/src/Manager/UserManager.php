@@ -81,7 +81,7 @@ class UserManager
         return $user;
     }
 
-    public function getUserByProviderIdAndOwnerId(int $providerId, int $ownerId)
+    public function getUserByProviderIdAndOwnerId(int $providerId, string $ownerId)
     {
         $tmp = $this->userProviderDao->findOneByProviderIdAndOwnerId($providerId, $ownerId);
         if (!$tmp) {

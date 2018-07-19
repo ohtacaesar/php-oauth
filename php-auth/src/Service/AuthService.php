@@ -2,12 +2,10 @@
 
 namespace Service;
 
-use Dao\UserDao;
-use Dao\UserProviderDao;
-use Dao\UserSessionDao;
 use Manager\UserManager;
 use Psr\Log\LoggerInterface;
 use Util\Providers;
+use Util\Session;
 
 /**
  * Class AuthService
@@ -18,7 +16,7 @@ class AuthService
     /** @var UserManager */
     private $userManager;
 
-    /** @var \Session */
+    /** @var Session */
     private $session;
 
     /** @var string */
@@ -32,7 +30,7 @@ class AuthService
 
     public function __construct(
         UserManager $userManager,
-        \Session $session,
+        Session $session,
         string $clientId,
         string $clientSecret,
         LoggerInterface $logger
@@ -83,55 +81,58 @@ class AuthService
         return $data;
     }
 
-    public function signUpByGithub(string $accessToken): bool
+    public function signUp(int $providerId, string $ownerId, $name)
     {
-        if (!$userInfo = $this->fetchUserInfo($accessToken)) {
-            return false;
-        }
-
-        // ログイン状態の判定
-        $currentUser = null;
-        if (isset($this->session['user_id'])) {
-            if (!$currentUser = $this->userManager->getUserByUserId($this->session['user_id'])) {
-                $this->signout();
+        if ($userId = $this->session->get('user_id')) {
+            $loginUser = $this->userManager->getUserByUserId($userId);
+            if ($loginUser === null) {
+                $this->logger->warning(sprintf('USER NOT FOUND(user_id=%s)', $userId));
+                $this->signOut();
                 return false;
             }
         }
 
         try {
-            $this->userManager->getUserDao()->transaction(function () use ($currentUser, $userInfo) {
-                $userProvider = $this->userManager->getUserProviderDao()->findOneByProviderIdAndOwnerId(
-                    Providers::GITHUB,
-                    $userInfo['id']
-                );
+            $this->userManager->getUserDao()->transaction(function () use ($loginUser, $providerId, $ownerId, $name) {
+                $userProvider = $this->userManager->getUserProviderDao()
+                    ->findOneByProviderIdAndOwnerId($providerId, $ownerId);
 
                 $user = null;
                 if ($userProvider) {
-                    if ($user = $this->userManager->getUserDao()->findOneByUserId($userProvider['user_id'])) {
-                        if ($currentUser['user_id'] !== $user['user_id']) {
+                    $user = $this->userManager->getUserByUserId($userProvider['user_id']);
+                    if ($user) {
+                        if ($loginUser && $loginUser['user_id'] !== $user['user_id']) {
                             $this->logger->error(sprintf(
-                                'current_user:%s, user:%s',
-                                $currentUser['user_id'],
+                                '$loginUser(%s) != $user(%s)',
+                                $loginUser['user_id'],
                                 $user['user_id']
                             ));
+                            $this->signOut();
                         }
+                    } else {
+                        $this->logger->warning(sprintf(
+                            'User not found.(user_id:%s, provider_id:%s, owner_id:%s)',
+                            $userProvider['user_id'],
+                            $userProvider['provider_id'],
+                            $userProvider['owner_id']
+                        ));
                     }
                 }
+
                 if (!$user) {
-                    $user = $this->userManager->createUser($userInfo['login']);
+                    $user = $this->userManager->createUser($name);
                 }
 
                 if ($user['name'] === null) {
-                    $user['name'] = $userInfo['login'];
+                    $user['name'] = $name;
                     $this->userManager->updateUser($user);
                 }
-                $userInfo['user_id'] = $user['user_id'];
 
                 if (!$userProvider) {
                     $this->userManager->getUserProviderDao()->create([
                         'user_id' => $user['user_id'],
-                        'provider_id' => Providers::GITHUB,
-                        'owner_id' => $userInfo['id'],
+                        'provider_id' => $providerId,
+                        'owner_id' => $ownerId,
                     ]);
                 }
 
