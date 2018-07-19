@@ -4,7 +4,6 @@ namespace Service;
 
 use Manager\UserManager;
 use Psr\Log\LoggerInterface;
-use Util\Providers;
 use Util\Session;
 
 /**
@@ -40,45 +39,6 @@ class AuthService
         $this->clientId = $clientId;
         $this->clientSecret = $clientSecret;
         $this->logger = $logger;
-    }
-
-    public function getAuthUrl()
-    {
-        $query = http_build_query(['client_id' => $this->clientId, 'scope' => 'read:user']);
-        $url = 'https://github.com/login/oauth/authorize?' . $query;
-
-        return $url;
-    }
-
-    public function fetchAccessToken($code)
-    {
-        list($str, $httpStatus) = http_post('https://github.com/login/oauth/access_token', [
-            'client_id' => $this->clientId,
-            'client_secret' => $this->clientSecret,
-            'code' => $code,
-        ]);
-
-        if ($httpStatus !== 200) {
-            $this->logger->error('Failed to fetch access token.');
-            return false;
-        }
-
-        parse_str($str, $data);
-        if (!isset($data['access_token'])) {
-            return false;
-        }
-
-        return $data['access_token'];
-    }
-
-    public function fetchUserInfo(string $accessToken)
-    {
-        list($str, $status) = http_get('https://api.github.com/user', ['access_token' => $accessToken]);
-        if ($status !== 200 || !($data = json_decode($str, true))) {
-            return false;
-        }
-
-        return $data;
     }
 
     public function signUp(int $providerId, string $ownerId, $name)

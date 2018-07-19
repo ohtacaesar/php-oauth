@@ -1,8 +1,8 @@
 <?php
 
 use Controller\AuthController;
-use Controller\GithubController;
-use Controller\GoogleController;
+use Controller\OAuth\GithubController;
+use Controller\OAuth\GoogleController;
 use Controller\Admin\UserController;
 use Controller\Admin\StorageController;
 use Slim\Http\Request;
