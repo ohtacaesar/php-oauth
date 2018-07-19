@@ -1,32 +1,28 @@
 <?php
 
-namespace Controller;
+namespace Controller\OAuth;
 
-use League\OAuth2\Client\Provider\Google;
-use League\OAuth2\Client\Provider\GoogleUser;
+use Controller\BaseController;
+use League\OAuth2\Client\Provider\AbstractProvider;
+use League\OAuth2\Client\Provider\ResourceOwnerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Service\AuthService;
 use Slim\Container;
 use Slim\Http\Request;
 use Slim\Http\Response;
-use Util\Providers;
 
-/**
- * Class GoogleController
- * @package Controller
- */
-class GoogleController extends BaseController
+abstract class OAuthController extends BaseController
 {
-    /** @var Google */
-    private $googleProvider;
-
     /** @var AuthService */
-    private $authService;
+    protected $authService;
+
+    abstract public function getProviderId(): int;
+
+    abstract public function getProvider(): AbstractProvider;
 
     public function __construct(Container $container)
     {
         parent::__construct($container);
-        $this->googleProvider = $container['googleProvider'];
         $this->authService = $container['authService'];
     }
 
@@ -40,7 +36,7 @@ class GoogleController extends BaseController
             }
         }
 
-        return $response->withRedirect($this->googleProvider->getAuthorizationUrl());
+        return $response->withRedirect($this->getProvider()->getAuthorizationUrl());
     }
 
     public function callback(Request $request, Response $response): ResponseInterface
@@ -49,13 +45,13 @@ class GoogleController extends BaseController
             return $response->withStatus(400);
         }
 
-        $accessToken = $this->googleProvider->getAccessToken('authorization_code', [
+        $accessToken = $this->getProvider()->getAccessToken('authorization_code', [
             'code' => $code
         ]);
-        /** @var GoogleUser $owner */
-        $owner = $this->googleProvider->getResourceOwner($accessToken);
 
-        $this->authService->signUp(Providers::GOOGLE, $owner->getId(), $owner->getName());
+        /** @var ResourceOwnerInterface $owner */
+        $owner = $this->getProvider()->getResourceOwner($accessToken);
+        $this->authService->signUp($this->getProviderId(), $owner->getId(), $owner->getName());
 
         return $response->withRedirect($this->session->getUnset('rd', '/'));
     }

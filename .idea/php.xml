@@ -61,6 +61,7 @@
       <path value="$PROJECT_DIR$/php-auth/vendor/phpunit/php-token-stream" />
       <path value="$PROJECT_DIR$/php-auth/vendor/phpunit/php-code-coverage" />
       <path value="$PROJECT_DIR$/php-auth/vendor/phpunit/phpunit" />
+      <path value="$PROJECT_DIR$/php-auth/vendor/league/oauth2-github" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="7.2" />

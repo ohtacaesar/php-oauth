@@ -104,6 +104,15 @@ $container['session'] = function (Container $c) {
     return new \Util\Session($_SESSION);
 };
 
+$container['githubProvider'] = function (Container $c) {
+    $conf = $c['settings']['github'];
+
+    return new League\OAuth2\Client\Provider\Github([
+        'clientId' => $conf['client_id'],
+        'clientSecret' => $conf['client_secret'],
+    ]);
+};
+
 $container['googleProvider'] = function (Container $c) {
     $conf = $c['settings']['google'];
 
