@@ -14,21 +14,15 @@ require __DIR__ . '/dependencies.php';
 require __DIR__ . '/routes.php';
 
 $app->get('/', function (Request $request, Response $response) {
+    /** @var \Util\Session $session */
     $session = $this->get('session');
-
-    $name = null;
-    if (isset($session['name'])) {
-        $name = $session['name'];
-    }
-    $roles = null;
-    if (isset($session['roles'])) {
-        $roles = $session['roles'];
-    }
+    $name = $session->get('name');
+    $roles = $session->get('roles', []);
 
     return $this->view->render($response, 'index.html.twig', [
         'name' => $name,
         'roles' => $roles,
-        'session' => $session,
+        'session' => $session->getArray(),
     ]);
 });
 

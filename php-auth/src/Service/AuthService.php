@@ -2,9 +2,12 @@
 
 namespace Service;
 
+use Dao\UserDao;
+use Dao\UserProviderDao;
 use Dao\UserSessionDao;
 use Manager\UserManager;
 use Psr\Log\LoggerInterface;
+use Util\Providers;
 
 /**
  * Class AuthService
@@ -14,9 +17,6 @@ class AuthService
 {
     /** @var UserManager */
     private $userManager;
-
-    /** @var UserSessionDao */
-    private $userSessionDao;
 
     /** @var \Session */
     private $session;
@@ -32,14 +32,12 @@ class AuthService
 
     public function __construct(
         UserManager $userManager,
-        UserSessionDao $userSessionDao,
         \Session $session,
         string $clientId,
         string $clientSecret,
         LoggerInterface $logger
     ) {
         $this->userManager = $userManager;
-        $this->userSessionDao = $userSessionDao;
         $this->session = $session;
         $this->clientId = $clientId;
         $this->clientSecret = $clientSecret;
@@ -92,18 +90,32 @@ class AuthService
         }
 
         // ログイン状態の判定
-        $user = null;
+        $currentUser = null;
         if (isset($this->session['user_id'])) {
-            if (!$user = $this->userManager->getUserByUserId($this->session['user_id'])) {
+            if (!$currentUser = $this->userManager->getUserByUserId($this->session['user_id'])) {
                 $this->signout();
                 return false;
             }
         }
 
         try {
-            $this->userSessionDao->transaction(function () use ($user, $userInfo) {
-                if (!$user) {
-                    $user = $this->userManager->getUserByGithubId($userInfo['id']);
+            $this->userManager->getUserDao()->transaction(function () use ($currentUser, $userInfo) {
+                $userProvider = $this->userManager->getUserProviderDao()->findOneByProviderIdAndOwnerId(
+                    Providers::GITHUB,
+                    $userInfo['id']
+                );
+
+                $user = null;
+                if ($userProvider) {
+                    if ($user = $this->userManager->getUserDao()->findOneByUserId($userProvider['user_id'])) {
+                        if ($currentUser['user_id'] !== $user['user_id']) {
+                            $this->logger->error(sprintf(
+                                'current_user:%s, user:%s',
+                                $currentUser['user_id'],
+                                $user['user_id']
+                            ));
+                        }
+                    }
                 }
                 if (!$user) {
                     $user = $this->userManager->createUser($userInfo['login']);
@@ -113,11 +125,17 @@ class AuthService
                     $user['name'] = $userInfo['login'];
                     $this->userManager->updateUser($user);
                 }
-                $userId = $user['user_id'];
                 $userInfo['user_id'] = $user['user_id'];
-                $this->userManager->getUserGithubDao()->update($userInfo);
 
-                $this->signIn($userId);
+                if (!$userProvider) {
+                    $this->userManager->getUserProviderDao()->create([
+                        'user_id' => $user['user_id'],
+                        'provider_id' => Providers::GITHUB,
+                        'owner_id' => $userInfo['id'],
+                    ]);
+                }
+
+                $this->signIn($user['user_id']);
             });
 
             return true;
@@ -125,10 +143,6 @@ class AuthService
             $this->logger->error($e->getMessage());
             return false;
         }
-    }
-
-    public function signupByGoogle() {
-
     }
 
     public function signIn($userId): bool
@@ -140,7 +154,7 @@ class AuthService
         $this->session['user_id'] = $user['user_id'];
         $this->session['name'] = $user['name'];
         $this->session['roles'] = $user['roles'];
-        $this->userSessionDao->update([
+        $this->userManager->getUserSessionDao()->update([
             'user_id' => $userId,
             'session_id' => session_id(),
         ]);

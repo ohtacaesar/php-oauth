@@ -2,11 +2,7 @@
 
 namespace Controller;
 
-use Dao\UserGithubDao;
-use Dao\UserRoleDao;
-use Dao\UserSessionDao;
 use Service\AuthService;
-use Service\LoginService;
 use Slim\Container;
 use Slim\Http\Request;
 use Slim\Http\Response;
