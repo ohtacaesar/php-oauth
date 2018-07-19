@@ -1,6 +1,8 @@
 <?php
 
-class Session implements ArrayAccess
+namespace Util;
+
+class Session implements \ArrayAccess
 {
     private $session;
 
@@ -44,5 +46,10 @@ class Session implements ArrayAccess
         unset($this[$offset]);
 
         return $default;
+    }
+
+    public function getArray()
+    {
+        return $this->session;
     }
 }

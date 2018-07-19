@@ -3,8 +3,9 @@
 namespace Manager;
 
 use Dao\UserDao;
-use Dao\UserGithubDao;
+use Dao\UserProviderDao;
 use Dao\UserRoleDao;
+use Dao\UserSessionDao;
 use Monolog\Logger;
 use Psr\Log\NullLogger;
 
@@ -19,22 +20,44 @@ class UserManager
     /** @var UserRoleDao */
     private $userRoleDao;
 
-    /** @var UserGithubDao */
-    private $userGithubDao;
+    /** @var UserProviderDao */
+    private $userProviderDao;
 
-    public function __construct(UserDao $userDao, UserRoleDao $userRoleDao, UserGithubDao $userGithubDao)
-    {
+    /** @var UserSessionDao */
+    private $userSessionDao;
+
+    public function __construct(
+        UserDao $userDao,
+        UserRoleDao $userRoleDao,
+        UserProviderDao $userProviderDao,
+        UserSessionDao $userSessionDao
+    ) {
         $this->userDao = $userDao;
         $this->userRoleDao = $userRoleDao;
-        $this->userGithubDao = $userGithubDao;
+        $this->userProviderDao = $userProviderDao;
+        $this->userSessionDao = $userSessionDao;
         $this->logger = new NullLogger();
     }
 
-    public function getUserGithubDao(): UserGithubDao
+    public function getUserDao(): UserDao
     {
-        return $this->userGithubDao;
+        return $this->userDao;
     }
 
+    public function getUserProviderDao(): UserProviderDao
+    {
+        return $this->userProviderDao;
+    }
+
+    public function getUserRoleDao(): UserRoleDao
+    {
+        return $this->userRoleDao;
+    }
+
+    public function getUserSessionDao(): UserSessionDao
+    {
+        return $this->userSessionDao;
+    }
 
     public function generateUserId(): string
     {
@@ -58,13 +81,14 @@ class UserManager
         return $user;
     }
 
-    public function getUserByGithubId($id)
+    public function getUserByProviderIdAndOwnerId(int $providerId, int $ownerId)
     {
-        if (!$ghUser = $this->userGithubDao->findOneById($id)) {
+        $tmp = $this->userProviderDao->findOneByProviderIdAndOwnerId($providerId, $ownerId);
+        if (!$tmp) {
             return null;
         }
 
-        if (!$user = $this->userDao->findOneByUserId($ghUser['user_id'])) {
+        if (!$user = $this->userDao->findOneByUserId($tmp['user_id'])) {
             return null;
         }
 
@@ -87,30 +111,5 @@ class UserManager
         ];
 
         $this->userDao->update($user);
-    }
-
-    public function addRolesByGithubId($id, array $roles)
-    {
-        try {
-            $this->userDao->transaction(function () use ($id, $roles) {
-                if ($ghUser = $this->userGithubDao->findOneById($id)) {
-                    $userId = $ghUser['user_id'];
-                    if (!$user = $this->userDao->findOneByUserId($userId)) {
-                        return false;
-                    }
-                } else {
-                    $user = $this->createUser();
-                    $this->userGithubDao->create($user['user_id'], $id);
-                }
-
-                foreach ($roles as $role) {
-                    $this->userRoleDao->update(['user_id' => $user['user_id'], 'role' => $role]);
-                }
-                return true;
-            });
-            return true;
-        } catch (\Exception $e) {
-            return false;
-        }
     }
 }

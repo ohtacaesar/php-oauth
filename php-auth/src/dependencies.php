@@ -37,22 +37,22 @@ $container['userSessionDao'] = function (Container $c) {
     return new \Dao\UserSessionDao($c->get('pdo'));
 };
 
-$container['userGithubDao'] = function (Container $c) {
-    return new \Dao\UserGithubDao($c->get('pdo'));
+$container['userProviderDao'] = function (Container $c) {
+    return new \Dao\UserProviderDao($c['pdo']);
 };
 
 $container['userManager'] = function (Container $c) {
     return new \Manager\UserManager(
         $c['userDao'],
         $c['userRoleDao'],
-        $c['userGithubDao']
+        $c['userProviderDao'],
+        $c['userSessionDao']
     );
 };
 
 $container['authService'] = function (Container $c) {
     return new \Service\AuthService(
         $c['userManager'],
-        $c['userSessionDao'],
         $c['session'],
         $c['settings']['github']['client_id'],
         $c['settings']['github']['client_secret'],
@@ -101,9 +101,8 @@ $container['session'] = function (Container $c) {
         'cookie_domain' => $cookieDomain
     ]);
 
-    return new Session($_SESSION);
+    return new \Util\Session($_SESSION);
 };
-
 
 $container['googleProvider'] = function (Container $c) {
     $conf = $c['settings']['google'];

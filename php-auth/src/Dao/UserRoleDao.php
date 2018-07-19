@@ -23,21 +23,17 @@ class UserRoleDao extends BaseDao
      * @param array $userRole
      * @return bool
      */
-    public function update(array $userRole)
+    public function update(array $userRole): bool
     {
         $sql = <<<EOS
-insert into user_roles(user_id, role) values (:userId, :role)
+insert into user_roles(user_id, role) values (:user_id, :role)
     on conflict
     on constraint user_roles_pkey
-    do update set user_id = :userId, role = :role
+    do update set user_id = :user_id, role = :role
 EOS;
         $stmt = $this->pdo->prepare($sql);
-        $stmt->bindValue('userId', $userRole['user_id']);
-        $stmt->bindValue('role', $userRole['role']);
-        $r = $stmt->execute();
-        $stmt->closeCursor();
 
-        return $r;
+        return $stmt->execute($userRole);
     }
 
     /**
@@ -59,8 +55,8 @@ EOS;
      */
     public function deleteByUserId(int $userId)
     {
-        $stmt = $this->pdo->prepare('delete from user_roles where user_id = :userId');
-        $stmt->bindValue('userId', $userId);
+        $stmt = $this->pdo->prepare('delete from user_roles where user_id = :user_id');
+        $stmt->bindValue('user_id', $userId);
         $r = $stmt->execute();
         $stmt->closeCursor();
 
@@ -74,8 +70,8 @@ EOS;
      */
     public function deleteByUserIdAndRole(int $userId, string $role)
     {
-        $stmt = $this->pdo->prepare('delete from user_roles where user_id = :userId and role = :role');
-        $stmt->bindValue('userId', $userId);
+        $stmt = $this->pdo->prepare('delete from user_roles where user_id = :user_id and role = :role');
+        $stmt->bindValue('user_id', $userId);
         $stmt->bindValue('role', $role);
         $r = $stmt->execute();
         $stmt->closeCursor();
