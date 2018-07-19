@@ -6,6 +6,7 @@ use Psr\Log\LoggerInterface;
 use Slim\Container;
 use Slim\Router;
 use Slim\Views\Twig;
+use Util\Session;
 
 /**
  * Class BaseController
@@ -25,7 +26,7 @@ class BaseController
     /** @var Router */
     protected $router;
 
-    /** @var \Session */
+    /** @var Session */
     protected $session;
 
     /** @var LoggerInterface */

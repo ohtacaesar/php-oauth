@@ -3,10 +3,13 @@
 namespace Controller;
 
 use League\OAuth2\Client\Provider\Google;
+use League\OAuth2\Client\Provider\GoogleUser;
 use Psr\Http\Message\ResponseInterface;
+use Service\AuthService;
 use Slim\Container;
 use Slim\Http\Request;
 use Slim\Http\Response;
+use Util\Providers;
 
 /**
  * Class GoogleController
@@ -17,10 +20,14 @@ class GoogleController extends BaseController
     /** @var Google */
     private $googleProvider;
 
+    /** @var AuthService */
+    private $authService;
+
     public function __construct(Container $container)
     {
         parent::__construct($container);
         $this->googleProvider = $container['googleProvider'];
+        $this->authService = $container['authService'];
     }
 
     public function start(Request $request, Response $response): ResponseInterface
@@ -45,10 +52,10 @@ class GoogleController extends BaseController
         $accessToken = $this->googleProvider->getAccessToken('authorization_code', [
             'code' => $code
         ]);
-
+        /** @var GoogleUser $owner */
         $owner = $this->googleProvider->getResourceOwner($accessToken);
-        $this->session['google_access_token'] = $accessToken;
-        $this->session['google_owner'] = $owner;
+
+        $this->authService->signUp(Providers::GOOGLE, $owner->getId(), $owner->getName());
 
         return $response->withRedirect($this->session->getUnset('rd', '/'));
     }
