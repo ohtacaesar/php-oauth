@@ -43,6 +43,7 @@ class AuthService
 
     public function signUp(int $providerId, string $ownerId, $name)
     {
+        $loginUser = null;
         if ($userId = $this->session->get('user_id')) {
             $loginUser = $this->userManager->getUserByUserId($userId);
             if ($loginUser === null) {
@@ -54,10 +55,11 @@ class AuthService
 
         try {
             $this->userManager->getUserDao()->transaction(function () use ($loginUser, $providerId, $ownerId, $name) {
+                $user = null;
+
                 $userProvider = $this->userManager->getUserProviderDao()
                     ->findOneByProviderIdAndOwnerId($providerId, $ownerId);
 
-                $user = null;
                 if ($userProvider) {
                     $user = $this->userManager->getUserByUserId($userProvider['user_id']);
                     if ($user) {
@@ -77,6 +79,9 @@ class AuthService
                             $userProvider['owner_id']
                         ));
                     }
+                }
+                if (!$user) {
+                    $user = $loginUser;
                 }
 
                 if (!$user) {

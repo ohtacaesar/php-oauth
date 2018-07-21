@@ -5,27 +5,39 @@
     <title>php-auth</title>
 </head>
 <body>
-{% if name is null %}
+{% if user %}
     <ul>
-        <li>OAuth Providers</li>
-        <li>
+        <li>{{ user.name }}</li>
+        <li>メニュー
             <ul>
-                <li><a href="{{ path_for('login', {}, {rd: base_url()}) }}">GitHub</a></li>
-                <li><a href="{{ path_for('oauth_google', {}, {rd: base_url()}) }}">Google</a></li>
+                <li><a href="{{ path_for('logout', {}, {rd: base_url()}) }}">ログアウト</a></li>
+                {% if 'ADMIN' in user.roles %}
+                    <li><a href="{{ path_for('admin') }}">管理画面</a></li>{% endif %}
             </ul>
         </li>
     </ul>
 {% else %}
-    <a href="{{ path_for('logout', {}, {rd: base_url()}) }}">ログアウト</a> | Hello, {{ name }}
 {% endif %}
-
 <ul>
-    {% for role in roles %}
-        <li>{{ role }}</li>
-    {% endfor %}
+    <li>OAuth Providers
+        <ul>
+            <li>{% if 1 in user.provider_ids %}GitHub{% else %}<a href="{{ path_for('login', {}, {rd: base_url()}) }}">
+                        GitHub</a>{% endif %}</li>
+            <li>{% if 2 in user.provider_ids %}Google{% else %}<a
+                    href="{{ path_for('oauth_google', {}, {rd: base_url()}) }}">Google</a>{% endif %}</li>
+        </ul>
+    </li>
+</ul>
+<ul>
+    <li>Roles
+        <ul>
+            {% for role in user.roles %}
+                <li>{{ role }}</li>
+            {% endfor %}
+        </ul>
+    </li>
 </ul>
 
-<pre>{{ dump(session) }}</pre>
 </body>
 </html>
 

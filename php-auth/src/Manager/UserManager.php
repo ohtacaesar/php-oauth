@@ -78,6 +78,10 @@ class UserManager
             return $e['role'];
         }, $userRoles);
 
+        $user['provider_ids'] = array_map(function ($e) {
+            return $e['provider_id'];
+        }, $this->userProviderDao->findByUserId($userId));
+
         return $user;
     }
 
