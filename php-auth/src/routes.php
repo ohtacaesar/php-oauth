@@ -1,6 +1,6 @@
 <?php
 
-use Controller\AuthController;
+use Controller\HomeController;
 use Controller\OAuth\GithubController;
 use Controller\OAuth\GoogleController;
 use Controller\Admin\UserController;
@@ -8,9 +8,10 @@ use Controller\Admin\StorageController;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
-$app->get('/auth', AuthController::class . ':auth')->setName('auth');
-$app->get('/logout', AuthController::class . ':signOut')->setName('logout');
-$app->get('/signout', AuthController::class . ':signOut')->setName('signout');
+$app->get('/', HomeController::class . ':home')->setName('home');
+$app->get('/auth', HomeController::class . ':auth')->setName('auth');
+$app->get('/logout', HomeController::class . ':signOut')->setName('logout');
+$app->get('/signout', HomeController::class . ':signOut')->setName('signout');
 
 $app->group('/github', function () {
     $this->get('', GitHubController::class . ':start')->setName('login');
@@ -29,7 +30,7 @@ $app->group('/admin', function () {
             'session' => $session,
             'uri' => $this->uri,
         ]);
-    });
+    })->setName('admin');
 
     $this->group('/users', function () {
         $this->get('', UserController::class . ':index')->setName('users');
