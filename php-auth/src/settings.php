@@ -2,6 +2,7 @@
 
 $ini = parse_ini_file('/var/run/secrets/secrets.ini', true);
 
+
 $settings = [
     'settings' => array_merge([
         'displayErrorDetails' => true, // set to false in production
@@ -21,6 +22,13 @@ $settings = [
             'username' => 'postgres',
             'passwd' => '',
         ],
+        'oauth' => [
+            \Util\Providers::GITHUB => [
+                'id' => [
+                    1635983 => ['ADMIN']
+                ]
+            ]
+        ]
     ], $ini)
 ];
 

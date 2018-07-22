@@ -12,6 +12,11 @@ class BaseDao
         $this->pdo = $pdo;
     }
 
+    public function getPdo(): \PDO
+    {
+        return $this->pdo;
+    }
+
     public function transaction(callable $callback)
     {
         $this->pdo->beginTransaction();
