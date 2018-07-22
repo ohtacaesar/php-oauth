@@ -5,16 +5,24 @@ namespace Controller\OAuth;
 use Controller\BaseController;
 use League\OAuth2\Client\Provider\AbstractProvider;
 use League\OAuth2\Client\Provider\ResourceOwnerInterface;
+use Manager\UserManager;
 use Psr\Http\Message\ResponseInterface;
 use Service\AuthService;
 use Slim\Container;
 use Slim\Http\Request;
 use Slim\Http\Response;
+use Util\Providers;
 
 abstract class OAuthController extends BaseController
 {
     /** @var AuthService */
     protected $authService;
+
+    /** @var UserManager */
+    protected $userManager;
+
+    /** @var array */
+    protected $grantConfig;
 
     abstract public function getProviderId(): int;
 
@@ -24,6 +32,13 @@ abstract class OAuthController extends BaseController
     {
         parent::__construct($container);
         $this->authService = $container['authService'];
+        $this->userManager = $container['userManager'];
+        $settings = $container['settings'];
+
+        if (isset($settings['oauth']) and isset($settings['oauth'][Providers::GITHUB])) {
+            $this->grantConfig = $settings['oauth'][Providers::GITHUB];
+            assert(is_array($this->grantConfig));
+        }
     }
 
     public function start(Request $request, Response $response): ResponseInterface
@@ -51,7 +66,29 @@ abstract class OAuthController extends BaseController
 
         /** @var ResourceOwnerInterface $owner */
         $owner = $this->getProvider()->getResourceOwner($accessToken);
-        $this->authService->signUp($this->getProviderId(), $owner->getId(), $owner->getName());
+        $user = $this->authService->signUp($this->getProviderId(), $owner->getId(), $owner->getName());
+
+        if (!$user) {
+            $this->logger->error('ログインに失敗');
+            return $response->withRedirect('/');
+        }
+
+        $owner = $owner->toArray();
+        foreach ($this->grantConfig as $key => $value) {
+            if (!array_key_exists($key, $owner)) {
+                $this->logger->warning(sprintf("''%s' is not exists in owner", $key));
+                continue;
+            }
+
+            foreach ($value as $k => $roles) {
+                // 正規表現でマッチさせる
+                if ($owner[$key] == $k) {
+                    foreach ($roles as $role) {
+                        $this->userManager->addRole($user, $role);
+                    }
+                }
+            }
+        }
 
         return $response->withRedirect($this->session->getUnset('rd', '/'));
     }

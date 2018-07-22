@@ -41,7 +41,7 @@ class AuthService
         $this->logger = $logger;
     }
 
-    public function signUp(int $providerId, string $ownerId, $name)
+    public function signUp(int $providerId, string $ownerId, $name): ?array
     {
         $loginUser = null;
         if ($userId = $this->session->get('user_id')) {
@@ -49,72 +49,73 @@ class AuthService
             if ($loginUser === null) {
                 $this->logger->warning(sprintf('USER NOT FOUND(user_id=%s)', $userId));
                 $this->signOut();
-                return false;
+                return null;
             }
         }
 
+        $pdo = $this->userManager->getUserDao()->getPdo();
+        $pdo->beginTransaction();
+        $user = null;
         try {
-            $this->userManager->getUserDao()->transaction(function () use ($loginUser, $providerId, $ownerId, $name) {
-                $user = null;
+            $userProvider = $this->userManager->getUserProviderDao()
+                ->findOneByProviderIdAndOwnerId($providerId, $ownerId);
 
-                $userProvider = $this->userManager->getUserProviderDao()
-                    ->findOneByProviderIdAndOwnerId($providerId, $ownerId);
-
-                if ($userProvider) {
-                    $user = $this->userManager->getUserByUserId($userProvider['user_id']);
-                    if ($user) {
-                        if ($loginUser && $loginUser['user_id'] !== $user['user_id']) {
-                            $this->logger->error(sprintf(
-                                '$loginUser(%s) != $user(%s)',
-                                $loginUser['user_id'],
-                                $user['user_id']
-                            ));
-                            $this->signOut();
-                        }
-                    } else {
-                        $this->logger->warning(sprintf(
-                            'User not found.(user_id:%s, provider_id:%s, owner_id:%s)',
-                            $userProvider['user_id'],
-                            $userProvider['provider_id'],
-                            $userProvider['owner_id']
+            if ($userProvider) {
+                $user = $this->userManager->getUserByUserId($userProvider['user_id']);
+                if ($user) {
+                    if ($loginUser && $loginUser['user_id'] !== $user['user_id']) {
+                        $this->logger->error(sprintf(
+                            '$loginUser(%s) != $user(%s)',
+                            $loginUser['user_id'],
+                            $user['user_id']
                         ));
+                        $this->signOut();
                     }
+                } else {
+                    $this->logger->warning(sprintf(
+                        'User not found.(user_id:%s, provider_id:%s, owner_id:%s)',
+                        $userProvider['user_id'],
+                        $userProvider['provider_id'],
+                        $userProvider['owner_id']
+                    ));
                 }
-                if (!$user) {
-                    $user = $loginUser;
-                }
+            }
+            if (!$user) {
+                $user = $loginUser;
+            }
 
-                if (!$user) {
-                    $user = $this->userManager->createUser($name);
-                }
+            if (!$user) {
+                $user = $this->userManager->createUser($name);
+            }
 
-                if ($user['name'] === null) {
-                    $user['name'] = $name;
-                    $this->userManager->updateUser($user);
-                }
+            if ($user['name'] === null) {
+                $user['name'] = $name;
+                $this->userManager->updateUser($user);
+            }
 
-                if (!$userProvider) {
-                    $this->userManager->getUserProviderDao()->create([
-                        'user_id' => $user['user_id'],
-                        'provider_id' => $providerId,
-                        'owner_id' => $ownerId,
-                    ]);
-                }
+            if (!$userProvider) {
+                $this->userManager->getUserProviderDao()->create([
+                    'user_id' => $user['user_id'],
+                    'provider_id' => $providerId,
+                    'owner_id' => $ownerId,
+                ]);
+            }
 
-                $this->signIn($user['user_id']);
-            });
+            $pdo->commit();
 
-            return true;
+            $user = $this->signIn($user['user_id']);
+            return $user;
         } catch (\Exception $e) {
             $this->logger->error($e->getMessage());
-            return false;
+            $pdo->rollBack();
+            return null;
         }
     }
 
-    public function signIn($userId): bool
+    public function signIn($userId): ?array
     {
         if (!$user = $this->userManager->getUserByUserId($userId)) {
-            return false;
+            return null;
         }
 
         $this->session['user_id'] = $user['user_id'];
@@ -125,7 +126,7 @@ class AuthService
             'session_id' => session_id(),
         ]);
 
-        return true;
+        return $user;
     }
 
     public function signOut(): bool

@@ -116,4 +116,26 @@ class UserManager
 
         $this->userDao->update($user);
     }
+
+    public function addRole(array $user, string $role)
+    {
+        $userRole = ['user_id' => $user['user_id'], 'role' => $role];
+        $this->userRoleDao->update($userRole);
+    }
+
+    /**
+     * @param array $user
+     * @param int $providerId
+     * @param $ownerId
+     */
+    public function addProvider(array $user, int $providerId, $ownerId)
+    {
+        $userProvider = [
+            'user_id' => $user['user_id'],
+            'provider_id' => $providerId,
+            'owner_id' => $ownerId,
+        ];
+
+        $this->userProviderDao->create($userProvider);
+    }
 }
