@@ -32,7 +32,7 @@ class BaseTestCase extends TestCase
          */
         $app = require __DIR__ . '/../../src/app.php';
         $container = $app->getContainer();
-        $container['session'] = new \Session($session);
+        $container['session'] = new \Util\Session($session);
 
         $response = $app->process($request, $response);
 
