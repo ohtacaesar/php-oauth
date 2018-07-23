@@ -54,8 +54,7 @@ $container['authService'] = function (Container $c) {
     return new \Service\AuthService(
         $c['userManager'],
         $c['session'],
-        $c['settings']['github']['client_id'],
-        $c['settings']['github']['client_secret'],
+        $c['settings']['grantRules'],
         $c['logger']
     );
 };

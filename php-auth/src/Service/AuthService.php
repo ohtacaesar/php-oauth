@@ -2,6 +2,7 @@
 
 namespace Service;
 
+use League\OAuth2\Client\Provider\ResourceOwnerInterface;
 use Manager\UserManager;
 use Psr\Log\LoggerInterface;
 use Util\Session;
@@ -18,11 +19,8 @@ class AuthService
     /** @var Session */
     private $session;
 
-    /** @var string */
-    private $clientId;
-
-    /** @var string */
-    private $clientSecret;
+    /** @var array */
+    private $grantRules;
 
     /** @var LoggerInterface */
     private $logger;
@@ -30,18 +28,16 @@ class AuthService
     public function __construct(
         UserManager $userManager,
         Session $session,
-        string $clientId,
-        string $clientSecret,
+        array $grantRules = [],
         LoggerInterface $logger
     ) {
         $this->userManager = $userManager;
         $this->session = $session;
-        $this->clientId = $clientId;
-        $this->clientSecret = $clientSecret;
+        $this->grantRules = $grantRules;
         $this->logger = $logger;
     }
 
-    public function signUp(int $providerId, string $ownerId, $name): ?array
+    public function signUp(int $providerId, ResourceOwnerInterface $owner): ?array
     {
         $loginUser = null;
         if ($userId = $this->session->get('user_id')) {
@@ -58,7 +54,7 @@ class AuthService
         $user = null;
         try {
             $userProvider = $this->userManager->getUserProviderDao()
-                ->findOneByProviderIdAndOwnerId($providerId, $ownerId);
+                ->findOneByProviderIdAndOwnerId($providerId, $owner->getId());
 
             if ($userProvider) {
                 $user = $this->userManager->getUserByUserId($userProvider['user_id']);
@@ -84,12 +80,17 @@ class AuthService
                 $user = $loginUser;
             }
 
-            if (!$user) {
-                $user = $this->userManager->createUser($name);
+            $ownerName = null;
+            $obj = new \ReflectionObject($owner);
+            try {
+                $ownerName = $obj->getMethod("getName")->invoke($owner);
+            } catch (\ReflectionException $ignore) {
             }
 
-            if ($user['name'] === null) {
-                $user['name'] = $name;
+            if (!$user) {
+                $user = $this->userManager->createUser($ownerName);
+            } elseif ($user['name'] === null and $ownerName) {
+                $user['name'] = $ownerName;
                 $this->userManager->updateUser($user);
             }
 
@@ -97,14 +98,47 @@ class AuthService
                 $this->userManager->getUserProviderDao()->create([
                     'user_id' => $user['user_id'],
                     'provider_id' => $providerId,
-                    'owner_id' => $ownerId,
+                    'owner_id' => $owner->getId(),
                 ]);
+            }
+
+            $ownerArray = $owner->toArray();
+            $rolesToAdd = [];
+            if (isset($this->grantRules[$providerId])) {
+                $grantRule = $this->grantRules[$providerId];
+                $this->logger->notice(sprintf('count($grantRule) = %d', count($grantRule)));
+                foreach ($grantRule as $key => $rules) {
+                    if (!isset($ownerArray[$key])) {
+                        $this->logger->warning(sprintf('Wrong key: %s[%s]', get_class($owner), $key));
+                        continue;
+                    }
+
+                    foreach ($rules as $pattern => $roles) {
+                        $this->logger->notice(sprintf(
+                            'pattern = %s, gettype($pattern) = %s, $ownerArray[%s] = %s',
+                            $pattern,
+                            gettype($pattern),
+                            $ownerArray[$key]
+                        ));
+
+                        if ($pattern == $ownerArray[$key] or preg_match($pattern, $ownerArray[$key])) {
+                            foreach ($roles as $role) {
+                                if (!in_array($role, $rolesToAdd)) {
+                                    $rolesToAdd[] = $role;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            foreach ($rolesToAdd as $role) {
+                $this->userManager->addRole($user, $role);
             }
 
             $pdo->commit();
 
-            $user = $this->signIn($user['user_id']);
-            return $user;
+            return $this->signIn($user['user_id']);
         } catch (\Exception $e) {
             $this->logger->error($e->getMessage());
             $pdo->rollBack();

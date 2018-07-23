@@ -66,28 +66,11 @@ abstract class OAuthController extends BaseController
 
         /** @var ResourceOwnerInterface $owner */
         $owner = $this->getProvider()->getResourceOwner($accessToken);
-        $user = $this->authService->signUp($this->getProviderId(), $owner->getId(), $owner->getName());
+        $user = $this->authService->signUp($this->getProviderId(), $owner);
 
         if (!$user) {
             $this->logger->error('ログインに失敗');
             return $response->withRedirect('/');
-        }
-
-        $owner = $owner->toArray();
-        foreach ($this->grantConfig as $key => $value) {
-            if (!array_key_exists($key, $owner)) {
-                $this->logger->warning(sprintf("''%s' is not exists in owner", $key));
-                continue;
-            }
-
-            foreach ($value as $k => $roles) {
-                // 正規表現でマッチさせる
-                if ($owner[$key] == $k) {
-                    foreach ($roles as $role) {
-                        $this->userManager->addRole($user, $role);
-                    }
-                }
-            }
         }
 
         return $response->withRedirect($this->session->getUnset('rd', '/'));
