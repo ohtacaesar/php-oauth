@@ -22,7 +22,7 @@ $settings = [
             'username' => 'postgres',
             'passwd' => '',
         ],
-        'oauth' => [
+        'grantRules' => [
             \Util\Providers::GITHUB => [
                 'id' => [
                     1635983 => ['ADMIN']
