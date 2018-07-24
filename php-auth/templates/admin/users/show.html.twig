@@ -31,6 +31,22 @@
         </table>
     </div>
     <div>
+        <h2>プロバイダ一覧</h2>
+        <table border="1">
+            {% for user_provider in user.user_providers %}
+                <tr>
+                    <td>{{ user_provider.provider_id }}</td>
+                    <td>
+                        <form action="{{ path_for('user_remove_provider', user_provider) }}" method="post">
+                            <button type="submit">削除</button>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+
+    </div>
+    <div>
         <h2>セッションID</h2>
         <p>{{ user.user_session.session_id }}</p>
     </div>
