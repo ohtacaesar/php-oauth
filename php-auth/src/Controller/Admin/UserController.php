@@ -5,8 +5,10 @@ namespace Controller\Admin;
 use Controller\BaseController;
 use Dao\UserDao;
 use Dao\UserGithubDao;
+use Dao\UserProviderDao;
 use Dao\UserRoleDao;
 use Dao\UserSessionDao;
+use Manager\UserManager;
 use Slim\Container;
 use Slim\Exception\NotFoundException;
 use Slim\Http\Request;
@@ -28,6 +30,9 @@ class UserController extends BaseController
     /** @var UserSessionDao */
     private $userSessionDao;
 
+    /** @var UserManager */
+    private $userManager;
+
     /**
      * UserController constructor.
      * @param Container $container
@@ -39,6 +44,7 @@ class UserController extends BaseController
         $this->userDao = $container->get('userDao');
         $this->userRoleDao = $container->get('userRoleDao');
         $this->userSessionDao = $container->get('userSessionDao');
+        $this->userManager = $container['userManager'];
     }
 
     /**
@@ -63,16 +69,10 @@ class UserController extends BaseController
      */
     public function show(Request $request, Response $response, array $args)
     {
-        $user = $this->userDao->findOneByUserId($args['user_id']);
+        $user = $this->userManager->getUserByUserId($args['user_id']);
         if (!$user) {
             throw new NotFoundException($request, $response);
         }
-
-        $userRoles = $this->userRoleDao->findByUserId($user['user_id']);
-        $user['user_roles'] = $userRoles;
-
-        $userSession = $this->userSessionDao->findOneByUserId($user['user_id']);
-        $user['user_session'] = $userSession;
 
         if (isset($this->session['message'])) {
             $message = $this->session['message'];
@@ -95,7 +95,7 @@ class UserController extends BaseController
      */
     public function userAddRole(Request $request, Response $response, array $args)
     {
-        $user = $this->userDao->findOneByUserId(intval($args['user_id']));
+        $user = $this->userDao->findOneByUserId($args['user_id']);
         if (!$user) {
             return $response->withRedirect($this->router->pathFor('users'));
         }
@@ -103,7 +103,8 @@ class UserController extends BaseController
         $role = $request->getParam('role');
         $role = mb_strtoupper($role);
         if (!$role || !preg_match('/^[A-Z]{1,8}$/', $role)) {
-            return $response->withStatus(400);
+            $this->session['message'] = 'ロールの指定が正しくありません';
+            return $response->withRedirect($this->router->pathFor('user', $user));
         }
 
         try {
@@ -130,7 +131,7 @@ class UserController extends BaseController
         $role = $args['role'];
 
         // 作業者のADMINロールは削除できない
-        if ($currentUserId == $args['user_id'] && $role === 'ADMIN') {
+        if ($currentUserId === $args['user_id'] && $role === 'ADMIN') {
             $this->session['message'] = '自分のADMINロールは削除できません';
         } else {
             $this->userRoleDao->delete($args);
@@ -143,5 +144,23 @@ class UserController extends BaseController
             $rd = $this->router->pathFor('user_index');
         }
         return $response->withRedirect($rd);
+    }
+
+
+    public function userRemoveProvider(Request $request, Response $response, array $args)
+    {
+        if (!$user = $this->userManager->getUserByUserId($args['user_id'])) {
+            $this->session['message'] = 'ユーザーが見つかりませんでした';
+            return $response->withRedirect($this->router->pathFor('user', $user));
+        }
+
+        if (count($user['user_providers']) <= 1) {
+            $this->session['message'] = 'プロバイダが一つしか登録されていないため、削除できません';
+            return $response->withRedirect($this->router->pathFor('user', $user));
+        }
+
+        $this->userManager->getUserProviderDao()->delete($args);
+
+        return $response->withRedirect($this->router->pathFor('user', $user));
     }
 }

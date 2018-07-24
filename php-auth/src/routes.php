@@ -37,6 +37,7 @@ $app->group('/admin', function () {
         $this->get('/{user_id:[a-f0-9]+}', UserController::class . ':show')->setName('user');
         $this->post('/{user_id:[a-f0-9]+}/roles', UserController::class . ':userAddRole')->setName('user_add_role');
         $this->post('/{user_id:[a-f0-9]+}/roles/{role}', UserController::class . ':userRemoveRole')->setName('user_remove_role');
+        $this->post('/{user_id:[a-f0-9]+}/providers/{provider_id}', UserController::class . ':userRemoveProvider')->setName('user_remove_provider');
     });
     $this->group('/storage', function () {
         $this->get('/redis', StorageController::class . ':redis')->setName('storage_redis');

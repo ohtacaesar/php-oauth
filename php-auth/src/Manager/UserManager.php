@@ -71,16 +71,22 @@ class UserManager
 
     public function getUserByUserId($userId)
     {
-        $user = $this->userDao->findOneByUserId($userId);
+        if (!$user = $this->userDao->findOneByUserId($userId)) {
+            return null;
+        }
 
-        $userRoles = $this->userRoleDao->findByUserId($userId);
-        $user['roles'] = array_map(function ($e) {
-            return $e['role'];
-        }, $userRoles);
+        $user['user_roles'] = $this->userRoleDao->findByUserId($userId);
+        $user['roles'] = array_column($user['user_roles'], 'role');
 
-        $user['provider_ids'] = array_map(function ($e) {
-            return $e['provider_id'];
-        }, $this->userProviderDao->findByUserId($userId));
+        $user['user_providers'] = $this->userProviderDao->findByUserId($userId);
+        $user['provider_ids'] = array_column($user['user_providers'], 'provider_id');
+
+        $user['user_session'] = $this->userSessionDao->findOneByUserId($userId);
+        $user['session_id'] = null;
+        if ($user['user_session']) {
+            $user['session_id'] = $user['user_session']['session_id'];
+        }
+
 
         return $user;
     }

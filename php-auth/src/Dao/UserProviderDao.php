@@ -55,4 +55,22 @@ EOS;
 
         return null;
     }
+
+    public function delete(array $userProvider)
+    {
+        if (!isset($userProvider['user_id']) or !isset($userProvider['provider_id'])) {
+            return false;
+        }
+
+        return $this->deleteByUserIdAndProviderId($userProvider['user_id'], $userProvider['provider_id']);
+    }
+
+    public function deleteByUserIdAndProviderId(string $userId, int $providerId)
+    {
+        $sql = "delete from user_providers where user_id = :user_id and provider_id = :provider_id";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindValue('user_id', $userId);
+        $stmt->bindValue('provider_id', $providerId);
+        return $stmt->execute();
+    }
 }

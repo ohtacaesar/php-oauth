@@ -64,18 +64,15 @@ EOS;
     }
 
     /**
-     * @param int $userId
+     * @param string $userId
      * @param string $role
      * @return bool
      */
-    public function deleteByUserIdAndRole(int $userId, string $role)
+    public function deleteByUserIdAndRole(string $userId, string $role)
     {
         $stmt = $this->pdo->prepare('delete from user_roles where user_id = :user_id and role = :role');
         $stmt->bindValue('user_id', $userId);
         $stmt->bindValue('role', $role);
-        $r = $stmt->execute();
-        $stmt->closeCursor();
-
-        return $r;
+        return $stmt->execute();
     }
 }
