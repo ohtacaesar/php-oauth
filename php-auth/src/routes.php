@@ -9,6 +9,7 @@ use Slim\Http\Request;
 use Slim\Http\Response;
 
 $app->get('/', HomeController::class . ':home')->setName('home');
+$app->post('/', HomeController::class . ':userUpdate')->setName('home_user_update');
 $app->get('/auth', HomeController::class . ':auth')->setName('auth');
 $app->get('/logout', HomeController::class . ':signOut')->setName('logout');
 $app->get('/signout', HomeController::class . ':signOut')->setName('signout');
