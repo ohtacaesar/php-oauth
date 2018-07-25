@@ -22,6 +22,8 @@
             <label for="name">名前</label>
             <input name="name" type="text" value="{{ user.name }}">
             <button type="submit">修正</button>
+            <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
+            <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
         </form>
     </div>
 {% else %}
