@@ -1,3 +1,3 @@
 <?php
 
-#$app->add(new \Middleware\Csrf());
+$app->add($app->getContainer()['csrf']);

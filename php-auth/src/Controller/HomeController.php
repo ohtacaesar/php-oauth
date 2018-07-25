@@ -6,6 +6,7 @@ use Manager\UserManager;
 use Psr\Http\Message\ResponseInterface;
 use Service\AuthService;
 use Slim\Container;
+use Slim\Csrf\Guard;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
@@ -17,11 +18,15 @@ class HomeController extends BaseController
     /** @var UserManager */
     private $userManager;
 
+    /** @var Guard */
+    private $csrf;
+
     public function __construct(Container $container)
     {
         parent::__construct($container);
         $this->authService = $container['authService'];
         $this->userManager = $container['userManager'];
+        $this->csrf = $container['csrf'];
     }
 
     private function getLoginUser(): ?array
@@ -47,6 +52,7 @@ class HomeController extends BaseController
         $user = $this->getLoginUser();
 
         $name = $request->getParam('name', null);
+
         if ($name === null or mb_strlen($name) <= 1 or 255 < mb_strlen($name)) {
             $this->session['message'] = '401: パラメータが正しくありません';
             return $response->withRedirect($this->router->pathFor('home'));

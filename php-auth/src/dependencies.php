@@ -1,6 +1,8 @@
 <?php
 
 use Slim\Container;
+use Slim\Http\Request;
+use Slim\Http\Response;
 
 $container = $app->getContainer();
 
@@ -70,6 +72,7 @@ $container['view'] = function (Container $c) {
     $view = new \Slim\Views\Twig($settings['template_path'], $settings);
     $view->addExtension(new \Slim\Views\TwigExtension($c->get('router'), $c->get('uri')));
     $view->addExtension(new Twig_Extension_Debug());
+    $view->addExtension(new \Twig\CsrfExtension($c['csrf']));
 
     return $view;
 };
@@ -121,4 +124,14 @@ $container['googleProvider'] = function (Container $c) {
         'redirectUri' => 'http://auth.example.com/google/callback',
         'useOidcMode' => true,
     ]);
+};
+
+$container['csrf'] = function (Container $c) {
+    $guard = new \Slim\Csrf\Guard('csrf', $c['session']);
+    $guard->setFailureCallable(function (Request $request, Response $response, callable $next) use ($c) {
+        $c['session']['message'] = 'Failed CSRF check!';
+        return $response->withRedirect($c['router']->pathFor('home'));
+    });
+
+    return $guard;
 };
