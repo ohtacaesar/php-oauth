@@ -42,6 +42,21 @@ class HomeController extends BaseController
         ]);
     }
 
+    public function userUpdate(Request $request, Response $response)
+    {
+        $user = $this->getLoginUser();
+
+        $name = $request->getParam('name', null);
+        if ($name === null or mb_strlen($name) <= 1 or 255 < mb_strlen($name)) {
+            $this->session['message'] = '401: パラメータが正しくありません';
+            return $response->withRedirect($this->router->pathFor('home'));
+        }
+        $user['name'] = $name;
+        $this->userManager->updateUser($user);
+
+        return $response->withRedirect($this->router->pathFor('home'));
+    }
+
     public function auth(Request $request, Response $response): ResponseInterface
     {
         // 認証
