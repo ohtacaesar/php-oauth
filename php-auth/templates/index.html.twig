@@ -22,13 +22,13 @@
             <label for="name">名前</label>
             <input name="name" type="text" value="{{ user.name }}">
             <button type="submit">修正</button>
-            <input type="hidden" name="{{csrf.keys.name}}" value="{{csrf.name}}">
-            <input type="hidden" name="{{csrf.keys.value}}" value="{{csrf.value}}">
+            <input type="hidden" name="{{ csrf.key }}" value="{{ csrf.token }}">
         </form>
     </div>
 {% else %}
 {% endif %}
 <ul>
+    <li><a href="{{ path_for('session_destroy', {}, {rd: base_url()}) }}">セッションデストロイ</a></li>
     <li>OAuth Providers
         <ul>
             <li>{% if 1 in user.provider_ids %}GitHub{% else %}<a href="{{ path_for('login', {}, {rd: base_url()}) }}">
