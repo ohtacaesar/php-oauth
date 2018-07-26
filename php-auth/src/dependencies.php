@@ -127,11 +127,5 @@ $container['googleProvider'] = function (Container $c) {
 };
 
 $container['csrf'] = function (Container $c) {
-    $guard = new \Slim\Csrf\Guard('csrf', $c['session']);
-    $guard->setFailureCallable(function (Request $request, Response $response, callable $next) use ($c) {
-        $c['session']['message'] = 'Failed CSRF check!';
-        return $response->withRedirect($c['router']->pathFor('home'));
-    });
-
-    return $guard;
+    return new \Middleware\Csrf($c['session'], $c['logger']);
 };

@@ -98,4 +98,16 @@ class HomeController extends BaseController
 
         return $response->withRedirect($rd);
     }
+
+    public function sessionDestroy(Request $request, Response $response)
+    {
+        $rd = $request->getParam('rd');
+        $rd = filter_var($rd, FILTER_VALIDATE_URL);
+        $rd = filter_var($rd, FILTER_SANITIZE_URL);
+        if (!$rd) {
+            $rd = '/';
+        }
+        session_destroy();
+        return $response->withRedirect($rd);
+    }
 }

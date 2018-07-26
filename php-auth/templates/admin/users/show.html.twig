@@ -24,6 +24,7 @@
                     <td>
                         <form action="{{ path_for('user_remove_role', user_role) }}" method="post">
                             <button type="submit">削除</button>
+                            <input type="hidden" name="{{ csrf.key }}" value="{{ csrf.token }}">
                         </form>
                     </td>
                 </tr>
@@ -39,6 +40,7 @@
                     <td>
                         <form action="{{ path_for('user_remove_provider', user_provider) }}" method="post">
                             <button type="submit">削除</button>
+                            <input type="hidden" name="{{ csrf.key }}" value="{{ csrf.token }}">
                         </form>
                     </td>
                 </tr>
