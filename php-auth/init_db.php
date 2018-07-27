@@ -2,8 +2,10 @@
 
 sleep(3);
 
-/** @var \Slim\App $app */
-$app = require_once __DIR__ . '/src/app.php';
+require_once __DIR__ . '/src/app.php';
+
+$app = createApp(false);
+
 $c = $app->getContainer();
 
 /** @var \PDO $pdo */

@@ -4,6 +4,8 @@ namespace Tests\Functional;
 
 class AdminTest extends BaseTestCase
 {
+    protected $withMiddleware = false;
+
     public function test1()
     {
         $r = $this->runApp('GET', '/admin');

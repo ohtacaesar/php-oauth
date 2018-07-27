@@ -4,6 +4,8 @@ namespace Tests\Functional;
 
 class AuthTest extends BaseTestCase
 {
+    protected $withMiddleware = false;
+
     public function test1()
     {
         $r = $this->runApp('GET', '/auth');
