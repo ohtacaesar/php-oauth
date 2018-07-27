@@ -1,6 +1,8 @@
 <?php
 
-$app = require_once __DIR__ . '/../src/app.php';
+require_once __DIR__ . '/../src/app.php';
+
+$app = createApp();
 
 $uri = $app->getContainer()->get('uri');
 $host = $uri->getHost();

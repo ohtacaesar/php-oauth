@@ -9,8 +9,13 @@ use Slim\Http\Environment;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
+require_once __DIR__ . '/../../src/app.php';
+
+
 class BaseTestCase extends TestCase
 {
+    protected $withMiddleware = true;
+
     public function runApp($method, $uri, $requestData = null, array $session = [], array $env = [])
     {
         $environment = Environment::mock(array_merge([
@@ -26,11 +31,12 @@ class BaseTestCase extends TestCase
 
         $response = new Response();
 
+        $app = createApp($this->withMiddleware);
+
         /**
          * @var App $app
          * @var Container $container
          */
-        $app = require __DIR__ . '/../../src/app.php';
         $container = $app->getContainer();
         $container['session'] = new \Util\Session($session);
 

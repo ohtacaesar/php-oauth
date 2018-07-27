@@ -3,10 +3,10 @@
 namespace Controller;
 
 use Manager\UserManager;
+use Middleware\Csrf;
 use Psr\Http\Message\ResponseInterface;
 use Service\AuthService;
 use Slim\Container;
-use Slim\Csrf\Guard;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
@@ -18,7 +18,7 @@ class HomeController extends BaseController
     /** @var UserManager */
     private $userManager;
 
-    /** @var Guard */
+    /** @var Csrf */
     private $csrf;
 
     public function __construct(Container $container)
