@@ -25,11 +25,13 @@ class ProvidersTest extends TestCase
             Providers::valueOf('GIFHUB');
             $this->fail();
         } catch (\LogicException $e) {
+            $this->assertEquals('Util\Providers::valueOf(\'GIFHUB\')', $e->getMessage());
         }
         try {
-            Providers::valueOf('GIFHUB');
+            Providers::valueOf('Goggle');
             $this->fail();
         } catch (\LogicException $e) {
+            $this->assertEquals('Util\Providers::valueOf(\'GOGGLE\')', $e->getMessage());
         }
     }
 }
