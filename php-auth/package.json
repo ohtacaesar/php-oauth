@@ -1,0 +1,28 @@
+{
+  "name": "php-oauth",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "admin-lte": "^2.4.8"
+  },
+  "devDependencies": {
+    "webpack": "^4.16.3",
+    "webpack-cli": "^3.1.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "webpack": "webpack",
+    "webpackw": "webpack -w"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ohtacaesar/php-oauth.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ohtacaesar/php-oauth/issues"
+  },
+  "homepage": "https://github.com/ohtacaesar/php-oauth#readme"
+}
