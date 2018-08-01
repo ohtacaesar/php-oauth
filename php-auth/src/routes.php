@@ -8,6 +8,35 @@ use Controller\Admin\StorageController;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
+$app->get('/dist[/{params:.*}]', function (Request $request, Response $response, array $args) {
+    if (!isset($args['params'])) {
+        throw new \Slim\Exception\NotFoundException($request, $response);
+    }
+
+    $path = __DIR__ . '/../public/dist/' . $args['params'];
+
+    if (!is_file($path)) {
+        throw new \Slim\Exception\NotFoundException($request, $response);
+    }
+
+    $ext = substr($path, strrpos($path, '.') + 1);
+    switch ($ext) {
+        case 'js':
+            $contentType = 'text/javascript';
+            break;
+        case 'css':
+            $contentType = 'text/css';
+            break;
+        default:
+            throw new \Slim\Exception\NotFoundException($request, $response);
+    }
+
+    $response = $response->withHeader('content-type', $contentType);
+    $response->getBody()->write(file_get_contents($path));
+
+    return $response;
+});
+
 $app->get('/', HomeController::class . ':home')->setName('home');
 $app->post('/', HomeController::class . ':userUpdate')->setName('home_user_update');
 $app->get('/auth', HomeController::class . ':auth')->setName('auth');
