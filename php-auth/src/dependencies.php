@@ -73,6 +73,7 @@ $container['view'] = function (Container $c) {
     $view->addExtension(new \Slim\Views\TwigExtension($c->get('router'), $c->get('uri')));
     $view->addExtension(new Twig_Extension_Debug());
     $view->addExtension(new \Twig\CsrfExtension($c['csrf']));
+    $view->addExtension(new \Twig\FlashExtension($c['session']));
 
     return $view;
 };

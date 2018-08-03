@@ -74,13 +74,16 @@ $app->group('/admin', function () {
         $this->get('/redis', StorageController::class . ':redis')->setName('storage_redis');
     });
 })->add(function (Request $request, Response $response, callable $next) {
+    /** @var \Util\Session $session */
     $session = $this->get('session');
     if (!isset($session['roles'])) {
-        return $response->withStatus(401);
+        $session['flash'] = 'ログインしてください。';
+        return $response->withRedirect("/");
     }
 
     if (!in_array('ADMIN', $session['roles'], true)) {
-        return $response->withStatus(403);
+        $session['flash'] = 'アクセス権限がありません。';
+        return $response->withRedirect("/");
     }
 
     return $next($request, $response);
