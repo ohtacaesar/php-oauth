@@ -6,6 +6,7 @@
     <link href="/dist/main.css" type="text/css" rel="stylesheet">
 </head>
 <body>
+{% if flash %}<p style="color: red">{{ flash }}</p>{% endif %}
 {% if user %}
     <ul>
         <li>{{ user.name }}</li>
