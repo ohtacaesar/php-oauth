@@ -103,7 +103,7 @@ class UserController extends BaseController
         $role = $request->getParam('role');
         $role = mb_strtoupper($role);
         if (!$role || !preg_match('/^[A-Z]{1,8}$/', $role)) {
-            $this->session['message'] = 'ロールの指定が正しくありません';
+            $this->session['flash'] = 'ロールの指定が正しくありません';
             return $response->withRedirect($this->router->pathFor('user', $user));
         }
 

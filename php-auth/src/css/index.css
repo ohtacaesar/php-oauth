@@ -1,5 +1,29 @@
 @import '~bootstrap/dist/css/bootstrap.min.css';
 
+html,
+body {
+  height: 100%;
+}
+
+body {
+  display: flex
+}
+
+.navbar {
+  margin-bottom: 10px;
+}
+
+main.container {
+  width: 100%;
+  max-width: 420px;
+  padding: 15px;
+  margin: auto;
+}
+
 p.flash {
-    color: red
+  color: red;
+}
+
+.my-list-group {
+  margin-bottom: 12px;
 }
