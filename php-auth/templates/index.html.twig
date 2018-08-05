@@ -1,14 +1,17 @@
 <!doctype html>
 <html>
+
 <head>
     <meta charset="UTF-8">
     <title>php-auth</title>
+    <link href="/dist/style.css" rel="stylesheet" type="text/css">
 </head>
 
 <body>
 <nav class="navbar navbar-expand-md navbar-dark bg-dark mb-4">
     <a class="navbar-brand" href="/">PHP Auth</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse"
+    <button class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarCollapse"
             aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
@@ -53,7 +56,8 @@
                         href="{{ path_for('login', {}, {rd: base_url()}) }}">
                             GitHub</a>{% endif %}</li>
                 <li>{% if 2 in user.provider_ids %}Google{% else %}<a
-                        href="{{ path_for('oauth_google', {}, {rd: base_url()}) }}">Google</a>{% endif %}</li>
+                        href="{{ path_for('oauth_google', {}, {rd: base_url()}) }}">
+                            Google</a>{% endif %}</li>
             </ul>
         </li>
     </ul>
