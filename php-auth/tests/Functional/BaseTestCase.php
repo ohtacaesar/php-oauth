@@ -9,7 +9,7 @@ use Slim\Http\Environment;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
-require_once __DIR__ . '/../../src/app.php';
+require_once __DIR__ . '/../../src/php/app.php';
 
 
 class BaseTestCase extends TestCase

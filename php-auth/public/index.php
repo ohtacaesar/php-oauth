@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/../src/app.php';
+require_once __DIR__ . '/../src/php/app.php';
 
 $app = createApp();
 
