@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/../../vendor/autoload.php';
 
 require_once __DIR__ . '/functions.php';
 
@@ -10,7 +10,7 @@ require_once __DIR__ . '/functions.php';
  */
 function createApp(bool $withMiddleware = true): \Slim\App
 {
-    $app = new \Slim\App(require __DIR__ . '/../src/settings.php');
+    $app = new \Slim\App(require __DIR__ . '/settings.php');
 
     require __DIR__ . '/dependencies.php';
 

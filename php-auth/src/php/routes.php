@@ -13,7 +13,7 @@ $app->get('/dist[/{params:.*}]', function (Request $request, Response $response,
         throw new \Slim\Exception\NotFoundException($request, $response);
     }
 
-    $path = __DIR__ . '/../public/dist/' . $args['params'];
+    $path = __DIR__ . '/../../public/dist/' . $args['params'];
 
     if (!is_file($path)) {
         throw new \Slim\Exception\NotFoundException($request, $response);
