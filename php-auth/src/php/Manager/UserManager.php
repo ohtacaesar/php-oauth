@@ -8,6 +8,7 @@ use Dao\UserRoleDao;
 use Dao\UserSessionDao;
 use Monolog\Logger;
 use Psr\Log\NullLogger;
+use Util\Providers;
 
 class UserManager
 {
@@ -31,7 +32,8 @@ class UserManager
         UserRoleDao $userRoleDao,
         UserProviderDao $userProviderDao,
         UserSessionDao $userSessionDao
-    ) {
+    )
+    {
         $this->userDao = $userDao;
         $this->userRoleDao = $userRoleDao;
         $this->userProviderDao = $userProviderDao;
@@ -80,6 +82,12 @@ class UserManager
 
         $user['user_providers'] = $this->userProviderDao->findByUserId($userId);
         $user['provider_ids'] = array_column($user['user_providers'], 'provider_id');
+
+        $providers = [];
+        foreach ($user['provider_ids'] as $id) {
+            $providers[] = Providers::name($id);
+        }
+        $user['providers'] = array_filter($providers);
 
         $user['user_session'] = $this->userSessionDao->findOneByUserId($userId);
         $user['session_id'] = null;

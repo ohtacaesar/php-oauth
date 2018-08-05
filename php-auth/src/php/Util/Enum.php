@@ -8,6 +8,8 @@ abstract class Enum
     /** @var [] */
     protected static $values;
 
+    protected static $flip;
+
     private static function init(): void
     {
         if (static::$values !== null) {
@@ -15,6 +17,7 @@ abstract class Enum
         }
         $class = new \ReflectionClass(static::class);
         static::$values = $class->getConstants();
+        static::$flip = array_flip($class->getConstants());
     }
 
     public static function values(): array
@@ -23,14 +26,15 @@ abstract class Enum
         return static::$values;
     }
 
-    public static function valueOf(string $name): int
+    public static function valueOf(string $name): ?int
     {
         static::init();
-        $name = strtoupper($name);
-        if (!isset(static::$values[$name])) {
-            throw new \LogicException(sprintf("%s::valueOf('%s')", static::class, $name));
-        }
+        return static::$values[strtoupper($name)] ?? null;
+    }
 
-        return static::$values[$name];
+    public static function name(int $ordinal): ?string
+    {
+        static::init();
+        return static::$flip[$ordinal] ?? null;
     }
 }

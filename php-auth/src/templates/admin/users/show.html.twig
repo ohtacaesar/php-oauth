@@ -38,7 +38,8 @@
                 <tr>
                     <td>{{ user_provider.provider_id }}</td>
                     <td>
-                        <form action="{{ path_for('user_remove_provider', user_provider) }}" method="post">
+                        <form action="{{ path_for('user_remove_provider', user_provider) }}"
+                              method="post">
                             <button type="submit">削除</button>
                             <input type="hidden" name="{{ csrf.key }}" value="{{ csrf.token }}">
                         </form>
@@ -56,6 +57,7 @@
         <h2>ロール追加</h2>
         <form action="{{ path_for('user_add_role', user) }}" method="post">
             <input type="text" name="role">
+            <input type="hidden" name="{{ csrf.key }}" value="{{ csrf.token }}">
             <button type="submit">追加</button>
         </form>
     </div>

@@ -1,76 +1,39 @@
-<!doctype html>
-<html>
+{% extends 'layout.html.twig' %}
 
-<head>
-    <meta charset="UTF-8">
-    <title>php-auth</title>
-    <link href="/dist/style.css" rel="stylesheet" type="text/css">
-</head>
-
-<body>
-<nav class="navbar navbar-expand-md navbar-dark bg-dark mb-4">
-    <a class="navbar-brand" href="/">PHP Auth</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse"
-            data-target="#navbarCollapse"
-            aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarCollapse">
-        <ul class="navbar-nav mr-auto">
-            <li class="nav-item active">
-                <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
-            </li>
-        </ul>
-    </div>
-</nav>
-
-<main role="main" class="container">
-    {% if flash %}<p class="flash">{{ flash }}</p>{% endif %}
-    {% if user %}
-        <ul>
-            <li>{{ user.name }}</li>
-            <li>{{ user.name|length }}</li>
-            <li>メニュー
-                <ul>
-                    <li><a href="{{ path_for('logout', {}, {rd: base_url()}) }}">ログアウト</a></li>
-                    {% if 'ADMIN' in user.roles %}
-                        <li><a href="{{ path_for('admin') }}">管理画面</a></li>{% endif %}
-                </ul>
-            </li>
-        </ul>
+{% block content %}
+    <main role="main" class="container">
+        <nav class="navbar navbar-light bg-light">
+            <span class="navbar-brand md-0 h">PHP Auth</span>
+            {% if user %}
+                <a href="{{ path_for('signout') }}" class="navbar-text">Signout</a>
+            {% endif %}
+        </nav>
+        {% if flash %}<p class="alert alert-warning">{{ flash }}</p>{% endif %}
+        {% if user %}
+            <table class="table">
+                <tbody>
+                <tr>
+                    <th>Username</th>
+                    <td>{{ user.name }}</td>
+                </tr>
+                <tr>
+                    <th>Roles</th>
+                    <td>{% for role in user.roles %}{{ role }}<br>{% endfor %}</td>
+                </tr>
+                <tr>
+                    <th>Providers</th>
+                    <td>{% for provider in user.providers %}{{ provider }}<br>{% endfor %}</td>
+                </tr>
+                </tbody>
+            </table>
+        {% endif %}
         <div>
-            <form method="post" action="{{ path_for('home_user_update') }}">
-                <label for="name">名前</label>
-                <input name="name" type="text" value="{{ user.name }}">
-                <button type="submit">修正</button>
-                <input type="hidden" name="{{ csrf.key }}" value="{{ csrf.token }}">
-            </form>
+            <div class="list-group my-list-group">
+                <a href="{{ path_for('login') }}"
+                   class="list-group-item list-group-item-action">Signin with GitHub</a>
+                <a href="{{ path_for('oauth_google') }}"
+                   class="list-group-item list-group-item-action">Signin with Google</a>
+            </div>
         </div>
-    {% else %}
-    {% endif %}
-    <ul>
-        <li><a href="{{ path_for('session_destroy', {}, {rd: base_url()}) }}">セッションデストロイ</a></li>
-        <li>OAuth Providers
-            <ul>
-                <li>{% if 1 in user.provider_ids %}GitHub{% else %}<a
-                        href="{{ path_for('login', {}, {rd: base_url()}) }}">
-                            GitHub</a>{% endif %}</li>
-                <li>{% if 2 in user.provider_ids %}Google{% else %}<a
-                        href="{{ path_for('oauth_google', {}, {rd: base_url()}) }}">
-                            Google</a>{% endif %}</li>
-            </ul>
-        </li>
-    </ul>
-    <ul>
-        <li>Roles
-            <ul>
-                {% for role in user.roles %}
-                    <li>{{ role }}</li>
-                {% endfor %}
-            </ul>
-        </li>
-    </ul>
-</main>
-<script src="/dist/bundle.js"></script>
-</body>
-</html>
+    </main>
+{% endblock %}
