@@ -9,7 +9,15 @@
 </head>
 
 <body>
-{% block content %}{% endblock %}
+<main role="main" class="container">
+    <nav class="navbar navbar-light bg-light">
+        <a class="navbar-brand" href="/">PHP Auth</a>
+        {% if user %}
+            <a href="{{ path_for('signout') }}" class="navbar-text">SIGNOUT</a>
+        {% endif %}
+    </nav>
+    {% block content %}{% endblock %}
+</main>
 <script src="/dist/bundle.js"></script>
 </body>
 </html>

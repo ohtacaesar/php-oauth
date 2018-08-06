@@ -1,8 +1,6 @@
 <?php
 
 use Slim\Container;
-use Slim\Http\Request;
-use Slim\Http\Response;
 
 $container = $app->getContainer();
 

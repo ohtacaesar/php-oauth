@@ -18,6 +18,8 @@ function createApp(bool $withMiddleware = true): \Slim\App
     $app = new \Slim\App(require __DIR__ . '/settings.php');
 
     require __DIR__ . '/dependencies.php';
+    require __DIR__ . '/handlers.php';
+
 
     if ($withMiddleware) {
         require __DIR__ . '/middleware.php';

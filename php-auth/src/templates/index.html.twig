@@ -1,13 +1,6 @@
 {% extends 'layout.html.twig' %}
 
 {% block content %}
-    <main role="main" class="container">
-        <nav class="navbar navbar-light bg-light">
-            <span class="navbar-brand md-0 h">PHP Auth</span>
-            {% if user %}
-                <a href="{{ path_for('signout') }}" class="navbar-text">Signout</a>
-            {% endif %}
-        </nav>
         {% if flash %}<p class="alert alert-warning">{{ flash }}</p>{% endif %}
         {% if user %}
             <table class="table">
@@ -35,5 +28,4 @@
                    class="list-group-item list-group-item-action">Signin with Google</a>
             </div>
         </div>
-    </main>
 {% endblock %}
