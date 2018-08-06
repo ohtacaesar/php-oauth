@@ -32,8 +32,7 @@ class UserManager
         UserRoleDao $userRoleDao,
         UserProviderDao $userProviderDao,
         UserSessionDao $userSessionDao
-    )
-    {
+    ) {
         $this->userDao = $userDao;
         $this->userRoleDao = $userRoleDao;
         $this->userProviderDao = $userProviderDao;

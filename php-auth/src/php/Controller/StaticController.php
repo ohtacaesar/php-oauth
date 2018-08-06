@@ -72,5 +72,4 @@ class StaticController extends BaseController
 
         return $response;
     }
-
 }
