@@ -9,7 +9,6 @@ use Controller\Admin\StorageController;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
-
 $app->get('/dist[/{params:.*}]', StaticController::class . ':dist');
 $app->get('/images[/{params:.*}]', StaticController::class . ':images');
 

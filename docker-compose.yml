@@ -13,6 +13,7 @@ services:
       SESSION_SAVE_HANDLER:  redis
       SESSION_SAVE_PATH:     redis:6379
       SESSION_SERIALIZE_HANDLER: msgpack
+      development: 0
 
   php-app:
     build: ./php-app
