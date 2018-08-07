@@ -4,14 +4,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>php-auth</title>
+    <title>{{ app.title }}</title>
     <link href="/dist/style.css" rel="stylesheet" type="text/css">
 </head>
 
 <body>
 <main role="main" class="container">
     <nav class="navbar navbar-light bg-light">
-        <a class="navbar-brand" href="/">PHP Auth</a>
+        <a class="navbar-brand" href="/">{{ app.title }}</a>
         {% if user %}
             <a href="{{ path_for('signout') }}" class="navbar-text">SIGNOUT</a>
         {% endif %}

@@ -1,31 +1,40 @@
 {% extends 'layout.html.twig' %}
 
 {% block content %}
-        {% if flash %}<p class="alert alert-warning">{{ flash }}</p>{% endif %}
-        {% if user %}
-            <table class="table">
-                <tbody>
-                <tr>
-                    <th>Username</th>
-                    <td>{{ user.name }}</td>
-                </tr>
-                <tr>
-                    <th>Roles</th>
-                    <td>{% for role in user.roles %}{{ role }}<br>{% endfor %}</td>
-                </tr>
-                <tr>
-                    <th>Providers</th>
-                    <td>{% for provider in user.providers %}{{ provider }}<br>{% endfor %}</td>
-                </tr>
-                </tbody>
-            </table>
-        {% endif %}
-        <div>
-            <div class="list-group my-list-group">
-                <a href="{{ path_for('login') }}"
-                   class="list-group-item list-group-item-action">Signin with GitHub</a>
-                <a href="{{ path_for('oauth_google') }}"
-                   class="list-group-item list-group-item-action">Signin with Google</a>
-            </div>
+    {% if flash %}<p class="alert alert-warning">{{ flash }}</p>{% endif %}
+    {% if user %}
+        <table class="table">
+            <tbody>
+            <tr>
+                <th>Username</th>
+                <td>{{ user.name }}</td>
+            </tr>
+            <tr>
+                <th>Roles</th>
+                <td>
+                    {% for role in user.roles %}
+                        {% if role == 'ADMIN' %}
+                            <a href="{{ path_for('admin') }}">{{ role }}</a>
+                        {% else %}
+                            {{ role }}
+                        {% endif %}
+                        <br>
+                    {% endfor %}
+                </td>
+            </tr>
+            <tr>
+                <th>Providers</th>
+                <td>{% for provider in user.providers %}{{ provider }}<br>{% endfor %}</td>
+            </tr>
+            </tbody>
+        </table>
+    {% endif %}
+    <div>
+        <div class="list-group my-list-group">
+            <a href="{{ path_for('login') }}"
+               class="list-group-item list-group-item-action">Signin with GitHub</a>
+            <a href="{{ path_for('oauth_google') }}"
+               class="list-group-item list-group-item-action">Signin with Google</a>
         </div>
+    </div>
 {% endblock %}

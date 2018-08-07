@@ -2,10 +2,14 @@
 
 $ini = parse_ini_file('/var/run/secrets/secrets.ini', true);
 
-$isDevelopment = boolval($_ENV['development'] ?? false);
+$isDevelopment = boolval($_ENV['DEVELOPMENT'] ?? false);
 
 $settings = [
     'settings' => array_merge([
+        'app' => [
+            'title' => $_ENV['PHP_AUTH_TITLE'] ?? 'PHP Auth',
+
+        ],
         'development' => $isDevelopment,
         'displayErrorDetails' => $isDevelopment, // set to false in production
         'addContentLengthHeader' => false, // Allow the web server to send the content-length header
