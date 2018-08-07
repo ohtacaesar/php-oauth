@@ -118,6 +118,7 @@ class AuthService
                             'pattern = %s, gettype($pattern) = %s, $ownerArray[%s] = %s',
                             $pattern,
                             gettype($pattern),
+                            $key,
                             $ownerArray[$key]
                         ));
 
