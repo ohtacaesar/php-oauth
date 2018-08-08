@@ -74,11 +74,10 @@ class UserController extends BaseController
             throw new NotFoundException($request, $response);
         }
 
+        $message = null;
         if (isset($this->session['message'])) {
             $message = $this->session['message'];
             unset($this->session['message']);
-        } else {
-            $message = null;
         }
 
         return $this->view->render($response, 'admin/users/show.html.twig', [
