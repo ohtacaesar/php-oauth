@@ -11,11 +11,8 @@ class UserSessionDao extends BaseDao
         $stmt->execute();
         $rows = $stmt->fetchAll();
         $stmt->closeCursor();
-        if (count($rows) > 0) {
-            return $rows[0];
-        } else {
-            return null;
-        }
+
+        return $rows[0] ?? null;
     }
 
     public function update(array $userSession)

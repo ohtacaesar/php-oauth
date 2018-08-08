@@ -20,11 +20,8 @@ class UserDao extends BaseDao
         $stmt->bindValue('user_id', $userId);
         $stmt->execute();
         $rows = $stmt->fetchAll();
-        if ($rows) {
-            return $rows[0];
-        } else {
-            return null;
-        }
+
+        return $rows[0] ?? null;
     }
 
     public function create(array $user): bool
