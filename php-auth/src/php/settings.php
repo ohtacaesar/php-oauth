@@ -8,7 +8,6 @@ $settings = [
     'settings' => array_merge([
         'app' => [
             'title' => $_ENV['PHP_AUTH_TITLE'] ?? 'PHP Auth',
-
         ],
         'development' => $isDevelopment,
         'displayErrorDetails' => $isDevelopment, // set to false in production
@@ -24,9 +23,9 @@ $settings = [
             'path' => isset($_ENV['docker']) ? 'php://stdout' : __DIR__ . '/../../logs/app.log',
         ],
         'pdo' => [
-            'dsn' => 'pgsql:host=postgres;port=5432;dbname=postgres',
-            'username' => 'postgres',
-            'passwd' => '',
+            'dsn' => $_ENV['PDO_DSN'] ?? 'pgsql:host=postgres;port=5432;dbnae=postgres',
+            'username' => $_ENV['PDO_USERNAME'] ?? 'postgres',
+            'passwd' => $_ENV['PDO_PASSWORD'] ?? '',
         ],
         // OAuthの認証情報で自動的にロールを付与するルール
         'grantRules' => [

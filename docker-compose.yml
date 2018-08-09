@@ -9,6 +9,9 @@ services:
     depends_on:
       - postgres
     environment:
+      PDO_DSN:      pgsql:host=postgres;port=5432;dbname=postgres
+      PDO_USERNAME: postgres
+      PDO_PASSWD:
       SESSION_COOKIE_DOMAIN: .example.com
       SESSION_SAVE_HANDLER:  redis
       SESSION_SAVE_PATH:     redis:6379
