@@ -1,26 +1,39 @@
-{% extends 'admin/base.html.twig' %}
+{% extends 'admin/layout.html.twig' %}
 
 {% block content %}
-    <table border="1">
-        <thead>
-        <tr>
-            <th>user_id</th>
-            <th>login</th>
-            <th>name</th>
-            <th>created_at</th>
-            <th>ROLES</th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for u in users %}
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2">Dashboard</h1>
+        <div class="btn-toolbar mb-2 mb-md-0">
+            <div class="btn-group mr-2">
+                <button class="btn btn-sm btn-outline-secondary">Share</button>
+                <button class="btn btn-sm btn-outline-secondary">Export</button>
+            </div>
+            <button class="btn btn-sm btn-outline-secondary dropdown-toggle">
+                <span data-feather="calendar"></span>
+                This week
+            </button>
+        </div>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-striped table-sm">
+            <thead>
+            <tr>
+                <th>UserID</th>
+                <th>Name</th>
+                <th>Created at</th>
+                <th>Roles</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for u in users %}
             <tr>
                 <td><a href="{{ path_for('user', u) }}">{{ u.user_id }}</a></td>
-                <td>{{ u.login }}</td>
                 <td>{{ u.name }}</td>
                 <td>{{ u.created_at }}</td>
                 <td>{{ u.roles }}</td>
             </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
 {% endblock %}
