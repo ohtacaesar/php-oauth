@@ -1,7 +1,9 @@
 version: '3.6'
 services:
   php-auth:
-    build: ./php-auth
+    build:
+      context: ./php-auth
+      dockerfile: Dockerfile2
     secrets:
       - secrets.ini
     volumes:
@@ -15,7 +17,6 @@ services:
       SESSION_COOKIE_DOMAIN: .example.com
       SESSION_SAVE_HANDLER:  redis
       SESSION_SAVE_PATH:     redis:6379
-      SESSION_SERIALIZE_HANDLER: msgpack
       DEVELOPMENT: 0
       PHP_AUTH_TITLE: test
 

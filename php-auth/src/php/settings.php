@@ -23,7 +23,7 @@ $settings = [
             'path' => isset($_ENV['docker']) ? 'php://stdout' : __DIR__ . '/../../logs/app.log',
         ],
         'pdo' => [
-            'dsn' => $_ENV['PDO_DSN'] ?? 'pgsql:host=postgres;port=5432;dbnae=postgres',
+            'dsn' => $_ENV['PDO_DSN'] ?? 'pgsql:host=postgres;port=5432;dbname=postgres',
             'username' => $_ENV['PDO_USERNAME'] ?? 'postgres',
             'passwd' => $_ENV['PDO_PASSWORD'] ?? '',
         ],
