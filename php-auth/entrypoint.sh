@@ -1,6 +1,6 @@
 #!/bin/sh
 
-env | grep SESSION | sed 's/_/./' | tr [A-Z] [a-z] > /usr/local/etc/php/conf.d/session.ini
+#env | grep SESSION | sed 's/_/./' | tr [A-Z] [a-z] > /usr/local/etc/php/conf.d/session.ini
 
 php init_db.php
 

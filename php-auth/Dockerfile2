@@ -1,0 +1,39 @@
+FROM alpine
+
+COPY ./ /app
+
+WORKDIR /app
+
+RUN set -xe \
+    && adduser -S www-data \
+    && apk add --no-cache \
+      php7 \
+      php7-phar \
+      php7-fpm \
+      php7-mbstring \
+      php7-json \
+      php7-yaml \
+      php7-openssl \
+      php7-sodium \
+      php7-pdo_pgsql \
+      php7-redis \
+      php7-pear \
+      php7-tokenizer \
+      php7-dom \
+      php7-xmlwriter \
+      composer \
+    && apk add --no-cache --virtual .build-deps \
+      nodejs-npm \
+    && composer install \
+    && npm install \
+    && npm run webpack \
+    && rm -rf node_modules \
+    && apk del .build-deps
+
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+
+COPY www.conf /etc/php7/php-fpm.d/www.conf
+
+ENTRYPOINT ["entrypoint.sh"]
+
+CMD ["php-fpm7"]
