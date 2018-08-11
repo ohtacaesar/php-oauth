@@ -7,7 +7,7 @@ $isDevelopment = boolval($_ENV['DEVELOPMENT'] ?? false);
 $settings = [
     'settings' => array_merge([
         'app' => [
-            'title' => $_ENV['PHP_AUTH_TITLE'] ?? 'PHP Auth',
+            'title' => $_ENV['PHP_AUTH_TITLE'] ?? 'PHP Auth'
         ],
         'development' => $isDevelopment,
         'displayErrorDetails' => $isDevelopment, // set to false in production

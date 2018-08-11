@@ -65,6 +65,8 @@ class HomeController extends BaseController
 
     public function auth(Request $request, Response $response): ResponseInterface
     {
+        $user = $this->getLoginUser();
+
         // 認証
         if (($userRoles = $this->session->get('roles')) === null) {
             return $response->withStatus(401);
@@ -72,12 +74,14 @@ class HomeController extends BaseController
 
         $roles = $request->getServerParam('HTTP_ROLE');
         if (!$roles) {
+            $response->getBody()->write($user['user_id']);
             return $response->withStatus(200);
         }
 
         // 認可
         foreach (explode(',', $roles) as $role) {
             if (in_array($role, $userRoles, true)) {
+                $response->getBody()->write($user['user_id']);
                 return $response->withStatus(200);
             }
         }

@@ -2,6 +2,8 @@
 
 namespace Util;
 
+use Symfony\Component\Console\Exception\LogicException;
+
 abstract class Enum
 {
 
@@ -29,7 +31,13 @@ abstract class Enum
     public static function valueOf(string $name): ?int
     {
         static::init();
-        return static::$values[strtoupper($name)] ?? null;
+        $name = strtoupper($name);
+        $value = static::$values[$name] ?? null;
+        if ($value === null) {
+            throw new LogicException("Util\Providers::valueOf('${name}')");
+        }
+
+        return $value;
     }
 
     public static function name(int $ordinal): ?string
