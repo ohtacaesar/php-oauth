@@ -20,7 +20,6 @@ function createApp(bool $withMiddleware = true): \Slim\App
     require __DIR__ . '/dependencies.php';
     require __DIR__ . '/handlers.php';
 
-
     if ($withMiddleware) {
         require __DIR__ . '/middleware.php';
     }

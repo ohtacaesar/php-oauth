@@ -2,6 +2,7 @@
 
 namespace Controller;
 
+use Manager\UserManager;
 use Psr\Log\LoggerInterface;
 use Slim\Container;
 use Slim\Router;
@@ -32,6 +33,8 @@ class BaseController
     /** @var LoggerInterface */
     protected $logger;
 
+    /** @var UserManager */
+    protected $userManager;
 
     /**
      * BaseController constructor.
@@ -46,5 +49,15 @@ class BaseController
         $this->router = $container->get('router');
         $this->session = $container->get('session');
         $this->logger = $container->get('logger');
+        $this->userManager = $container['userManager'];
+    }
+
+    protected function getLoginUser(): ?array
+    {
+        if (!$userId = $this->session->get('user_id')) {
+            return null;
+        }
+
+        return $this->userManager->getUserByUserId($userId);
     }
 }

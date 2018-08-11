@@ -7,7 +7,6 @@ use Dao\UserDao;
 use Dao\UserGithubDao;
 use Dao\UserRoleDao;
 use Dao\UserSessionDao;
-use Manager\UserManager;
 use Psr\Http\Message\ResponseInterface;
 use Slim\Container;
 use Slim\Exception\NotFoundException;
@@ -29,9 +28,6 @@ class UserController extends BaseController
     /** @var UserSessionDao */
     private $userSessionDao;
 
-    /** @var UserManager */
-    private $userManager;
-
     /**
      * UserController constructor.
      * @param Container $container
@@ -43,7 +39,6 @@ class UserController extends BaseController
         $this->userDao = $container->get('userDao');
         $this->userRoleDao = $container->get('userRoleDao');
         $this->userSessionDao = $container->get('userSessionDao');
-        $this->userManager = $container['userManager'];
     }
 
     /**
