@@ -92,7 +92,7 @@ class UserController extends BaseController
      * @param array $args
      * @return Response
      */
-    public function userAddRole(Request $request, Response $response, array $args)
+    public function addRole(Request $request, Response $response, array $args)
     {
         $user = $this->userDao->findOneByUserId($args['user_id']);
         if (!$user) {
@@ -124,7 +124,7 @@ class UserController extends BaseController
      * @param array $args
      * @return Response
      */
-    public function userRemoveRole(Request $request, Response $response, array $args)
+    public function removeRole(Request $request, Response $response, array $args)
     {
         $currentUserId = $this->session['user_id'];
         $role = $args['role'];
@@ -146,7 +146,7 @@ class UserController extends BaseController
     }
 
 
-    public function userRemoveProvider(Request $request, Response $response, array $args)
+    public function removeProvider(Request $request, Response $response, array $args)
     {
         if (!$user = $this->userManager->getUserByUserId($args['user_id'])) {
             $this->session['message'] = 'ユーザーが見つかりませんでした';

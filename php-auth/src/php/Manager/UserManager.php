@@ -94,7 +94,6 @@ class UserManager
             $user['session_id'] = $user['user_session']['session_id'];
         }
 
-
         return $user;
     }
 

@@ -1,9 +1,7 @@
 version: '3.6'
 services:
   php-auth:
-    build:
-      context: ./php-auth
-      dockerfile: Dockerfile2
+    build: ./php-auth
     secrets:
       - secrets.ini
     volumes:
@@ -14,9 +12,6 @@ services:
       PDO_DSN:      pgsql:host=postgres;port=5432;dbname=postgres
       PDO_USERNAME: postgres
       PDO_PASSWD:
-      SESSION_COOKIE_DOMAIN: .example.com
-      SESSION_SAVE_HANDLER:  redis
-      SESSION_SAVE_PATH:     redis:6379
       DEVELOPMENT: 0
       PHP_AUTH_TITLE: test
 

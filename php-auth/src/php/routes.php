@@ -1,11 +1,11 @@
 <?php
 
+use Controller\Admin\UserController;
+use Controller\AdminController;
 use Controller\HomeController;
-use Controller\StaticController;
 use Controller\OAuth\GithubController;
 use Controller\OAuth\GoogleController;
-use Controller\Admin\UserController;
-use Controller\Admin\StorageController;
+use Controller\StaticController;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
@@ -30,23 +30,15 @@ $app->group('/google', function () {
 });
 
 $app->group('/admin', function () {
-    $this->get('', function (Request $request, Response $response) {
-        $session = $this->get('session');
-        return $this->view->render($response, 'admin/index.html.twig', [
-            'session' => $session,
-            'uri' => $this->uri,
-        ]);
-    })->setName('admin');
-
+    $this->get('', AdminController::class . ':index')->setName('admin');
     $this->group('/users', function () {
         $this->get('', UserController::class . ':index')->setName('users');
-        $this->get('/{user_id:[a-f0-9]+}', UserController::class . ':show')->setName('user');
-        $this->post('/{user_id:[a-f0-9]+}/roles', UserController::class . ':userAddRole')->setName('user_add_role');
-        $this->post('/{user_id:[a-f0-9]+}/roles/{role}', UserController::class . ':userRemoveRole')->setName('user_remove_role');
-        $this->post('/{user_id:[a-f0-9]+}/providers/{provider_id}', UserController::class . ':userRemoveProvider')->setName('user_remove_provider');
-    });
-    $this->group('/storage', function () {
-        $this->get('/redis', StorageController::class . ':redis')->setName('storage_redis');
+        $this->group('/{user_id:[a-f0-9]+}', function () {
+            $this->get('', UserController::class . ':show')->setName('user');
+            $this->post('/roles', UserController::class . ':addRole')->setName('user_add_role');
+            $this->post('/roles/{role}', UserController::class . ':removeRole')->setName('user_remove_role');
+            $this->post('/providers/{provider_id}', UserController::class . ':removeProvider')->setName('user_remove_provider');
+        });
     });
 })->add(function (Request $request, Response $response, callable $next) {
     /** @var \Util\Session $session */
