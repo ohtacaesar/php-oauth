@@ -41,14 +41,27 @@ $app->group('/admin', function () {
         });
     });
 })->add(function (Request $request, Response $response, callable $next) {
-    /** @var \Util\Session $session */
+    /**
+     * @var \Manager\UserManager $userManager
+     * @var \Util\Session $session
+     */
+    $userManager = $this->get('userManager');
     $session = $this->get('session');
-    if (!isset($session['roles'])) {
+    $userId = $session->get('user_id');
+
+    if ($userId === null) {
         $session['flash'] = 'ログインしてください。';
         return $response->withRedirect("/");
     }
 
-    if (!in_array('ADMIN', $session['roles'], true)) {
+    $user = $userManager->getUserByUserId($userId);
+    if ($user === null) {
+        unset($session['user_id']);
+        $session['flash'] = 'ユーザー情報の取得に失敗しました。';
+        return $response->withRedirect("/");
+    }
+
+    if (!in_array('ADMIN', $user['roles'], true)) {
         $session['flash'] = 'アクセス権限がありません。';
         return $response->withRedirect("/");
     }

@@ -68,7 +68,7 @@ class HomeController extends BaseController
         $user = $this->getLoginUser();
 
         // 認証
-        if (($userRoles = $this->session->get('roles')) === null) {
+        if ($user === null) {
             return $response->withStatus(401);
         }
 
@@ -80,7 +80,7 @@ class HomeController extends BaseController
 
         // 認可
         foreach (explode(',', $roles) as $role) {
-            if (in_array($role, $userRoles, true)) {
+            if (in_array($role, $user['roles'], true)) {
                 $response->getBody()->write($user['user_id']);
                 return $response->withStatus(200);
             }
