@@ -3,7 +3,7 @@
 use Controller\Admin\UserController;
 use Controller\AdminController;
 use Controller\HomeController;
-use Controller\OAuth\GithubController;
+use Controller\OAuth\GitHubController;
 use Controller\OAuth\GoogleController;
 use Controller\StaticController;
 use Slim\Http\Request;
@@ -26,7 +26,7 @@ $app->group('/github', function () {
 
 $app->group('/google', function () {
     $this->get('', GoogleController::class . ':start')->setName('oauth_google');
-    $this->get('/callback', GoogleController::class . ':callback')->setName('oauth_google_callback');
+    $this->get('/callback', GoogleController::class . ':callback');
 });
 
 $app->group('/admin', function () {
