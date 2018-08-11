@@ -1,6 +1,6 @@
 #!/bin/sh
 
-php init_db.php
+php bin/init_db.php
 
 set -e
 
