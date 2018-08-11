@@ -2,7 +2,7 @@
 
 sleep(3);
 
-require_once __DIR__ . '/src/php/app.php';
+require_once __DIR__ . '/../src/php/app.php';
 
 $app = createApp(false);
 
@@ -10,5 +10,5 @@ $c = $app->getContainer();
 
 /** @var \PDO $pdo */
 $pdo = $c['pdo'];
-$sql = file_get_contents(__DIR__ . '/schema.sql');
+$sql = file_get_contents(__DIR__ . '/../src/resouces/schema.sql');
 $pdo->exec($sql);

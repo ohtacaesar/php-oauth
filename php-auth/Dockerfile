@@ -1,8 +1,12 @@
 FROM php:7.2.6-fpm-alpine3.7
 
-COPY ./ /app
-
 WORKDIR /app
+
+COPY composer.* ./
+COPY package* ./
+COPY webpack.config.js ./
+COPY src/ ./src
+COPY public/ ./public
 
 RUN set -xe \
     && apk add --no-cache postgresql-libs \
@@ -18,9 +22,14 @@ RUN set -xe \
     && rm -rf node_modules \
     && apk del .build-deps
 
+COPY bin/ ./bin
+COPY tests/ ./tests
+COPY .php_cs.dist ./
+COPY phpunit.xml ./
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
-
 COPY www.conf /usr/local/etc/php-fpm.d/www.conf
+
+VOLUME ./logs
 
 ENTRYPOINT ["entrypoint.sh"]
 

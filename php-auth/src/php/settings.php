@@ -20,7 +20,7 @@ $settings = [
         // Monolog settings
         'logger' => [
             'name' => 'slim-app',
-            'path' => isset($_ENV['docker']) ? 'php://stdout' : __DIR__ . '/../../logs/app.log',
+            'path' => isset($_ENV['DOCKER']) ? 'php://stdout' : __DIR__ . '/../../logs/app.log',
         ],
         'pdo' => [
             'dsn' => $_ENV['PDO_DSN'] ?? 'pgsql:host=postgres;port=5432;dbname=postgres',
