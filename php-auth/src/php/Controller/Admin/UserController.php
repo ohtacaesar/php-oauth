@@ -5,15 +5,14 @@ namespace Controller\Admin;
 use Controller\BaseController;
 use Dao\UserDao;
 use Dao\UserGithubDao;
-use Dao\UserProviderDao;
 use Dao\UserRoleDao;
 use Dao\UserSessionDao;
 use Manager\UserManager;
+use Psr\Http\Message\ResponseInterface;
 use Slim\Container;
 use Slim\Exception\NotFoundException;
 use Slim\Http\Request;
 use Slim\Http\Response;
-use Psr\Http\Message\ResponseInterface;
 
 /**
  * Class UserController
@@ -74,15 +73,8 @@ class UserController extends BaseController
             throw new NotFoundException($request, $response);
         }
 
-        $message = null;
-        if (isset($this->session['message'])) {
-            $message = $this->session['message'];
-            unset($this->session['message']);
-        }
-
         return $this->view->render($response, 'admin/users/show.html.twig', [
-            'user' => $user,
-            'message' => $message,
+            'user' => $user
         ]);
     }
 

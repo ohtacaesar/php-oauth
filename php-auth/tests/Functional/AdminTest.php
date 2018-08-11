@@ -14,19 +14,19 @@ class AdminTest extends BaseTestCase
 
     public function test2()
     {
-        $r = $this->runApp('GET', '/admin', null, ['roles' => ['USER']]);
+        $r = $this->runApp('GET', '/admin', null, ['user_id' => 'user']);
         $this->assertEquals(302, $r->getStatusCode());
     }
 
     public function test3()
     {
-        $r = $this->runApp('GET', '/admin', null, ['roles' => ['ADMIN']]);
+        $r = $this->runApp('GET', '/admin', null, ['user_id' => 'admin']);
         $this->assertEquals(200, $r->getStatusCode());
     }
 
     public function test4()
     {
-        $r = $this->runApp('GET', '/admin/users', null, ['roles' => ['ADMIN']]);
+        $r = $this->runApp('GET', '/admin/users', null, ['user_id' => 'admin']);
         $this->assertEquals(200, $r->getStatusCode());
     }
 }

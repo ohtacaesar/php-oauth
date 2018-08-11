@@ -154,8 +154,6 @@ class AuthService
         }
 
         $this->session['user_id'] = $user['user_id'];
-        $this->session['name'] = $user['name'];
-        $this->session['roles'] = $user['roles'];
         $this->userManager->getUserSessionDao()->update([
             'user_id' => $userId,
             'session_id' => session_id(),
@@ -166,11 +164,7 @@ class AuthService
 
     public function signOut(): bool
     {
-        unset(
-            $this->session['user_id'],
-            $this->session['name'],
-            $this->session['roles']
-        );
+        session_destroy();
 
         return true;
     }

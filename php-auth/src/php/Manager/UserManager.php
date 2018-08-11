@@ -70,7 +70,7 @@ class UserManager
         return $userId;
     }
 
-    public function getUserByUserId($userId)
+    public function getUserByUserId(string $userId): ?array
     {
         if (!$user = $this->userDao->findOneByUserId($userId)) {
             return null;
