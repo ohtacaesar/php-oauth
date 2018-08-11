@@ -20,7 +20,8 @@ RUN set -xe \
     && npm install \
     && npm run webpack \
     && rm -rf node_modules \
-    && apk del .build-deps
+    && apk del .build-deps \
+    && mkdir logs
 
 COPY bin/ ./bin
 COPY tests/ ./tests
@@ -28,8 +29,6 @@ COPY .php_cs.dist ./
 COPY phpunit.xml ./
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 COPY www.conf /usr/local/etc/php-fpm.d/www.conf
-
-VOLUME ./logs
 
 ENTRYPOINT ["entrypoint.sh"]
 
