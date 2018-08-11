@@ -17,14 +17,6 @@ $container['pdo'] = function (Container $c) {
     );
 };
 
-$container['redis'] = function (Container $c) {
-    $redis = new Redis();
-    $redis->connect('redis', 6379);
-
-    return $redis;
-};
-
-
 $container['userDao'] = function (Container $c) {
     return new \Dao\UserDao($c->get('pdo'));
 };
@@ -59,7 +51,6 @@ $container['authService'] = function (Container $c) {
     );
 };
 
-
 $container['uri'] = function () {
     return \Slim\Http\Uri::createFromEnvironment(new \Slim\Http\Environment($_SERVER));
 };
@@ -82,7 +73,6 @@ $container['logger'] = function (Container $c) {
     $logger = new Monolog\Logger($settings['name']);
     $logger->pushProcessor(new Monolog\Processor\UidProcessor());
     $logger->pushHandler(new Monolog\Handler\StreamHandler($settings['path'], $settings['level']));
-    $logger->pushHandler(new Monolog\Handler\StreamHandler('php://stdout', $settings['level']));
 
     return $logger;
 };
@@ -117,11 +107,14 @@ $container['githubProvider'] = function (Container $c) {
 
 $container['googleProvider'] = function (Container $c) {
     $conf = $c['settings']['google'];
+    /** @var \Slim\Http\Uri $uri */
+    $uri = $c['uri'];
+    $uri = $uri->withPath("/google/callback")->withQuery("")->withFragment("");
 
     return new League\OAuth2\Client\Provider\Google([
         'clientId' => $conf['client_id'],
         'clientSecret' => $conf['client_secret'],
-        'redirectUri' => 'http://auth.example.com/google/callback',
+        'redirectUri' => (string)$uri,
         'useOidcMode' => true,
     ]);
 };

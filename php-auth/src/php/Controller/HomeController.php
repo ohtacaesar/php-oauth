@@ -2,8 +2,6 @@
 
 namespace Controller;
 
-use Manager\UserManager;
-use Middleware\Csrf;
 use Psr\Http\Message\ResponseInterface;
 use Service\AuthService;
 use Slim\Container;
@@ -15,39 +13,30 @@ class HomeController extends BaseController
     /** @var AuthService */
     private $authService;
 
-    /** @var UserManager */
-    private $userManager;
-
-    /** @var Csrf */
-    private $csrf;
-
     public function __construct(Container $container)
     {
         parent::__construct($container);
         $this->authService = $container['authService'];
-        $this->userManager = $container['userManager'];
-        $this->csrf = $container['csrf'];
-    }
-
-    private function getLoginUser(): ?array
-    {
-        if (!$userId = $this->session->get('user_id')) {
-            return null;
-        }
-
-        return $this->userManager->getUserByUserId($userId);
     }
 
     public function home(Request $request, Response $response): ResponseInterface
     {
         $user = $this->getLoginUser();
 
+        if ($rd = $request->getParam('rd', null)) {
+            $rd = filter_var($rd, FILTER_VALIDATE_URL);
+            $rd = filter_var($rd, FILTER_SANITIZE_URL);
+            if ($rd) {
+                $this->session['rd'] = $rd;
+            }
+        }
+
         return $this->view->render($response, 'index.html.twig', [
-            'user' => $user
+            'user' => $user,
         ]);
     }
 
-    public function userUpdate(Request $request, Response $response)
+    public function userUpdate(Request $request, Response $response): ResponseInterface
     {
         $user = $this->getLoginUser();
 
@@ -100,18 +89,6 @@ class HomeController extends BaseController
 
         $this->authService->signOut();
 
-        return $response->withRedirect($rd);
-    }
-
-    public function sessionDestroy(Request $request, Response $response)
-    {
-        $rd = $request->getParam('rd');
-        $rd = filter_var($rd, FILTER_VALIDATE_URL);
-        $rd = filter_var($rd, FILTER_SANITIZE_URL);
-        if (!$rd) {
-            $rd = '/';
-        }
-        session_destroy();
         return $response->withRedirect($rd);
     }
 }
