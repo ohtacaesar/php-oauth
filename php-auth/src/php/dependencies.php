@@ -25,10 +25,6 @@ $container['userRoleDao'] = function (Container $c) {
     return new \Dao\UserRoleDao($c->get('pdo'));
 };
 
-$container['userSessionDao'] = function (Container $c) {
-    return new \Dao\UserSessionDao($c->get('pdo'));
-};
-
 $container['userProviderDao'] = function (Container $c) {
     return new \Dao\UserProviderDao($c['pdo']);
 };
@@ -37,8 +33,7 @@ $container['userManager'] = function (Container $c) {
     return new \Manager\UserManager(
         $c['userDao'],
         $c['userRoleDao'],
-        $c['userProviderDao'],
-        $c['userSessionDao']
+        $c['userProviderDao']
     );
 };
 

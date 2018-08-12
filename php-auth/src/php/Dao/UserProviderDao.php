@@ -40,11 +40,11 @@ EOS;
         return null;
     }
 
-    public function findOneByProviderIdAndOwnerId(int $provider_id, string $ownerId)
+    public function findOneByProviderIdAndOwnerId(int $providerId, string $ownerId)
     {
         $sql = "select * from user_providers where provider_id = :provider_id and owner_id = :owner_id";
         $stmt = $this->pdo->prepare($sql);
-        $stmt->bindValue(':provider_id', $provider_id);
+        $stmt->bindValue(':provider_id', $providerId);
         $stmt->bindValue(':owner_id', $ownerId);
         $stmt->execute();
 

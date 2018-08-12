@@ -24,19 +24,14 @@ class UserManager
     /** @var UserProviderDao */
     private $userProviderDao;
 
-    /** @var UserSessionDao */
-    private $userSessionDao;
-
     public function __construct(
         UserDao $userDao,
         UserRoleDao $userRoleDao,
-        UserProviderDao $userProviderDao,
-        UserSessionDao $userSessionDao
+        UserProviderDao $userProviderDao
     ) {
         $this->userDao = $userDao;
         $this->userRoleDao = $userRoleDao;
         $this->userProviderDao = $userProviderDao;
-        $this->userSessionDao = $userSessionDao;
         $this->logger = new NullLogger();
     }
 
@@ -55,11 +50,6 @@ class UserManager
         return $this->userRoleDao;
     }
 
-    public function getUserSessionDao(): UserSessionDao
-    {
-        return $this->userSessionDao;
-    }
-
     public function generateUserId(): string
     {
         $userId = bin2hex(random_bytes(10));
@@ -70,8 +60,12 @@ class UserManager
         return $userId;
     }
 
-    public function getUserByUserId(string $userId): ?array
+    public function getUserByUserId(?string $userId): ?array
     {
+        if ($userId === null) {
+            return null;
+        }
+
         if (!$user = $this->userDao->findOneByUserId($userId)) {
             return null;
         }
@@ -88,27 +82,17 @@ class UserManager
         }
         $user['providers'] = array_filter($providers);
 
-        $user['user_session'] = $this->userSessionDao->findOneByUserId($userId);
-        $user['session_id'] = null;
-        if ($user['user_session']) {
-            $user['session_id'] = $user['user_session']['session_id'];
-        }
-
         return $user;
     }
 
-    public function getUserByProviderIdAndOwnerId(int $providerId, string $ownerId)
+    public function getUserByProviderIdAndOwnerId(int $providerId, string $ownerId): ?array
     {
         $tmp = $this->userProviderDao->findOneByProviderIdAndOwnerId($providerId, $ownerId);
         if (!$tmp) {
             return null;
         }
 
-        if (!$user = $this->userDao->findOneByUserId($tmp['user_id'])) {
-            return null;
-        }
-
-        return $user;
+        return $this->getUserByUserId($tmp['user_id']);
     }
 
     public function createUser(string $name = null): array

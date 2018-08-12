@@ -39,62 +39,37 @@ class AuthService
 
     public function signUp(int $providerId, ResourceOwnerInterface $owner): ?array
     {
-        $loginUser = null;
-        if ($userId = $this->session->get('user_id')) {
-            $loginUser = $this->userManager->getUserByUserId($userId);
-            if ($loginUser === null) {
-                $this->logger->warning(sprintf('USER NOT FOUND(user_id=%s)', $userId));
-                $this->signOut();
-                return null;
-            }
-        }
-
         $pdo = $this->userManager->getUserDao()->getPdo();
         $pdo->beginTransaction();
-        $user = null;
         try {
-            $userProvider = $this->userManager->getUserProviderDao()
-                ->findOneByProviderIdAndOwnerId($providerId, $owner->getId());
-
-            if ($userProvider) {
-                $user = $this->userManager->getUserByUserId($userProvider['user_id']);
-                if ($user) {
-                    if ($loginUser && $loginUser['user_id'] !== $user['user_id']) {
-                        $this->logger->error(sprintf(
-                            '$loginUser(%s) != $user(%s)',
-                            $loginUser['user_id'],
-                            $user['user_id']
-                        ));
-                        $this->signOut();
-                    }
-                } else {
-                    $this->logger->warning(sprintf(
-                        'User not found.(user_id:%s, provider_id:%s, owner_id:%s)',
-                        $userProvider['user_id'],
-                        $userProvider['provider_id'],
-                        $userProvider['owner_id']
-                    ));
+            $loginUser = null;
+            if ($userId = $this->session->get('user_id')) {
+                $loginUser = $this->userManager->getUserByUserId($userId);
+                if ($loginUser === null) {
+                    $this->logger->warning(sprintf('USER NOT FOUND(user_id=%s)', $userId));
+                    $this->signOut();
+                    return null;
                 }
             }
-            if (!$user) {
+
+            $user = $this->userManager->getUserByProviderIdAndOwnerId($providerId, $owner->getId());
+            if ($user) {
+                if ($loginUser && $loginUser['user_id'] !== $user['user_id']) {
+                    $this->logger->error(sprintf(
+                        '$loginUser(%s) != $user(%s)',
+                        $loginUser['user_id'],
+                        $user['user_id']
+                    ));
+                    $this->signOut();
+                    return null;
+                }
+            } else {
                 $user = $loginUser;
             }
 
-            $ownerName = null;
-            $obj = new \ReflectionObject($owner);
-            try {
-                $ownerName = $obj->getMethod("getName")->invoke($owner);
-            } catch (\ReflectionException $ignore) {
-            }
+            $user = $this->updateOrCreateUser($user, $owner);
 
-            if (!$user) {
-                $user = $this->userManager->createUser($ownerName);
-            } elseif ($user['name'] === null and $ownerName) {
-                $user['name'] = $ownerName;
-                $this->userManager->updateUser($user);
-            }
-
-            if (!$userProvider) {
+            if (!in_array($providerId, $user['provider_ids'] ?? [], true)) {
                 $this->userManager->getUserProviderDao()->create([
                     'user_id' => $user['user_id'],
                     'provider_id' => $providerId,
@@ -102,41 +77,7 @@ class AuthService
                 ]);
             }
 
-            $ownerArray = $owner->toArray();
-            $rolesToAdd = [];
-            if (isset($this->grantRules[$providerId])) {
-                $grantRule = $this->grantRules[$providerId];
-                $this->logger->notice(sprintf('count($grantRule) = %d', count($grantRule)));
-                foreach ($grantRule as $key => $rules) {
-                    if (!isset($ownerArray[$key])) {
-                        $this->logger->warning(sprintf('Wrong key: %s[%s]', get_class($owner), $key));
-                        continue;
-                    }
-
-                    foreach ($rules as $pattern => $roles) {
-                        $this->logger->notice(sprintf(
-                            'pattern = %s, gettype($pattern) = %s, $ownerArray[%s] = %s',
-                            $pattern,
-                            gettype($pattern),
-                            $key,
-                            $ownerArray[$key]
-                        ));
-
-                        if ($pattern == $ownerArray[$key] or preg_match($pattern, $ownerArray[$key])) {
-                            foreach ($roles as $role) {
-                                if (!in_array($role, $rolesToAdd)) {
-                                    $rolesToAdd[] = $role;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            foreach ($rolesToAdd as $role) {
-                $this->userManager->addRole($user, $role);
-            }
-
+            $this->applyGrantRules($user, $providerId, $owner);
             $pdo->commit();
 
             return $this->signIn($user['user_id']);
@@ -154,10 +95,6 @@ class AuthService
         }
 
         $this->session['user_id'] = $user['user_id'];
-        $this->userManager->getUserSessionDao()->update([
-            'user_id' => $userId,
-            'session_id' => session_id(),
-        ]);
 
         return $user;
     }
@@ -167,5 +104,57 @@ class AuthService
         session_destroy();
 
         return true;
+    }
+
+    private function updateOrCreateUser(?array $user, ResourceOwnerInterface $owner): ?array
+    {
+        $ownerName = method_exists($owner, 'getName') ? $owner->getName() : null;
+
+        if ($user === null) {
+            $user = $this->userManager->createUser($ownerName);
+        } elseif ($user['name'] === null and $ownerName) {
+            $user['name'] = $ownerName;
+            $this->userManager->updateUser($user);
+        }
+
+        return $user;
+    }
+
+    private function applyGrantRules(array $user, int $providerId, ResourceOwnerInterface $owner)
+    {
+        if (!isset($this->grantRules[$providerId])) {
+            return;
+        }
+
+        $grantRule = $this->grantRules[$providerId];
+        $this->logger->notice(sprintf('count($grantRule) = %d', count($grantRule)));
+        $ownerArray = $owner->toArray();
+        $rolesToAdd = [];
+        foreach ($grantRule as $key => $rules) {
+            if (!isset($ownerArray[$key])) {
+                $this->logger->warning(sprintf('Wrong key: %s[%s]', get_class($owner), $key));
+                continue;
+            }
+
+            foreach ($rules as $pattern => $roles) {
+                $this->logger->notice(sprintf(
+                    'pattern = %s, gettype($pattern) = %s, $ownerArray[%s] = %s',
+                    $pattern,
+                    gettype($pattern),
+                    $key,
+                    $ownerArray[$key]
+                ));
+
+                if ($pattern == $ownerArray[$key] or preg_match($pattern, $ownerArray[$key])) {
+                    foreach ($roles as $role) {
+                        $rolesToAdd[] = $role;
+                    }
+                }
+            }
+        }
+
+        foreach (array_unique($rolesToAdd) as $role) {
+            $this->userManager->addRole($user, $role);
+        }
     }
 }
