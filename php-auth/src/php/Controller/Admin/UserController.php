@@ -4,9 +4,7 @@ namespace Controller\Admin;
 
 use Controller\BaseController;
 use Dao\UserDao;
-use Dao\UserGithubDao;
 use Dao\UserRoleDao;
-use Dao\UserSessionDao;
 use Psr\Http\Message\ResponseInterface;
 use Slim\Container;
 use Slim\Exception\NotFoundException;
@@ -25,9 +23,6 @@ class UserController extends BaseController
     /** @var UserRoleDao */
     private $userRoleDao;
 
-    /** @var UserSessionDao */
-    private $userSessionDao;
-
     /**
      * UserController constructor.
      * @param Container $container
@@ -38,7 +33,6 @@ class UserController extends BaseController
         parent::__construct($container);
         $this->userDao = $container->get('userDao');
         $this->userRoleDao = $container->get('userRoleDao');
-        $this->userSessionDao = $container->get('userSessionDao');
     }
 
     /**
@@ -99,7 +93,7 @@ class UserController extends BaseController
                 'role' => $role,
             ]);
         } catch (\PDOException $e) {
-            $this->session['message'] = $e->getMessage();
+            $this->session['flash'] = $e->getMessage();
         }
 
         return $response->withRedirect($this->router->pathFor('user', $user));
@@ -118,7 +112,7 @@ class UserController extends BaseController
 
         // 作業者のADMINロールは削除できない
         if ($currentUserId === $args['user_id'] && $role === 'ADMIN') {
-            $this->session['message'] = '自分のADMINロールは削除できません';
+            $this->session['flash'] = '自分のADMINロールは削除できません';
         } else {
             $this->userRoleDao->delete($args);
         }
@@ -141,7 +135,7 @@ class UserController extends BaseController
         }
 
         if (count($user['user_providers']) <= 1) {
-            $this->session['message'] = 'プロバイダが一つしか登録されていないため、削除できません';
+            $this->session['flash'] = 'プロバイダが一つしか登録されていないため、削除できません';
             return $response->withRedirect($this->router->pathFor('user', $user));
         }
 

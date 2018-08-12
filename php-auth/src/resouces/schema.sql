@@ -19,9 +19,3 @@ create table if not exists user_roles (
   role    char(8)  not null,
   primary key (user_id, role)
 );
-
-create table if not exists user_sessions (
-  user_id    char(20) not null,
-  session_id char(32) not null,
-  primary key (user_id)
-);

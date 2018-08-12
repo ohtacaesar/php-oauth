@@ -30,6 +30,6 @@
         "fix": "php-cs-fixer fix",
         "check": "php-cs-fixer fix --dry-run",
         "diff": "php-cs-fixer fix --diff --dry-run",
-        "phpmd": "phpmd src/php text cleancode,codesize"
+        "phpmd": "phpmd src/php text ruleset.xml"
     }
 }
