@@ -6,39 +6,39 @@
     <title>管理ページ - {{ app.title }}</title>
     <link href="/dist/style.css" rel="stylesheet" type="text/css">
     <style>
-        [role="main"],
-        .sidebar-sticky {
-            padding-top: 48px; /* Space for fixed navbar */
+        [role="main"] {
+            padding-top: 56px; /* Space for fixed navbar */
         }
     </style>
 </head>
 
 <body>
-<nav class="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow">
-    <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="{{ path_for('home') }}">{{ app.title }}</a>
-    <ul class="navbar-nav px-3">
-        <li class="nav-item text-nowrap">
-            <a class="nav-link" href="#">Sign out</a>
-        </li>
-    </ul>
+
+<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+    <a class="navbar-brand" href="{{ path_for('admin') }}">{{ app.title }}</a>
+    <button class="navbar-toggler collapsed" type="button" data-toggle="collapse"
+            data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false"
+            aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="navbar-collapse collapse" id="navbarCollapse" style="">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+                <a class="nav-link" href="{{ path_for('users') }}">ユーザー</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ path_for('home') }}">アプリホーム</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link disabled" href="#">Disabled</a>
+            </li>
+        </ul>
+    </div>
 </nav>
 
 <div class="container-fluid">
     <div class="row">
-        <nav class="col-md-2 d-none d-md-block bg-light sidebar">
-            <div class="sidebar-sticky">
-                <ul class="nav flex-column">
-                    <li class="nav-item">
-                        <a class="nav-link active" href="{{ path_for('admin') }}">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" href="{{ path_for('users') }}">Users </a>
-                    </li>
-                </ul>
-            </div>
-        </nav>
-
-        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
+        <main role="main" class="col-md-12 ml-sm-auto col-lg-12 px-4">
             {% block content %}
             {% endblock %}
         </main>
