@@ -2,25 +2,25 @@
 
 {% block content %}
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-        <h1 class="h2">Users</h1>
+        <h1 class="h3">Users</h1>
     </div>
     <div class="table-responsive">
         <table class="table table-striped table-sm">
             <thead>
             <tr>
-                <th>UserID</th>
+                <th class="d-none d-sm-table-cell">UserID</th>
                 <th>Name</th>
-                <th>Created at</th>
-                <th>Roles</th>
+                <th class="d-none d-sm-table-cell">Created at</th>
+                <th class="d-none d-sm-table-cell">Roles</th>
             </tr>
             </thead>
             <tbody>
             {% for u in users %}
             <tr>
-                <td><a href="{{ path_for('user', u) }}">{{ u.user_id }}</a></td>
-                <td>{{ u.name }}</td>
-                <td>{{ u.created_at }}</td>
-                <td>{{ u.roles }}</td>
+                <td class="d-none d-sm-table-cell"><a href="{{ path_for('user', u) }}">{{ u.user_id }}</a></td>
+                <td><a href="{{ path_for('user', u) }}">{{ u.name }}</a></td>
+                <td class="d-none d-sm-table-cell">{{ u.created_at }}</td>
+                <td class="d-none d-sm-table-cell">{{ u.roles }}</td>
             </tr>
             {% endfor %}
             </tbody>

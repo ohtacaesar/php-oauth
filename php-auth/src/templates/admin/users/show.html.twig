@@ -2,12 +2,12 @@
 
 {% block content %}
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-        <h1 class="h2">{{ user.name }}</h1>
+        <h1 class="h3">{{ user.name }}</h1>
     </div>
-    {% if message %}<p>{{ message }}<p>{% endif %}
+    {% if flash %}<p class="alert alert-danger" role="alert">{{ flash }}<p>{% endif %}
     <div>
-        <h2>基本情報</h2>
-        <table border="1">
+        <h3>基本情報</h3>
+        <table class="table">
             <tr>
                 <th>user_id</th>
                 <td>{{ user.user_id }}</td>
@@ -19,14 +19,26 @@
         </table>
     </div>
     <div>
-        <h2>ロール一覧</h2>
-        <table border="1">
+        <h3>ロール一覧</h3>
+        <table class="table">
+            <tr>
+                <form action="{{ path_for('user_add_role', user) }}" method="post">
+                    <td>
+                        <input type="text" name="role">
+                        <input type="hidden" name="{{ csrf.key }}" value="{{ csrf.token }}">
+                    </td>
+                    <td>
+                        <button type="submit" class="btn btn-primary btn-sm">追加</button>
+                    </td>
+                </form>
+            </tr>
             {% for user_role in user.user_roles %}
                 <tr>
                     <td>{{ user_role.role }}</td>
                     <td>
-                        <form action="{{ path_for('user_remove_role', user_role) }}" method="post">
-                            <button type="submit">削除</button>
+                        <form action="{{ path_for('user_remove_role', user_role) }}"
+                              method="post">
+                            <button type="submit" class="btn btn-danger btn-sm">削除</button>
                             <input type="hidden" name="{{ csrf.key }}" value="{{ csrf.token }}">
                         </form>
                     </td>
@@ -35,32 +47,20 @@
         </table>
     </div>
     <div>
-        <h2>プロバイダ一覧</h2>
-        <table border="1">
+        <h3>プロバイダ一覧</h3>
+        <table class="table">
             {% for user_provider in user.user_providers %}
                 <tr>
                     <td>{{ user_provider.provider_id }}</td>
                     <td>
                         <form action="{{ path_for('user_remove_provider', user_provider) }}"
                               method="post">
-                            <button type="submit">削除</button>
+                            <button type="submit" class="btn btn-danger btn-sm">削除</button>
                             <input type="hidden" name="{{ csrf.key }}" value="{{ csrf.token }}">
                         </form>
                     </td>
                 </tr>
             {% endfor %}
         </table>
-    </div>
-    <div>
-        <h2>セッションID</h2>
-        <p>{{ user.user_session.session_id }}</p>
-    </div>
-    <div>
-        <h2>ロール追加</h2>
-        <form action="{{ path_for('user_add_role', user) }}" method="post">
-            <input type="text" name="role">
-            <input type="hidden" name="{{ csrf.key }}" value="{{ csrf.token }}">
-            <button type="submit">追加</button>
-        </form>
     </div>
 {% endblock %}
