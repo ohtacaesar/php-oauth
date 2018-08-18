@@ -5,7 +5,8 @@ WORKDIR /app
 COPY composer.* ./
 COPY package* ./
 COPY webpack.config.js ./
-COPY src/ ./src
+COPY src/js ./src/js
+COPY src/css ./src/css
 COPY public/ ./public
 
 RUN set -xe \
@@ -23,6 +24,7 @@ RUN set -xe \
     && apk del .build-deps \
     && mkdir logs
 
+COPY src/ ./src
 COPY bin/ ./bin
 COPY tests/ ./tests
 COPY .php_cs.dist ./
