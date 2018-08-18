@@ -20,13 +20,13 @@ class AuthTest extends BaseTestCase
 
     public function test3()
     {
-        $r = $this->runApp('GET', '/auth', null, ['user_id' => 'user'], ['HTTP_ROLE' => 'ADMIN']);
+        $r = $this->runApp('GET', '/auth', null, ['user_id' => 'user'], ['HTTP_X_AUTH_ROLES' => 'ADMIN']);
         $this->assertEquals(403, $r->getStatusCode());
     }
 
     public function test4()
     {
-        $r = $this->runApp('GET', '/auth', null, ['user_id' => 'admin'], ['HTTP_ROLE' => 'ADMIN']);
+        $r = $this->runApp('GET', '/auth', null, ['user_id' => 'admin'], ['HTTP_X_AUTH_ROLES' => 'ADMIN']);
         $this->assertEquals(200, $r->getStatusCode());
     }
 }

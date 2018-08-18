@@ -61,7 +61,8 @@ class HomeController extends BaseController
             return $response->withStatus(401);
         }
 
-        $roles = $request->getServerParam('HTTP_ROLE');
+        $roles = $request->getServerParam('HTTP_X_AUTH_ROLES');
+        $this->logger->info($roles);
         if (!$roles) {
             $response->getBody()->write($user['user_id']);
             return $response->withStatus(200);
