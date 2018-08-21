@@ -1,11 +1,11 @@
 version: '3.6'
 services:
   php-auth:
-    build: ./php-auth
+    build: ./
     secrets:
       - secrets.ini
     volumes:
-      - ./php-auth:/app
+      - ./:/app
     depends_on:
       - postgres
     environment:
@@ -16,22 +16,11 @@ services:
       PHP_AUTH_TITLE: test
       DOCKER: 1
 
-  php-app:
-    build: ./php-app
-    volumes:
-      - ./php-app/public:/var/www/html
-    environment:
-      SESSION_COOKIE_DOMAIN: .example.com
-      SESSION_SAVE_HANDLER:  redis
-      SESSION_SAVE_PATH:     redis:6379
-      SESSION_SERIALIZE_HANDLER: msgpack
-
   nginx:
     build: ./nginx
     ports:
       - "80:80"
     depends_on:
-      - php-app
       - php-auth
 
   postgres:
