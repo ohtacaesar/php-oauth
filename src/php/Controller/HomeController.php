@@ -54,6 +54,10 @@ class HomeController extends BaseController
 
     public function auth(Request $request, Response $response): ResponseInterface
     {
+        if (!$request->getServerParam('HTTP_X_AUTH_ENABLE')) {
+            $this->logger->error("X-AUTH-ENABLE is not set");
+            return $response->withStatus(400);
+        }
         $user = $this->getLoginUser();
 
         // 認証
