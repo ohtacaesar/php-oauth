@@ -4,6 +4,7 @@ namespace Tests\Functional;
 
 use Manager\UserManager;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\NullLogger;
 use Slim\App;
 use Slim\Container;
 use Slim\Http\Environment;
@@ -22,6 +23,8 @@ class BaseTestCase extends TestCase
         $environment = Environment::mock(array_merge([
             'REQUEST_METHOD' => $method,
             'REQUEST_URI' => $uri,
+            'SERVER_NAME' => 'auth.example.com',
+            'HTTP_HOST' => 'auth.example.com',
         ], $env));
 
         $request = Request::createFromEnvironment($environment);
@@ -40,6 +43,7 @@ class BaseTestCase extends TestCase
          */
         $container = $app->getContainer();
         $container['session'] = new \Util\Session($session);
+        $container['logger'] = new NullLogger();
 
         $userMap = [
             ['admin', ['user_id' => 'admin', 'name' => 'ADMIN', 'roles' => ['ADMIN']]],

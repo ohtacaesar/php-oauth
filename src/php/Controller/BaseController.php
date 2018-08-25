@@ -5,6 +5,7 @@ namespace Controller;
 use Manager\UserManager;
 use Psr\Log\LoggerInterface;
 use Slim\Container;
+use Slim\Http\Request;
 use Slim\Router;
 use Slim\Views\Twig;
 use Util\Session;
@@ -59,5 +60,31 @@ class BaseController
         }
 
         return $this->userManager->getUserByUserId($userId);
+    }
+
+    protected function validateRedirectUrl(Request $request, $redirectUrl)
+    {
+        $redirectUrl = filter_var($redirectUrl, FILTER_VALIDATE_URL);
+        $redirectUrl = filter_var($redirectUrl, FILTER_SANITIZE_URL);
+
+        $url = parse_url($redirectUrl);
+        if (!$url) {
+            return false;
+        }
+        if (null === ($host = $url['host'] ?? null)) {
+            return false;
+        }
+
+        $host = array_reverse(explode('.', $host));
+        $serverName = $request->getServerParam('SERVER_NAME');
+        $serverName = array_reverse(explode('.', $serverName));
+
+        for ($i = 0, $l = max(2, count($serverName) - 1); $i < $l; $i++) {
+            if ($host[$i] !== $serverName[$i]) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }
