@@ -43,11 +43,11 @@ abstract class OAuthController extends BaseController
 
     public function start(Request $request, Response $response): ResponseInterface
     {
-        if ($rd = $request->getParam('rd', null)) {
-            $rd = filter_var($rd, FILTER_VALIDATE_URL);
-            $rd = filter_var($rd, FILTER_SANITIZE_URL);
-            if ($rd) {
-                $this->session['rd'] = $rd;
+        if ($redirectUrl = $request->getParam('rd', null)) {
+            if ($this->validateRedirectUrl($request, $redirectUrl)) {
+                $this->session['rd'] = $redirectUrl;
+            } else {
+                return $response->withStatus(400);
             }
         }
 
