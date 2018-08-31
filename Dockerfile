@@ -1,6 +1,6 @@
 FROM php:7.2.6-fpm-alpine3.7
 
-ARG ALPINE_REPOSITORY=dl-cdn.alpinelinux.org
+ARG ALPINE_SERVER=dl-cdn.alpinelinux.org
 
 WORKDIR /app
 
@@ -12,7 +12,7 @@ COPY src/css ./src/css
 COPY public/ ./public
 
 RUN set -eux \
-    &&  sed -i "s/dl-cdn.alpinelinux.org/${ALPINE_REPOSITORY}/" /etc/apk/repositories \
+    &&  sed -i "s/dl-cdn.alpinelinux.org/${ALPINE_SERVER}/" /etc/apk/repositories \
     &&  apk add --no-cache postgresql-libs \
     &&  apk add --no-cache --virtual .build-deps nodejs-npm postgresql-dev $PHPIZE_DEPS \
     &&  docker-php-ext-install pdo_pgsql \
