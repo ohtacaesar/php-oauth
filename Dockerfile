@@ -1,6 +1,7 @@
 FROM php:7.2.6-fpm-alpine3.7
 
-ARG ALPINE_SERVER=dl-cdn.alpinelinux.org
+ARG ALPINE_SERVER=""
+ARG NPM_PROXY=""
 
 WORKDIR /app
 
@@ -12,7 +13,9 @@ COPY src/css ./src/css
 COPY public/ ./public
 
 RUN set -eux \
-    &&  sed -i "s/dl-cdn.alpinelinux.org/${ALPINE_SERVER}/" /etc/apk/repositories \
+    &&  if [[ -n "${ALPINE_SERVER}" ]]; then \
+          sed -i "s/dl-cdn.alpinelinux.org/${ALPINE_SERVER}/" /etc/apk/repositories; \
+        fi \
     &&  apk add --no-cache postgresql-libs \
     &&  apk add --no-cache --virtual .build-deps nodejs-npm postgresql-dev $PHPIZE_DEPS \
     &&  docker-php-ext-install pdo_pgsql \
@@ -21,6 +24,11 @@ RUN set -eux \
     &&  php composer-setup.php --install-dir=/usr/local/bin \
     &&  php -r "unlink('composer-setup.php');" \
     &&  composer.phar install --no-dev \
+    &&  if [[ -n "${NPM_PROXY}" ]]; then \
+          npm config set proxy       $NPM_PROXY; \
+          npm config set https-proxy $NPM_PROXY; \
+          npm config set strict-ssl  false; \
+        fi \
     &&  npm install \
     &&  npm run webpack \
     &&  rm -rf node_modules \
