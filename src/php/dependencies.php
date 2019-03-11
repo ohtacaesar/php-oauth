@@ -85,7 +85,9 @@ $container['session'] = function (Container $c) {
     }
 
     session_start([
-        'cookie_domain' => $cookieDomain
+        'cookie_domain' => $cookieDomain,
+        'cookie_secure' => true,
+        'cookie_httponly' => true,
     ]);
 
     return new \Util\Session($_SESSION);
