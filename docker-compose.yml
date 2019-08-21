@@ -4,7 +4,8 @@ services:
     build:
       context: ./
       args:
-        COMPOSER_INSTALLER_HASH: 48e3236262b34d30969dca3c37281b3b4bbe3221bda826ac6a9a62d6444cdb0dcd0615698a5cbe587c3f0fe57a54d8f5
+        COMPOSER_URL:  https://getcomposer.org/download/1.8.6/composer.phar
+        COMPOSER_HASH: b66f9b53db72c5117408defe8a1e00515fe749e97ce1b0ae8bdaa6a5a43dd542
     secrets:
       - secrets.ini
     volumes:
