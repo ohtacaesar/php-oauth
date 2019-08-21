@@ -84,11 +84,10 @@ $container['session'] = function (Container $c) {
         $cookieDomain = $host;
     }
 
-    session_start([
-        'cookie_domain' => $cookieDomain,
-        'cookie_secure' => true,
-        'cookie_httponly' => true,
+    $config = array_merge($c['settings']['cookie'], [
+        'cookie_domain' => $cookieDomain
     ]);
+    session_start($config);
 
     return new \Util\Session($_SESSION);
 };
