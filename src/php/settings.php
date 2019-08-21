@@ -27,6 +27,10 @@ $settings = [
             'username' => $_ENV['PDO_USERNAME'] ?? 'postgres',
             'passwd' => $_ENV['PDO_PASSWORD'] ?? '',
         ],
+        'cookie' => [
+            'cookie_secure' => boolval($_ENV['COOKIE_SECURE']) ?? boolval($_SERVER['HTTPS']),
+            'cookie_httponly' => boolval($_ENV['COOKIE_HTTPONLY']) ?? true,
+        ],
         // OAuthの認証情報で自動的にロールを付与するルール
         'grantRules' => [
             \Util\Providers::GITHUB => [
@@ -34,7 +38,7 @@ $settings = [
                     1635983 => ['ADMIN']
                 ]
             ]
-        ]
+        ],
     ], $ini)
 ];
 
