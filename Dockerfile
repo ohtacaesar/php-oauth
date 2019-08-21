@@ -2,7 +2,8 @@ FROM php:7.2.6-fpm-alpine3.7
 
 ARG ALPINE_SERVER=""
 ARG NPM_PROXY=""
-ARG COMPOSER_INSTALLER_HASH=""
+ARG COMPOSER_URL
+ARG COMPOSER_HASH=""
 
 WORKDIR /app
 
@@ -20,10 +21,12 @@ RUN set -eux \
     &&  apk add --no-cache postgresql-libs \
     &&  apk add --no-cache --virtual .build-deps nodejs-npm postgresql-dev $PHPIZE_DEPS \
     &&  docker-php-ext-install pdo_pgsql \
-    &&  php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
-    &&  php -r "\$hash = '${COMPOSER_INSTALLER_HASH}'; if(empty(\$hash)) { echo 'No hash given'; } else if (hash_file('SHA384', 'composer-setup.php') === \$hash) { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;" \
-    &&  php composer-setup.php --install-dir=/usr/local/bin \
-    &&  php -r "unlink('composer-setup.php');" \
+    &&  wget  -O /usr/local/bin/composer.phar ${COMPOSER_URL} \
+    &&  chmod +x /usr/local/bin/composer.phar \
+    &&  if [[ -n "${COMPOSER_HASH}" ]]; then \
+          echo "${COMPOSER_HASH}  /usr/local/bin/composer.phar" > /tmp/hash; \
+          sha256sum -c /tmp/hash; \
+        fi \
     &&  composer.phar install --no-dev \
     &&  if [[ -n "${NPM_PROXY}" ]]; then \
           npm config set proxy       $NPM_PROXY; \
