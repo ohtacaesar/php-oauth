@@ -16,12 +16,13 @@
             </thead>
             <tbody>
             {% for u in users %}
-            <tr>
-                <td class="d-none d-sm-table-cell"><a href="{{ path_for('user', u) }}">{{ u.user_id }}</a></td>
-                <td><a href="{{ path_for('user', u) }}">{{ u.name }}</a></td>
-                <td class="d-none d-sm-table-cell">{{ u.created_at }}</td>
-                <td class="d-none d-sm-table-cell">{{ u.roles }}</td>
-            </tr>
+                <tr>
+                    <td class="d-none d-sm-table-cell"><a
+                                href="{{ path_for('user', u) }}">{{ u.user_id }}</a></td>
+                    <td><a href="{{ path_for('user', u) }}">{{ u.name }}</a></td>
+                    <td class="d-none d-sm-table-cell">{{ u.created_at }}</td>
+                    <td class="d-none d-sm-table-cell">{{ u.roles }}</td>
+                </tr>
             {% endfor %}
             </tbody>
         </table>

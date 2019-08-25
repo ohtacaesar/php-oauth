@@ -29,6 +29,8 @@ $app->group('/google', function () {
     $this->get('/callback', GoogleController::class . ':callback');
 });
 
+$app->get('/signin/token', HomeController::class . ':signinWithToken')->setName('token_signin');
+
 $app->group('/admin', function () {
     $this->get('', AdminController::class . ':index')->setName('admin');
     $this->group('/users', function () {
@@ -38,6 +40,8 @@ $app->group('/admin', function () {
             $this->post('/roles', UserController::class . ':addRole')->setName('user_add_role');
             $this->post('/roles/{role}', UserController::class . ':removeRole')->setName('user_remove_role');
             $this->post('/providers/{provider_id}', UserController::class . ':removeProvider')->setName('user_remove_provider');
+            $this->post('/signin_token', UserController::class . ':generateSigninToken')->setName('user_signin_token');
+            $this->delete('/signin_token', UserController::class . ':deleteSigninToken')->setName('user_signin_token');
         });
     });
 })->add(function (Request $request, Response $response, callable $next) {

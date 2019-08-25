@@ -30,7 +30,8 @@ class AuthService
         Session $session,
         array $grantRules = [],
         LoggerInterface $logger
-    ) {
+    )
+    {
         $this->userManager = $userManager;
         $this->session = $session;
         $this->grantRules = $grantRules;
@@ -156,5 +157,17 @@ class AuthService
         foreach (array_unique($rolesToAdd) as $role) {
             $this->userManager->addRole($user, $role);
         }
+    }
+
+    public function signinWithToken($signinToken)
+    {
+        $user = $this->userManager->getUserBySigninToken($signinToken);
+        if ($user === null) {
+            return null;
+        }
+
+        $this->session['user_id'] = $user['user_id'];
+
+        return $user;
     }
 }

@@ -47,6 +47,26 @@
         </table>
     </div>
     <div>
+        <h3>サインイントークン</h3>
+        <div>
+            <form action="{{ path_for('user_signin_token', user) }}" method="post">
+                <button type="submit" class="btn btn-primary btn-sm">生成</button>
+                <button type="submit" name="_METHOD" value="DELETE" class="btn btn-danger btn-sm">削除</button>
+                <input type="hidden" name="{{ csrf.key }}" value="{{ csrf.token }}">
+            </form>
+        </div>
+        <table class="table">
+            <tr>
+                <th>サインイントークン</th>
+                <td>{{ user.signin_token }}</td>
+            </tr>
+            <tr>
+                <th>サインインURL</th>
+                <td>{% if token_signin_url %}{{ token_signin_url }}{% endif %}</td>
+            </tr>
+        </table>
+    </div>
+    <div>
         <h3>プロバイダ一覧</h3>
         <table class="table">
             {% for user_provider in user.user_providers %}

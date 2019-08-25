@@ -24,6 +24,16 @@ class UserDao extends BaseDao
         return $rows[0] ?? null;
     }
 
+    public function findOneBySigninToken(string $signinToken)
+    {
+        $stmt = $this->pdo->prepare('select * from users where signin_token = :signin_token');
+        $stmt->bindValue('signin_token', $signinToken);
+        $stmt->execute();
+        $rows = $stmt->fetchAll();
+
+        return $rows[0] ?? null;
+    }
+
     public function create(array $user): bool
     {
         $stmt = $this->pdo->prepare("insert into users(user_id, name) values (:user_id, :name)");
@@ -31,10 +41,10 @@ class UserDao extends BaseDao
     }
 
     const UPDATE = <<<EOS
-insert into users(user_id, name) values (:user_id, :name)
+insert into users(user_id, name, signin_token) values (:user_id, :name, :signin_token)
     on conflict
     on constraint users_pkey
-    do update set name = :name
+    do update set name = :name, signin_token = :signin_token
 EOS;
 
     public function update(array $user): bool

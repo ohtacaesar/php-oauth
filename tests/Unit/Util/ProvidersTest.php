@@ -3,7 +3,6 @@
 namespace Tests\Unit\Util;
 
 use PHPUnit\Framework\TestCase;
-use Util\ProviderException;
 use Util\Providers;
 
 class ProvidersTest extends TestCase

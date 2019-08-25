@@ -5,7 +5,6 @@ namespace Manager;
 use Dao\UserDao;
 use Dao\UserProviderDao;
 use Dao\UserRoleDao;
-use Dao\UserSessionDao;
 use Monolog\Logger;
 use Psr\Log\NullLogger;
 use Util\Providers;
@@ -28,7 +27,8 @@ class UserManager
         UserDao $userDao,
         UserRoleDao $userRoleDao,
         UserProviderDao $userProviderDao
-    ) {
+    )
+    {
         $this->userDao = $userDao;
         $this->userRoleDao = $userRoleDao;
         $this->userProviderDao = $userProviderDao;
@@ -60,6 +60,16 @@ class UserManager
         return $userId;
     }
 
+    public function generateSigninToken(): string
+    {
+        $signinToken = bin2hex(random_bytes(20));
+        while ($user = $this->userDao->findOneBySigninToken($signinToken)) {
+            $signinToken = bin2hex(random_bytes(20));
+        }
+
+        return $signinToken;
+    }
+
     public function getUserByUserId(?string $userId): ?array
     {
         if ($userId === null) {
@@ -85,6 +95,15 @@ class UserManager
         return $user;
     }
 
+    public function getUserBySigninToken(?string $signinToken): ?array
+    {
+        if ($signinToken == null) {
+            return null;
+        }
+
+        return $this->userDao->findOneBySigninToken($signinToken);
+    }
+
     public function getUserByProviderIdAndOwnerId(int $providerId, string $ownerId): ?array
     {
         $tmp = $this->userProviderDao->findOneByProviderIdAndOwnerId($providerId, $ownerId);
@@ -108,6 +127,7 @@ class UserManager
         $user = [
             'user_id' => $user['user_id'],
             'name' => $user['name'],
+            'signin_token' => $user['signin_token'] ?? null,
         ];
 
         $this->userDao->update($user);

@@ -96,4 +96,20 @@ class HomeController extends BaseController
 
         return $response->withRedirect($rd);
     }
+
+    public function signinWithToken(Request $request, Response $response): ResponseInterface
+    {
+        $signinToken = $request->getParam('token');
+        if (!$signinToken) {
+            return $response->withStatus(400);
+        }
+
+        $user = $this->authService->signinWithToken($signinToken);
+        if (!$user) {
+            return $response->withStatus(400);
+        }
+
+        $this->session['flash'] = 'サインインしました。';
+        return $response->withRedirect($this->router->pathFor('home'));
+    }
 }

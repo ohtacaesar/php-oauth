@@ -18,8 +18,8 @@ RUN set -eux \
     &&  if [[ -n "${ALPINE_SERVER}" ]]; then \
           sed -i "s/dl-cdn.alpinelinux.org/${ALPINE_SERVER}/" /etc/apk/repositories; \
         fi \
-    &&  apk add --no-cache postgresql-libs \
-    &&  apk add --no-cache --virtual .build-deps nodejs-npm postgresql-dev $PHPIZE_DEPS \
+    &&  apk add --no-cache postgresql-libs nodejs-npm \
+    &&  apk add --no-cache --virtual .build-deps postgresql-dev $PHPIZE_DEPS \
     &&  docker-php-ext-install pdo_pgsql \
     &&  wget  -O /usr/local/bin/composer.phar ${COMPOSER_URL} \
     &&  chmod +x /usr/local/bin/composer.phar \
