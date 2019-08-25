@@ -1,8 +1,10 @@
 create table if not exists users (
-  user_id    char(20)     not null,
-  name       varchar(255),
-  created_at timestamp    not null default current_timestamp,
-  primary key (user_id)
+  user_id char(20) not null,
+  name varchar(255),
+  signin_token char(40),
+  created_at timestamp not null default current_timestamp,
+  primary key (user_id),
+  unique(signin_token)
 );
 
 create table if not exists user_providers (

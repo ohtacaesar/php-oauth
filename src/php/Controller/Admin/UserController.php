@@ -10,6 +10,7 @@ use Slim\Container;
 use Slim\Exception\NotFoundException;
 use Slim\Http\Request;
 use Slim\Http\Response;
+use Slim\Http\Uri;
 
 /**
  * Class UserController
@@ -23,6 +24,9 @@ class UserController extends BaseController
     /** @var UserRoleDao */
     private $userRoleDao;
 
+    /** @var Uri */
+    private $uri;
+
     /**
      * UserController constructor.
      * @param Container $container
@@ -33,6 +37,7 @@ class UserController extends BaseController
         parent::__construct($container);
         $this->userDao = $container->get('userDao');
         $this->userRoleDao = $container->get('userRoleDao');
+        $this->uri = $container->get('uri');
     }
 
     /**
@@ -62,8 +67,16 @@ class UserController extends BaseController
             throw new NotFoundException($request, $response);
         }
 
+        $signinToken = $user['signin_token'] ?? null;
+        $tokenSigninUrl = null;
+        if ($signinToken) {
+            $tokenSigninPath = $this->router->pathFor('token_signin', [], ['token' => $signinToken]);
+            $tokenSigninUrl = $this->uri->getBaseUrl() . $tokenSigninPath;
+        }
+
         return $this->view->render($response, 'admin/users/show.html.twig', [
-            'user' => $user
+            'user' => $user,
+            'token_signin_url' => $tokenSigninUrl,
         ]);
     }
 
@@ -126,12 +139,11 @@ class UserController extends BaseController
         return $response->withRedirect($rd);
     }
 
-
     public function removeProvider(Request $request, Response $response, array $args)
     {
         if (!$user = $this->userManager->getUserByUserId($args['user_id'])) {
-            $this->session['message'] = 'ユーザーが見つかりませんでした';
-            return $response->withRedirect($this->router->pathFor('user', $user));
+            $this->session['flash'] = 'ユーザーが見つかりませんでした';
+            return $response->withRedirect($this->router->pathFor('users'));
         }
 
         if (count($user['user_providers']) <= 1) {
@@ -140,6 +152,35 @@ class UserController extends BaseController
         }
 
         $this->userManager->getUserProviderDao()->delete($args);
+
+        return $response->withRedirect($this->router->pathFor('user', $user));
+    }
+
+    public function generateSigninToken(Request $request, Response $response, array $args)
+    {
+        if (!$user = $this->userManager->getUserByUserId($args['user_id'])) {
+            $this->session['flash'] = 'ユーザーが見つかりませんでした';
+            return $response->withRedirect($this->router->pathFor('users'));
+        }
+
+        $signinToken = $this->userManager->generateSigninToken();
+        $user['signin_token'] = $signinToken;
+        $this->userManager->updateUser($user);
+        $this->session['flash'] = 'ログイントークンを生成しました。';
+
+        return $response->withRedirect($this->router->pathFor('user', $user));
+    }
+
+    public function deleteSigninToken(Request $request, Response $response, array $args)
+    {
+        if (!$user = $this->userManager->getUserByUserId($args['user_id'])) {
+            $this->session['flash'] = 'ユーザーが見つかりませんでした';
+            return $response->withRedirect($this->router->pathFor('users'));
+        }
+
+        $user['signin_token'] = null;
+        $this->userManager->updateUser($user);
+        $this->session['flash'] = 'ログイントークンを削除しました。';
 
         return $response->withRedirect($this->router->pathFor('user', $user));
     }
