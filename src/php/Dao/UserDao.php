@@ -34,9 +34,15 @@ class UserDao extends BaseDao
         return $rows[0] ?? null;
     }
 
+    /**
+     * @param array $user
+     * @return bool
+     * @throws \PDOException
+     */
     public function create(array $user): bool
     {
         $stmt = $this->pdo->prepare("insert into users(user_id, name) values (:user_id, :name)");
+
         return $stmt->execute($user);
     }
 
