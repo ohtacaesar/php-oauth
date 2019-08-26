@@ -39,7 +39,7 @@ class UserDao extends BaseDao
      * @return bool
      * @throws \PDOException
      */
-    public function create(array $user): bool
+    public function insert(array $user): bool
     {
         $stmt = $this->pdo->prepare("insert into users(user_id, name) values (:user_id, :name)");
 
@@ -57,5 +57,12 @@ EOS;
     {
         $stmt = $this->pdo->prepare(static::UPDATE);
         return $stmt->execute($user);
+    }
+
+    public function delete(array $user): bool
+    {
+        $stmt = $this->pdo->prepare('delete from users where user_id = :user_id');
+        $stmt->bindValue('user_id', $user['user_id']);
+        return $stmt->execute();
     }
 }

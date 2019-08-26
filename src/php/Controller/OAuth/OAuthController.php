@@ -69,9 +69,12 @@ abstract class OAuthController extends BaseController
         $user = $this->authService->signUp($this->getProviderId(), $owner);
 
         if (!$user) {
-            $this->logger->error('ログインに失敗');
-            return $response->withRedirect('/');
+            $this->logger->error('ログインに失敗しました。');
+            $this->session['flash'] = 'ログインに失敗しました。';
+            return $response->withRedirect($this->router->pathFor('home'));
         }
+
+        $this->session['flash'] = 'ログインしました。';
 
         return $response->withRedirect($this->session->getUnset('rd', '/'));
     }

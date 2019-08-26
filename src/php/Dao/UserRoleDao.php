@@ -53,7 +53,7 @@ EOS;
      * @param int $userId
      * @return bool
      */
-    public function deleteByUserId(int $userId)
+    public function deleteByUserId(string $userId)
     {
         $stmt = $this->pdo->prepare('delete from user_roles where user_id = :user_id');
         $stmt->bindValue('user_id', $userId);

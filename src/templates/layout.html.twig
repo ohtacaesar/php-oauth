@@ -2,22 +2,33 @@
 <html>
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>{{ app.title }}</title>
-    <link href="/dist/style.css" rel="stylesheet" type="text/css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>{{ page.title ?? app.title }}</title>
+  <link href="/dist/style.css" rel="stylesheet" type="text/css">
 </head>
 
 <body>
-<main role="main" class="container">
-    <nav class="navbar navbar-light bg-light">
-        <a class="navbar-brand" href="/">{{ app.title }}</a>
-        {% if user %}
-            <a href="{{ path_for('signout') }}" class="navbar-text">SIGNOUT</a>
-        {% endif %}
-    </nav>
-    {% block content %}{% endblock %}
-</main>
+<header class="navbar navbar-expand flex-column flex-md-row navbar-dark bg-dark">
+  <a class="navbar-brand" href="{{ path_for('home') }}">{{ app.title }}</a>
+  <ul class="navbar-nav flex-row ml-md-auto d-none d-md-flex">
+    {% if user %}
+      <li class="nav-item dropdown show">
+        <a class="nav-item nav-link dropdown-toggle mr-md-2" href="#" id="bd-versions"
+           data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+          {{ user.name|length > 14 ? user.name[:14] ~ '...' : user.name }}
+        </a>
+        <div class="dropdown-menu dropdown-menu-right">
+          <a class="dropdown-item" href="{{ path_for('signout') }}">ログアウト</a>
+          <!--<div class="dropdown-divider"></div>-->
+        </div>
+      </li>
+    {% endif %}
+  </ul>
+</header>
+<div class="container-fluid">
+  {% block content %}{% endblock %}
+</div>
 <script src="/dist/bundle.js"></script>
 </body>
 </html>

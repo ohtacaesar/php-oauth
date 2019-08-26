@@ -98,15 +98,15 @@ class UserController extends BaseController
             ]
         ];
 
-
         if (!$name) {
             $userForm['error_count'] += 1;
             $userForm['name']['errors'][] = '空です';
         }
 
-        if (mb_strlen($name) > 255) {
+        $len = mb_strlen($name);
+        if ($len < 1 or 255 < $len) {
             $userForm['error_count'] += 1;
-            $userForm['name']['errors'][] = '255文字までです';
+            $userForm['name']['errors'][] = '1~255文字';
         }
 
         if ($userForm['error_count'] > 0) {

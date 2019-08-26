@@ -19,6 +19,11 @@ $app->get('/logout', HomeController::class . ':signOut')->setName('logout');
 $app->get('/signout', HomeController::class . ':signOut')->setName('signout');
 $app->get('/destroy', HomeController::class . ':sessionDestroy')->setName('session_destroy');
 
+$app->group('/settings', function () {
+    $this->get('/account', HomeController::class . ':showDeleteAccount')->setName('settings_account');
+    $this->delete('/account', HomeController::class . ':deleteAccount')->setName('settings_account');
+});
+
 $app->group('/github', function () {
     $this->get('', GitHubController::class . ':start')->setName('login');
     $this->get('/callback', GitHubController::class . ':callback');
