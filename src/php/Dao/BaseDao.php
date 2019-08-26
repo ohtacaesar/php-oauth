@@ -17,6 +17,10 @@ class BaseDao
         return $this->pdo;
     }
 
+    /**
+     * @param callable $callback
+     * @throws \Exception
+     */
     public function transaction(callable $callback)
     {
         $this->pdo->beginTransaction();

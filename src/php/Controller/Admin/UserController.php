@@ -80,6 +80,45 @@ class UserController extends BaseController
         ]);
     }
 
+    public function new(Request $request, Response $response)
+    {
+        return $this->view->render($response, 'admin/users/new.html.twig', [
+            'user_form' => $this->session->getUnset('user_form')
+        ]);
+    }
+
+    public function create(Request $request, Response $response)
+    {
+        $name = $request->getParam('name');
+        $userForm = [
+            'error_count' => 0,
+            'name' => [
+                'value' => $name,
+                'errors' => [],
+            ]
+        ];
+
+
+        if (!$name) {
+            $userForm['error_count'] += 1;
+            $userForm['name']['errors'][] = '空です';
+        }
+
+        if (mb_strlen($name) > 255) {
+            $userForm['error_count'] += 1;
+            $userForm['name']['errors'][] = '255文字までです';
+        }
+
+        if ($userForm['error_count'] > 0) {
+            $this->session['user_form'] = $userForm;
+            return $response->withRedirect($this->router->pathFor('users_new'));
+        }
+
+        $user = $this->userManager->createUser($name);
+
+        return $response->withRedirect($this->router->pathFor('user', $user));
+    }
+
     /**
      * @param Request $request
      * @param Response $response

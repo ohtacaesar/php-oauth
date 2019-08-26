@@ -1,0 +1,24 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block content %}
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h3">新規作成</h1>
+    </div>
+    {% if flash %}<p class="alert alert-danger" role="alert">{{ flash }}<p>{% endif %}
+    <div>
+        <form action="{{ path_for('users') }}" method="post">
+            <div class="form-group">
+                <label for="form_name">名前</label>
+                <input id="form_name" type="text" name="name" value="{{ user_form.name.value }}"
+                       class="form-control{% if user_form.name.errors %} is-invalid{% endif %}">
+                {% if user_form.name.errors %}
+                    <div class="invalid-feedback">
+                        {% for e in user_form.name.errors %}{{ e }}<br>{% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            <input type="hidden" name="{{ csrf.key }}" value="{{ csrf.token }}">
+            <button type="submit" class="btn btn-primary">作成</button>
+        </form>
+    </div>
+{% endblock %}

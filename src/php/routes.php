@@ -35,6 +35,8 @@ $app->group('/admin', function () {
     $this->get('', AdminController::class . ':index')->setName('admin');
     $this->group('/users', function () {
         $this->get('', UserController::class . ':index')->setName('users');
+        $this->get('/new', UserController::class . ':new')->setName('users_new');
+        $this->post('', UserController::class . ':create')->setName('users');
         $this->group('/{user_id:[a-f0-9]+}', function () {
             $this->get('', UserController::class . ':show')->setName('user');
             $this->post('/roles', UserController::class . ':addRole')->setName('user_add_role');
