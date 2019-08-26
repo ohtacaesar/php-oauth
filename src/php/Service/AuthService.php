@@ -102,7 +102,7 @@ class AuthService
 
     public function signOut(): bool
     {
-        session_destroy();
+        unset($this->session['user_id']);
 
         return true;
     }

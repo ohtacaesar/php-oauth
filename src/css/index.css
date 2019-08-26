@@ -5,19 +5,14 @@ body {
   height: 100%;
 }
 
-body {
-  display: flex
-}
-
 .navbar {
-  margin-bottom: 10px;
+  margin-bottom: 20px;
 }
 
 main.container {
   width: 100%;
-  max-width: 420px;
+  max-width: 600px;
   padding: 15px;
-  margin: auto;
 }
 
 p.flash {
@@ -26,4 +21,18 @@ p.flash {
 
 .my-list-group {
   margin-bottom: 12px;
+}
+
+div.box {
+  max-width: 800px;
+  margin-bottom: 40px;
+}
+
+div.box .box__header {
+  margin-bottom: 20px;
+  font-size: 1.2rem;
+}
+
+div.box .box__body {
+  padding-left: 10px;
 }

@@ -117,7 +117,7 @@ class UserManager
     public function createUser(string $name = null): array
     {
         $user = ['user_id' => $this->generateUserId(), 'name' => $name];
-        $this->userDao->create($user);
+        $this->userDao->insert($user);
 
         return $user;
     }
@@ -131,6 +131,16 @@ class UserManager
         ];
 
         $this->userDao->update($user);
+    }
+
+    public function deleteUser(array $user)
+    {
+        $this->userDao->transaction(function () use ($user) {
+            $userId = $user['user_id'];
+            $this->userRoleDao->deleteByUserId($userId);
+            $this->userProviderDao->deleteByUserId($userId);
+            $this->userDao->delete($user);
+        });
     }
 
     public function addRole(array $user, string $role)

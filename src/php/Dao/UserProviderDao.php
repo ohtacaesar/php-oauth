@@ -65,7 +65,15 @@ EOS;
         return $this->deleteByUserIdAndProviderId($userProvider['user_id'], $userProvider['provider_id']);
     }
 
-    public function deleteByUserIdAndProviderId(string $userId, int $providerId)
+    public function deleteByUserId(string $userId): bool
+    {
+        $sql = "delete from user_providers where user_id = :user_id";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindValue('user_id', $userId);
+        return $stmt->execute();
+    }
+
+    public function deleteByUserIdAndProviderId(string $userId, int $providerId): bool
     {
         $sql = "delete from user_providers where user_id = :user_id and provider_id = :provider_id";
         $stmt = $this->pdo->prepare($sql);
