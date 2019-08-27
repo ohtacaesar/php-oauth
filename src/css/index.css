@@ -1,22 +1,11 @@
 @import '~bootstrap/dist/css/bootstrap.min.css';
 
-html,
-body {
-  height: 100%;
-}
-
-.navbar {
-  margin-bottom: 20px;
-}
-
-main.container {
-  width: 100%;
-  max-width: 600px;
-  padding: 15px;
-}
-
 p.flash {
   color: red;
+}
+
+.container-fluid {
+  padding-top: 32px;
 }
 
 .my-list-group {

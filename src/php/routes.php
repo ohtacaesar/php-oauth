@@ -5,6 +5,7 @@ use Controller\AdminController;
 use Controller\HomeController;
 use Controller\OAuth\GitHubController;
 use Controller\OAuth\GoogleController;
+use Controller\SettingsController;
 use Controller\StaticController;
 use Slim\Http\Request;
 use Slim\Http\Response;
@@ -18,11 +19,8 @@ $app->get('/auth', HomeController::class . ':auth')->setName('auth');
 $app->get('/logout', HomeController::class . ':signOut')->setName('logout');
 $app->get('/signout', HomeController::class . ':signOut')->setName('signout');
 $app->get('/destroy', HomeController::class . ':sessionDestroy')->setName('session_destroy');
+$app->get('/signin/token', HomeController::class . ':signinWithToken')->setName('token_signin');
 
-$app->group('/settings', function () {
-    $this->get('/account', HomeController::class . ':showDeleteAccount')->setName('settings_account');
-    $this->delete('/account', HomeController::class . ':deleteAccount')->setName('settings_account');
-});
 
 $app->group('/github', function () {
     $this->get('', GitHubController::class . ':start')->setName('login');
@@ -34,7 +32,35 @@ $app->group('/google', function () {
     $this->get('/callback', GoogleController::class . ':callback');
 });
 
-$app->get('/signin/token', HomeController::class . ':signinWithToken')->setName('token_signin');
+$app->group('/settings', function () {
+    $this->get('', SettingsController::class . ':home')->setName('settings');
+    $this->get('/profile', SettingsController::class . ':profile')->setName('settings_profile');
+    $this->put('/profile', SettingsController::class . ':profileUpdate');
+    $this->get('/account', SettingsController::class . ':account')->setName('settings_account');
+    $this->delete('/account', SettingsController::class . ':accountDelete');
+})->add(function (Request $request, Response $response, callable $next) {
+    /**
+     * @var \Manager\UserManager $userManager
+     * @var \Util\Session $session
+     */
+    $userManager = $this->get('userManager');
+    $session = $this->get('session');
+    $userId = $session->get('user_id');
+
+    if ($userId === null) {
+        $session['flash'] = 'ログインしてください。';
+        return $response->withRedirect("/");
+    }
+
+    $user = $userManager->getUserByUserId($userId);
+    if ($user === null) {
+        unset($session['user_id']);
+        $session['flash'] = 'ユーザー情報の取得に失敗しました。';
+        return $response->withRedirect("/");
+    }
+
+    return $next($request, $response);
+});
 
 $app->group('/admin', function () {
     $this->get('', AdminController::class . ':index')->setName('admin');
