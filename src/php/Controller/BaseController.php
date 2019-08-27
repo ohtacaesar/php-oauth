@@ -6,6 +6,7 @@ use Manager\UserManager;
 use Psr\Log\LoggerInterface;
 use Slim\Container;
 use Slim\Http\Request;
+use Slim\Http\Uri;
 use Slim\Router;
 use Slim\Views\Twig;
 use Util\Session;
@@ -28,6 +29,9 @@ class BaseController
     /** @var Router */
     protected $router;
 
+    /** @var Uri */
+    protected $uri;
+
     /** @var Session */
     protected $session;
 
@@ -48,6 +52,7 @@ class BaseController
         $this->pdo = $container->get('pdo');
         $this->view = $container->get('view');
         $this->router = $container->get('router');
+        $this->uri = $container->get('uri');
         $this->session = $container->get('session');
         $this->logger = $container->get('logger');
         $this->userManager = $container['userManager'];
@@ -64,13 +69,14 @@ class BaseController
 
     protected function validateRedirectUrl(Request $request, $redirectUrl)
     {
-        $redirectUrl = filter_var($redirectUrl, FILTER_VALIDATE_URL);
-        $redirectUrl = filter_var($redirectUrl, FILTER_SANITIZE_URL);
-
-        $url = parse_url($redirectUrl);
+        $url = $redirectUrl;
+        $url = filter_var($url, FILTER_VALIDATE_URL);
+        $url = filter_var($url, FILTER_SANITIZE_URL);
+        $url = parse_url($url);
         if (!$url) {
             return false;
         }
+
         if (null === ($host = $url['host'] ?? null)) {
             return false;
         }

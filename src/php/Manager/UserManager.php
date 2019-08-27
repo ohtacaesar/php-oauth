@@ -83,7 +83,12 @@ class UserManager
         $user['user_roles'] = $this->userRoleDao->findByUserId($userId);
         $user['roles'] = array_column($user['user_roles'], 'role');
 
-        $user['user_providers'] = $this->userProviderDao->findByUserId($userId);
+        $userProviders = $this->userProviderDao->findByUserId($userId);
+        $userProviderMap = [];
+        foreach ($userProviders as $userProvider) {
+            $userProviderMap[$userProvider['provider_id']] = $userProvider;
+        }
+        $user['user_providers'] = $userProviderMap;
         $user['provider_ids'] = array_column($user['user_providers'], 'provider_id');
 
         $providers = [];

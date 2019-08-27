@@ -5,8 +5,8 @@ namespace Dao;
 class UserProviderDao extends BaseDao
 {
     const INSERT_SQL = <<<EOS
-insert into user_providers(user_id, provider_id, owner_id)
-values(:user_id, :provider_id, :owner_id)
+insert into user_providers(user_id, provider_id, owner_id, name)
+values(:user_id, :provider_id, :owner_id, :name)
 EOS;
 
     public function create(array $data): bool
