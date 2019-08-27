@@ -7,6 +7,7 @@ use Service\AuthService;
 use Slim\Container;
 use Slim\Http\Request;
 use Slim\Http\Response;
+use Util\Providers;
 
 
 class SettingsController extends BaseController
@@ -30,10 +31,22 @@ class SettingsController extends BaseController
         $user = $this->getLoginUser();
 
         return $this->view->render($response, 'settings/profile.html.twig', [
-            'user' => $user
+            'user' => $user,
+            'providers' => [
+                [
+                    'id' => Providers::GITHUB,
+                    'name' => 'GitHub',
+                    'enable_path' => 'login',
+                ], [
+                    'id' => Providers::GOOGLE,
+                    'name' => 'Google',
+                    'enable_path' => 'oauth_google',
+                ]
+            ],
+            'current_url' => (string)$this->uri,
+            'current_path' => $this->uri->getPath()
         ]);
     }
-
 
     public function profileUpdate(Request $request, Response $response): ResponseInterface
     {
@@ -41,15 +54,15 @@ class SettingsController extends BaseController
 
         $name = $request->getParam('name', null);
 
-        if ($name === null or mb_strlen($name) <= 1 or 255 < mb_strlen($name)) {
+        if ($name === null or mb_strlen($name) <= 1 or 30 < mb_strlen($name)) {
             $this->session['flash'] = 'パラメータが正しくありません。';
-            return $response->withRedirect($this->router->pathFor('home'));
+            return $response->withRedirect($this->router->pathFor('settings'));
         }
         $user['name'] = $name;
         $this->userManager->updateUser($user);
         $this->session['flash'] = 'プロフィールを変更しました。';
 
-        return $response->withRedirect($this->router->pathFor('home'));
+        return $response->withRedirect($this->router->pathFor('settings'));
     }
 
     public function account(Request $request, Response $response): ResponseInterface
@@ -73,5 +86,4 @@ class SettingsController extends BaseController
 
         return $response->withRedirect($this->router->pathFor('home'));
     }
-
 }

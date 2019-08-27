@@ -104,9 +104,9 @@ class UserController extends BaseController
         }
 
         $len = mb_strlen($name);
-        if ($len < 1 or 255 < $len) {
+        if ($len < 1 or 30 < $len) {
             $userForm['error_count'] += 1;
-            $userForm['name']['errors'][] = '1~255文字';
+            $userForm['name']['errors'][] = '1~30文字';
         }
 
         if ($userForm['error_count'] > 0) {

@@ -68,13 +68,17 @@ class AuthService
                 $user = $loginUser;
             }
 
-            $user = $this->updateOrCreateUser($user, $owner);
+            $ownerName = method_exists($owner, 'getName') ? $owner->getName() : null;
+            if ($user === null) {
+                $user = $this->userManager->createUser($ownerName);
+            }
 
             if (!in_array($providerId, $user['provider_ids'] ?? [], true)) {
                 $this->userManager->getUserProviderDao()->create([
                     'user_id' => $user['user_id'],
                     'provider_id' => $providerId,
                     'owner_id' => $owner->getId(),
+                    'name' => $ownerName,
                 ]);
             }
 
@@ -105,20 +109,6 @@ class AuthService
         unset($this->session['user_id']);
 
         return true;
-    }
-
-    private function updateOrCreateUser(?array $user, ResourceOwnerInterface $owner): ?array
-    {
-        $ownerName = method_exists($owner, 'getName') ? $owner->getName() : null;
-
-        if ($user === null) {
-            $user = $this->userManager->createUser($ownerName);
-        } elseif ($user['name'] === null and $ownerName) {
-            $user['name'] = $ownerName;
-            $this->userManager->updateUser($user);
-        }
-
-        return $user;
     }
 
     private function applyGrantRules(array $user, int $providerId, ResourceOwnerInterface $owner)

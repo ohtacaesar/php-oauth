@@ -18,7 +18,7 @@
            data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
           {{ user.name|length > 14 ? user.name[:14] ~ '...' : user.name }}
         </a>
-        <div class="dropdown-menu dropdown-menu-right">
+        <div class="dropdown-menu dropdown-menu-right" style="font-size: 0.9rem">
           <a class="dropdown-item" href="{{ path_for('settings') }}">設定</a>
           <div class="dropdown-divider"></div>
           <a class="dropdown-item" href="{{ path_for('signout') }}">ログアウト</a>

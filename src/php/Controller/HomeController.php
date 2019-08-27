@@ -37,7 +37,6 @@ class HomeController extends BaseController
     }
 
 
-
     public function auth(Request $request, Response $response): ResponseInterface
     {
         if (!$request->getServerParam('HTTP_X_AUTH_ENABLE')) {
