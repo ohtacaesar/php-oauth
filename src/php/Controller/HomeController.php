@@ -36,44 +36,7 @@ class HomeController extends BaseController
         ]);
     }
 
-    public function userUpdate(Request $request, Response $response): ResponseInterface
-    {
-        $user = $this->getLoginUser();
 
-        $name = $request->getParam('name', null);
-
-        if ($name === null or mb_strlen($name) <= 1 or 255 < mb_strlen($name)) {
-            $this->session['flash'] = 'パラメータが正しくありません。';
-            return $response->withRedirect($this->router->pathFor('home'));
-        }
-        $user['name'] = $name;
-        $this->userManager->updateUser($user);
-        $this->session['flash'] = 'プロフィールを変更しました。';
-
-        return $response->withRedirect($this->router->pathFor('home'));
-    }
-
-    public function showDeleteAccount(Request $request, Response $response): ResponseInterface
-    {
-        $user = $this->getLoginUser();
-        if (!$user) {
-            return $response->withRedirect($this->router->pathFor('home'));
-        }
-
-        return $this->view->render($response, 'settings/account_delete.html.twig', [
-            'user' => $user,
-        ]);
-    }
-
-    public function deleteAccount(Request $request, Response $response): ResponseInterface
-    {
-        $user = $this->getLoginUser();
-        $this->userManager->deleteUser($user);
-        $this->authService->signOut();
-        $this->session['flash'] = 'アカウントを削除しました。';
-
-        return $response->withRedirect($this->router->pathFor('home'));
-    }
 
     public function auth(Request $request, Response $response): ResponseInterface
     {

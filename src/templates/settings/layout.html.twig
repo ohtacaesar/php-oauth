@@ -1,0 +1,17 @@
+{% extends 'layout.html.twig' %}
+
+{% block content %}
+  <div class="row">
+    <div class="col-md-3">
+      <ul class="list-group" style="font-size: 0.9rem">
+        <li class="list-group-item list-group-item-secondary">設定</li>
+        <li class="list-group-item"><a href="{{ path_for('settings_profile') }}">基本設定</a></li>
+        <li class="list-group-item"><a href="{{ path_for('settings_account') }}">アカウントの削除</a></li>
+      </ul>
+    </div>
+    <div class="col">
+      {% block content_column %}
+      {% endblock %}
+    </div>
+  </div>
+{% endblock %}

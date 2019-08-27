@@ -1,0 +1,44 @@
+{% extends 'settings/layout.html.twig' %}
+
+{% block content_column %}
+  <div class="box">
+    <h3 class="box__header">プロフィール</h3>
+    <div class="box__body">
+      <form action="{{ path_for('settings_profile') }}" method="post">
+        <table class="table">
+          <tbody>
+          <tr>
+            <th><label class="col-form-label">表示名</label></th>
+            <td><input name="name" value="{{ user.name }}" class="form-control"></td>
+          </tr>
+          <tr>
+            <th>ロール</th>
+            <td>
+              {% for role in user.roles %}
+                {% if role == 'ADMIN' %}
+                  <a href="{{ path_for('admin') }}">{{ role }}</a>
+                {% else %}
+                  {{ role }}
+                {% endif %}
+                <br>
+              {% endfor %}
+            </td>
+          </tr>
+          </tbody>
+        </table>
+        <input type="hidden" name="{{ csrf.key }}" value="{{ csrf.token }}">
+        <button type="submit" name="_METHOD" value="PUT" class="btn btn-primary">更新</button>
+      </form>
+    </div>
+  </div>
+  <div class="box">
+    <h3 class="box__header">ソーシャルログイン</h3>
+    <div class="box__body">
+      <ul>
+        {% for provider in user.providers %}
+          <li>{{ provider }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+{% endblock %}
