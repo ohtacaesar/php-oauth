@@ -10,7 +10,6 @@ use Slim\Container;
 use Slim\Exception\NotFoundException;
 use Slim\Http\Request;
 use Slim\Http\Response;
-use Slim\Http\Uri;
 
 /**
  * Class UserController
@@ -24,9 +23,6 @@ class UserController extends BaseController
     /** @var UserRoleDao */
     private $userRoleDao;
 
-    /** @var Uri */
-    private $uri;
-
     /**
      * UserController constructor.
      * @param Container $container
@@ -37,7 +33,6 @@ class UserController extends BaseController
         parent::__construct($container);
         $this->userDao = $container->get('userDao');
         $this->userRoleDao = $container->get('userRoleDao');
-        $this->uri = $container->get('uri');
     }
 
     /**

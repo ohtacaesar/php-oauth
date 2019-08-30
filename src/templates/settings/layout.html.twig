@@ -10,6 +10,7 @@
       </ul>
     </div>
     <div class="col">
+      {% if flash %}<p class="alert alert-warning">{{ flash }}</p>{% endif %}
       {% block content_column %}
       {% endblock %}
     </div>

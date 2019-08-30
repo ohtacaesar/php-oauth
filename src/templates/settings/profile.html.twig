@@ -50,8 +50,13 @@
             <td>{{ user.user_providers[provider.id].name }}</td>
             <td>
               {% if user.user_providers[provider.id] %}
-                <a href="{{ path_for('home') }}"
-                   class="btn btn-sm btn-warning">解除する</a>
+                <form action="{{ path_for('settings_social_login', {'provider_id': provider.id}) }}"
+                      method="post">
+                  <input type="hidden" name="{{ csrf.key }}" value="{{ csrf.token }}">
+                  <button type="submit" name="_METHOD" value="DELETE"
+                          class="btn btn-sm btn-warning">解除する
+                  </button>
+                </form>
               {% else %}
                 <a href="{{ path_for(provider.enable_path, {}, {'rd': current_url}) }}"
                    class="btn btn-sm btn-success">連携する</a>

@@ -64,7 +64,13 @@ class BaseController
             return null;
         }
 
-        return $this->userManager->getUserByUserId($userId);
+        $user = $this->userManager->getUserByUserId($userId);
+        if ($user === null) {
+            unset($this->session['user_id']);
+            return null;
+        }
+
+        return $user;
     }
 
     protected function validateRedirectUrl(Request $request, $redirectUrl)
