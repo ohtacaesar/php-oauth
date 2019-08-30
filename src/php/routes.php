@@ -36,8 +36,9 @@ $app->group('/settings', function () {
     $this->get('', SettingsController::class . ':home')->setName('settings');
     $this->get('/profile', SettingsController::class . ':profile')->setName('settings_profile');
     $this->put('/profile', SettingsController::class . ':profileUpdate');
+    $this->delete('/social_login/{provider_id:[0-9]+}', SettingsController::class . ':deleteSocialLogin')->setName('settings_social_login');
     $this->get('/account', SettingsController::class . ':account')->setName('settings_account');
-    $this->delete('/account', SettingsController::class . ':accountDelete');
+    $this->delete('/account', SettingsController::class . ':deleteAccount');
 })->add(function (Request $request, Response $response, callable $next) {
     /**
      * @var \Manager\UserManager $userManager

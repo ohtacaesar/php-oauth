@@ -148,6 +148,7 @@ class UserManager
         });
     }
 
+
     public function addRole(array $user, string $role)
     {
         $userRole = ['user_id' => $user['user_id'], 'role' => $role];
@@ -168,5 +169,14 @@ class UserManager
         ];
 
         $this->userProviderDao->create($userProvider);
+    }
+
+    /**
+     * @param array $user
+     * @param int $providerId
+     */
+    public function deleteUserProviderByUserAndProviderId(array $user, int $providerId)
+    {
+        $this->userProviderDao->deleteByUserIdAndProviderId($user['user_id'], $providerId);
     }
 }

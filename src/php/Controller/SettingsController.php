@@ -5,6 +5,7 @@ namespace Controller;
 use Psr\Http\Message\ResponseInterface;
 use Service\AuthService;
 use Slim\Container;
+use Slim\Exception\SlimException;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use Util\Providers;
@@ -64,6 +65,22 @@ class SettingsController extends BaseController
 
         return $response->withRedirect($this->router->pathFor('settings'));
     }
+
+    public function deleteSocialLogin(Request $request, Response $response, $args)
+    {
+        $user = $this->getLoginUser();
+        if ($user === null) {
+            $this->session['flash'] = 'ログインが必要です。';
+            throw new SlimException($request, $response->withRedirect($this->router->pathFor('home')));
+        }
+
+        $providerId = (int)$args['provider_id'];
+        $this->userManager->deleteUserProviderByUserAndProviderId($user, $providerId);
+
+        $this->session['flash'] = 'ソーシャルログイン設定を解除しました。';
+        return $response->withRedirect($this->router->pathFor('settings'));
+    }
+
 
     public function account(Request $request, Response $response): ResponseInterface
     {
