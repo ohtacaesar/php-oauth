@@ -76,6 +76,6 @@ abstract class OAuthController extends BaseController
 
         $this->session['flash'] = 'ログインしました。';
 
-        return $response->withRedirect($this->session->getUnset('rd', '/'));
+        return $response->withRedirect($this->session->getUnset('rd', $this->router->pathFor('home')));
     }
 }

@@ -25,11 +25,15 @@ services:
     build: ./nginx
     ports:
       - "80:80"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
     depends_on:
       - php-auth
 
   postgres:
     image: postgres:10-alpine
+    ports:
+      - 5432:5432
 
 secrets:
   secrets.ini:

@@ -10,6 +10,7 @@ use Controller\StaticController;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
+
 $app->get('/dist[/{params:.*}]', StaticController::class . ':dist');
 $app->get('/images[/{params:.*}]', StaticController::class . ':images');
 
@@ -77,6 +78,9 @@ $app->group('/admin', function () {
             $this->post('/signin_token', UserController::class . ':generateSigninToken')->setName('user_signin_token');
             $this->delete('/signin_token', UserController::class . ':deleteSigninToken')->setName('user_signin_token');
         });
+    });
+    $this->get('/phpinfo', function () {
+        phpinfo();
     });
 })->add(function (Request $request, Response $response, callable $next) {
     /**
