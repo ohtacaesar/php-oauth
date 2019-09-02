@@ -1,6 +1,18 @@
 <?php
 
+use Dao\UserDao;
+use Dao\UserProviderDao;
+use Dao\UserRoleDao;
+use Middleware\Csrf;
 use Slim\Container;
+use Slim\Http\Environment;
+use Slim\Http\Uri;
+use Slim\Views\Twig;
+use Slim\Views\TwigExtension;
+use Twig\AppExtension;
+use Twig\CsrfExtension;
+use Twig\FlashExtension;
+use Util\Session;
 
 $container = $app->getContainer();
 
@@ -18,15 +30,15 @@ $container['pdo'] = function (Container $c) {
 };
 
 $container['userDao'] = function (Container $c) {
-    return new \Dao\UserDao($c->get('pdo'));
+    return new UserDao($c->get('pdo'));
 };
 
 $container['userRoleDao'] = function (Container $c) {
-    return new \Dao\UserRoleDao($c->get('pdo'));
+    return new UserRoleDao($c->get('pdo'));
 };
 
 $container['userProviderDao'] = function (Container $c) {
-    return new \Dao\UserProviderDao($c['pdo']);
+    return new UserProviderDao($c['pdo']);
 };
 
 $container['userManager'] = function (Container $c) {
@@ -47,18 +59,18 @@ $container['authService'] = function (Container $c) {
 };
 
 $container['uri'] = function () {
-    return \Slim\Http\Uri::createFromEnvironment(new \Slim\Http\Environment($_SERVER));
+    return Uri::createFromEnvironment(new Environment($_SERVER));
 };
 
 $container['view'] = function (Container $c) {
     $settings = $c->get('settings')['view'];
 
-    $view = new \Slim\Views\Twig($settings['template_path'], $settings);
-    $view->addExtension(new \Slim\Views\TwigExtension($c->get('router'), $c->get('uri')));
+    $view = new Twig($settings['template_path'], $settings);
+    $view->addExtension(new TwigExtension($c->get('router'), $c->get('uri')));
     $view->addExtension(new Twig_Extension_Debug());
-    $view->addExtension(new \Twig\CsrfExtension($c['csrf']));
-    $view->addExtension(new \Twig\FlashExtension($c['session']));
-    $view->addExtension(new \Twig\AppExtension($c));
+    $view->addExtension(new CsrfExtension($c['csrf']));
+    $view->addExtension(new FlashExtension($c['session']));
+    $view->addExtension(new AppExtension($c));
 
     return $view;
 };
@@ -87,9 +99,8 @@ $container['session'] = function (Container $c) {
     $config = array_merge($c['settings']['cookie'], [
         'cookie_domain' => $cookieDomain
     ]);
-    session_start($config);
 
-    return new \Util\Session($_SESSION);
+    return new Session($config);
 };
 
 $container['githubProvider'] = function (Container $c) {
@@ -103,7 +114,7 @@ $container['githubProvider'] = function (Container $c) {
 
 $container['googleProvider'] = function (Container $c) {
     $conf = $c['settings']['google'];
-    /** @var \Slim\Http\Uri $uri */
+    /** @var Uri $uri */
     $uri = $c['uri'];
     $uri = $uri->withPath("/google/callback")->withQuery("")->withFragment("");
 
@@ -116,5 +127,5 @@ $container['googleProvider'] = function (Container $c) {
 };
 
 $container['csrf'] = function (Container $c) {
-    return new \Middleware\Csrf($c['session'], $c['logger']);
+    return new Csrf($c['session'], $c['logger']);
 };

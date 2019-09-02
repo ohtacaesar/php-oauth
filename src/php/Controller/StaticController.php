@@ -2,6 +2,7 @@
 
 namespace Controller;
 
+use Slim\Exception\NotFoundException;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
@@ -24,7 +25,7 @@ class StaticController extends BaseController
      * @param Response $response
      * @param array $args
      * @return Response
-     * @throws \Slim\Exception\NotFoundException
+     * @throws NotFoundException
      */
     public function dist(Request $request, Response $response, $args = [])
     {
@@ -38,7 +39,7 @@ class StaticController extends BaseController
      * @param Response $response
      * @param array $args
      * @return Response
-     * @throws \Slim\Exception\NotFoundException
+     * @throws NotFoundException
      */
     public function images(Request $request, Response $response, $args = [])
     {
@@ -52,22 +53,24 @@ class StaticController extends BaseController
      * @param Response $response
      * @param $path
      * @return Response
-     * @throws \Slim\Exception\NotFoundException
+     * @throws NotFoundException
      */
     private function staticFile(Request $request, Response $response, $path)
     {
         if (!is_file($path)) {
             $this->logger->info(sprintf('File not found.(%s)', $path));
-            throw new \Slim\Exception\NotFoundException($request, $response);
+            throw new NotFoundException($request, $response);
         }
 
         $ext = substr($path, strrpos($path, '.') + 1);
         if (!isset(static::MIME_MAP[$ext])) {
-            throw new \Slim\Exception\NotFoundException($request, $response);
+            throw new NotFoundException($request, $response);
         }
 
         $contentType = static::MIME_MAP[$ext];
-        $response = $response->withHeader('content-type', $contentType);
+        $response = $response
+            ->withHeader('Content-Type', $contentType)
+            ->withHeader('Cache-Control', 'public, max-age=31536000');
         $response->getBody()->write(file_get_contents($path));
 
         return $response;

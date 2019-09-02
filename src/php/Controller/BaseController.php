@@ -2,6 +2,7 @@
 
 namespace Controller;
 
+use Interop\Container\Exception\ContainerException;
 use Manager\UserManager;
 use Psr\Log\LoggerInterface;
 use Slim\Container;
@@ -44,7 +45,7 @@ class BaseController
     /**
      * BaseController constructor.
      * @param Container $container
-     * @throws \Interop\Container\Exception\ContainerException
+     * @throws ContainerException
      */
     public function __construct(Container $container)
     {
