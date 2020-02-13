@@ -1,6 +1,6 @@
 #!/bin/sh
 
-php bin/init_db.php
+composer.phar db-setup
 
 set -e
 

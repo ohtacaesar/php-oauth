@@ -21,7 +21,7 @@ $container['pdo'] = function (Container $c) {
     return new \PDO(
         $settings['dsn'],
         $settings['username'],
-        $settings['passwd'],
+        $settings['password'],
         [
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
@@ -45,7 +45,8 @@ $container['userManager'] = function (Container $c) {
     return new \Manager\UserManager(
         $c['userDao'],
         $c['userRoleDao'],
-        $c['userProviderDao']
+        $c['userProviderDao'],
+        $c['logger']
     );
 };
 

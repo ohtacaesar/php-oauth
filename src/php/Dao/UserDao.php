@@ -48,9 +48,7 @@ class UserDao extends BaseDao
 
     const UPDATE = <<<EOS
 insert into users(user_id, name, signin_token) values (:user_id, :name, :signin_token)
-    on conflict
-    on constraint users_pkey
-    do update set name = :name, signin_token = :signin_token
+    on duplicate key update name = :name, signin_token = :signin_token
 EOS;
 
     public function update(array $user): bool

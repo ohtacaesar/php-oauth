@@ -33,6 +33,8 @@
     "fix": "php-cs-fixer fix",
     "check": "php-cs-fixer fix --dry-run",
     "diff": "php-cs-fixer fix --diff --dry-run",
-    "phpmd": "phpmd src/php text ruleset.xml"
+    "phpmd": "phpmd src/php text ruleset.xml",
+    "db-setup": "Script\\Main::setupDB",
+    "db-drop": "Script\\Main::dropDB"
   }
 }

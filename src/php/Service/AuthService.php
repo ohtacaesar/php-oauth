@@ -45,6 +45,7 @@ class AuthService
         try {
             $loginUser = null;
             if ($userId = $this->session->get('user_id')) {
+                $this->logger->info('user_id found in session');
                 $loginUser = $this->userManager->getUserByUserId($userId);
                 if ($loginUser === null) {
                     $this->logger->warning(sprintf('USER NOT FOUND(user_id=%s)', $userId));
@@ -55,6 +56,7 @@ class AuthService
 
             $user = $this->userManager->getUserByProviderIdAndOwnerId($providerId, $owner->getId());
             if ($user) {
+                $this->logger->info('yes');
                 if ($loginUser && $loginUser['user_id'] !== $user['user_id']) {
                     $this->logger->error(sprintf(
                         '$loginUser(%s) != $user(%s)',
@@ -73,7 +75,7 @@ class AuthService
                 $user = $this->userManager->createUser($ownerName);
             }
 
-            if (!in_array($providerId, $user['provider_ids'] ?? [], true)) {
+            if (!in_array($providerId, $user['provider_ids'] ?? [])) {
                 $this->userManager->getUserProviderDao()->create([
                     'user_id' => $user['user_id'],
                     'provider_id' => $providerId,
@@ -153,6 +155,7 @@ class AuthService
     {
         $user = $this->userManager->getUserBySigninToken($signinToken);
         if ($user === null) {
+            $this->logger->info("User not found by token");
             return null;
         }
 

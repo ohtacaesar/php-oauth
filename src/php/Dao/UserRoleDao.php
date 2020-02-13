@@ -25,12 +25,7 @@ class UserRoleDao extends BaseDao
      */
     public function update(array $userRole): bool
     {
-        $sql = <<<EOS
-insert into user_roles(user_id, role) values (:user_id, :role)
-    on conflict
-    on constraint user_roles_pkey
-    do update set user_id = :user_id, role = :role
-EOS;
+        $sql = "replace into user_roles(user_id, role) values (:user_id, :role)";
         $stmt = $this->pdo->prepare($sql);
 
         return $stmt->execute($userRole);
