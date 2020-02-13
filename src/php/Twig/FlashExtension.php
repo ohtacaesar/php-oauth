@@ -2,9 +2,11 @@
 
 namespace Twig;
 
+use Twig\Extension\AbstractExtension;
+use Twig\Extension\GlobalsInterface;
 use Util\Session;
 
-class FlashExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInterface
+class FlashExtension extends AbstractExtension implements GlobalsInterface
 {
     /** @var Session */
     protected $session;
@@ -14,7 +16,7 @@ class FlashExtension extends \Twig_Extension implements \Twig_Extension_GlobalsI
         $this->session = $session;
     }
 
-    public function getGlobals()
+    public function getGlobals(): array
     {
         return [
             'flash' => $this->session->getUnset('flash')
