@@ -3,8 +3,10 @@
 namespace Twig;
 
 use Middleware\Csrf;
+use Twig\Extension\AbstractExtension;
+use Twig\Extension\GlobalsInterface;
 
-class CsrfExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInterface
+class CsrfExtension extends AbstractExtension implements GlobalsInterface
 {
     /** @var Csrf */
     protected $csrf;
@@ -14,7 +16,7 @@ class CsrfExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
         $this->csrf = $csrf;
     }
 
-    public function getGlobals()
+    public function getGlobals(): array
     {
         return [
             'csrf' => [

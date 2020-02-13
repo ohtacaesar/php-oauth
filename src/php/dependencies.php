@@ -11,6 +11,7 @@ use Slim\Views\Twig;
 use Slim\Views\TwigExtension;
 use Twig\AppExtension;
 use Twig\CsrfExtension;
+use Twig\Extension\DebugExtension;
 use Twig\FlashExtension;
 use Util\Session;
 
@@ -68,7 +69,7 @@ $container['view'] = function (Container $c) {
 
     $view = new Twig($settings['template_path'], $settings);
     $view->addExtension(new TwigExtension($c->get('router'), $c->get('uri')));
-    $view->addExtension(new Twig_Extension_Debug());
+    $view->addExtension(new DebugExtension());
     $view->addExtension(new CsrfExtension($c['csrf']));
     $view->addExtension(new FlashExtension($c['session']));
     $view->addExtension(new AppExtension($c));

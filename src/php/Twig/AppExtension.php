@@ -3,8 +3,10 @@
 namespace Twig;
 
 use Slim\Container;
+use Twig\Extension\AbstractExtension;
+use Twig\Extension\GlobalsInterface;
 
-class AppExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInterface
+class AppExtension extends AbstractExtension implements GlobalsInterface
 {
     private $app;
 
@@ -13,7 +15,7 @@ class AppExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInt
         $this->app = $c['settings']['app'];
     }
 
-    public function getGlobals()
+    public function getGlobals(): array
     {
         return [
             'app' => $this->app,
