@@ -12,14 +12,17 @@ services:
     volumes:
       - ./:/app
     depends_on:
-      - postgres
+      - mysql
     environment:
-      PDO_DSN:      pgsql:host=postgres;port=5432;dbname=postgres
-      PDO_USERNAME: postgres
-      PDO_PASSWD:
+      PDO_DSN: mysql:host=mysql;port=3306;dbname=gateway
+      PDO_USERNAME: root
+      PDO_PASSWORD: root
       DEVELOPMENT: 0
       PHP_AUTH_TITLE: test
       DOCKER: 1
+    logging: &logging
+      options:
+        max-size: "1m"
 
   nginx:
     build: ./nginx
@@ -29,13 +32,23 @@ services:
       - ./nginx/conf.d:/etc/nginx/conf.d
     depends_on:
       - php-auth
+    logging: *logging
 
-  postgres:
-    image: postgres:10-alpine
+  mysql:
+    image: mysql:5
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_bin
     ports:
-      - 5432:5432
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: gateway
+    volumes:
+      - mysql:/var/lib/mysql
+    logging: *logging
+
+volumes:
+  mysql:
 
 secrets:
   secrets.ini:
     file: ./secrets.ini
-

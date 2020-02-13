@@ -8,9 +8,10 @@ class Session implements \ArrayAccess
 
     private $session;
 
-    public function __construct($config)
+    public function __construct($config, $session = null)
     {
         $this->config = $config;
+        $this->session = $session;
     }
 
     /**

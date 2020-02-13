@@ -23,13 +23,13 @@ $settings = [
             'path' => isset($_ENV['DOCKER']) ? 'php://stdout' : __DIR__ . '/../../logs/app.log',
         ],
         'pdo' => [
-            'dsn' => $_ENV['PDO_DSN'] ?? 'pgsql:host=postgres;port=5432;dbname=postgres',
-            'username' => $_ENV['PDO_USERNAME'] ?? 'postgres',
-            'passwd' => $_ENV['PDO_PASSWORD'] ?? '',
+            'dsn' => $_ENV['PDO_DSN'],
+            'username' => $_ENV['PDO_USERNAME'],
+            'password' => $_ENV['PDO_PASSWORD'],
         ],
         'cookie' => [
-            'cookie_secure' => boolval($_ENV['COOKIE_SECURE']) ?? boolval($_SERVER['HTTPS']),
-            'cookie_httponly' => boolval($_ENV['COOKIE_HTTPONLY']) ?? true,
+            'cookie_secure' => boolval($_ENV['COOKIE_SECURE'] ?? $_SERVER['HTTPS'] ?? false),
+            'cookie_httponly' => boolval($_ENV['COOKIE_HTTPONLY'] ?? true),
         ],
         // OAuthの認証情報で自動的にロールを付与するルール
         'grantRules' => [

@@ -6,7 +6,7 @@ use Dao\UserDao;
 use Dao\UserProviderDao;
 use Dao\UserRoleDao;
 use Monolog\Logger;
-use Psr\Log\NullLogger;
+use Psr\Log\LoggerInterface;
 use Util\Providers;
 
 class UserManager
@@ -26,13 +26,14 @@ class UserManager
     public function __construct(
         UserDao $userDao,
         UserRoleDao $userRoleDao,
-        UserProviderDao $userProviderDao
+        UserProviderDao $userProviderDao,
+        LoggerInterface $logger
     )
     {
         $this->userDao = $userDao;
         $this->userRoleDao = $userRoleDao;
         $this->userProviderDao = $userProviderDao;
-        $this->logger = new NullLogger();
+        $this->logger = $logger;
     }
 
     public function getUserDao(): UserDao

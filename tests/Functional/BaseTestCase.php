@@ -42,7 +42,7 @@ class BaseTestCase extends TestCase
          * @var Container $container
          */
         $container = $app->getContainer();
-        $container['session'] = new \Util\Session($session);
+        $container['session'] = new \Util\Session([], $session);
         $container['logger'] = new NullLogger();
 
         $userMap = [

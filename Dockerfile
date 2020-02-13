@@ -18,9 +18,9 @@ RUN set -eux \
     &&  if [[ -n "${ALPINE_SERVER}" ]]; then \
           sed -i "s/dl-cdn.alpinelinux.org/${ALPINE_SERVER}/" /etc/apk/repositories; \
         fi \
-    &&  apk add --no-cache postgresql-libs nodejs-npm \
-    &&  apk add --no-cache --virtual .build-deps postgresql-dev $PHPIZE_DEPS \
-    &&  docker-php-ext-install pdo_pgsql \
+    &&  apk add --no-cache nodejs-npm \
+    &&  apk add --no-cache --virtual .build-deps $PHPIZE_DEPS \
+    &&  docker-php-ext-install pdo_mysql \
     &&  wget  -O /usr/local/bin/composer.phar ${COMPOSER_URL} \
     &&  chmod +x /usr/local/bin/composer.phar \
     &&  if [[ -n "${COMPOSER_HASH}" ]]; then \
@@ -40,7 +40,6 @@ RUN set -eux \
     &&  mkdir logs
 
 COPY src/ ./src
-COPY bin/ ./bin
 COPY tests/ ./tests
 COPY .php_cs.dist ./
 COPY phpunit.xml ./
